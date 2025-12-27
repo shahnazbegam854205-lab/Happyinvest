@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Recharge - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        /* Balance Section */
+        .balance-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .balance-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .balance-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Input Section */
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .amount-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        /* Quick Amount Grid */
+        .quick-amount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .amount-btn {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .amount-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .amount-btn.selected {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            margin-bottom: 30px;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .payment-option.selected {
+            border-color: #000;
+            background: #f8f9fa;
+        }
+        
+        .payment-radio {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: #000;
+        }
+        
+        .payment-name {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Recharge Button */
+        .recharge-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .recharge-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn">←</a>
+        <h1 class="page-title">Recharge</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Balance Section -->
+        <div class="balance-section">
+            <div class="balance-item">
+                <div class="balance-amount" id="currentBalance">₹12.00</div>
+                <div class="balance-label">Current Balance</div>
+            </div>
+            <div class="balance-item">
+                <div class="balance-amount" id="rechargeBalance">₹0</div>
+                <div class="balance-label">Recharge Balance</div>
+            </div>
+        </div>
+        
+        <!-- Amount Input -->
+        <div class="input-section">
+            <h3 class="section-title">Enter Amount</h3>
+            <input type="number" 
+                   class="amount-input" 
+                   id="amountInput" 
+                   placeholder="Recharge Amount"
+                   min="100"
+                   step="100">
+        </div>
+        
+        <!-- Quick Amounts -->
+        <div class="input-section">
+            <h3 class="section-title">Quick Amount</h3>
+            <div class="quick-amount-grid" id="quickAmounts">
+                <!-- Buttons will be added by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+            <h3 class="section-title">Online Channel</h3>
+            <div class="payment-option" data-method="upi">
+                <input type="radio" class="payment-radio" name="payment" id="payment1">
+                <label class="payment-name" for="payment1">PAYMENT 001</label>
+            </div>
+            <div class="payment-option" data-method="card">
+                <input type="radio" class="payment-radio" name="payment" id="payment2">
+                <label class="payment-name" for="payment2">PAYMENT 002</label>
+            </div>
+        </div>
+        
+        <!-- Recharge Button -->
+        <button class="recharge-btn" id="rechargeBtn">Recharge Now</button>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load user balance
+            const userBalance = localStorage.getItem('userBalance') || '12.00';
+            document.getElementById('currentBalance').textContent = `₹${userBalance}`;
+            
+            // Quick amounts
+            const quickAmounts = [800, 296, 450, 900, 2000, 4500];
+            const quickAmountsGrid = document.getElementById('quickAmounts');
+            
+            quickAmounts.forEach(amount => {
+                const button = document.createElement('button');
+                button.className = 'amount-btn';
+                button.textContent = `₹${amount}`;
+                button.dataset.amount = amount;
+                
+                button.addEventListener('click', function() {
+                    // Remove selected class from all buttons
+                    document.querySelectorAll('.amount-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    
+                    // Set amount in input
+                    document.getElementById('amountInput').value = amount;
+                });
+                
+                quickAmountsGrid.appendChild(button);
+            });
+            
+            // Payment selection
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    document.querySelectorAll('.payment-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Check the radio button
+                    const radio = this.querySelector('.payment-radio');
+                    radio.checked = true;
+                });
+            });
+            
+            // Recharge button click
+            document.getElementById('rechargeBtn').addEventListener('click', async function() {
+                const amount = document.getElementById('amountInput').value;
+                const paymentMethod = document.querySelector('.payment-option.selected');
+                
+                if (!amount || amount < 100) {
+                    alert('Please enter valid amount (minimum ₹100)');
+                    return;
+                }
+                
+                if (!paymentMethod) {
+                    alert('Please select payment method');
+                    return;
+                }
+                
+                const btn = this;
+                btn.textContent = 'Processing...';
+                btn.disabled = true;
+                
+                try {
+                    const API_URL = 'https://your-vercel-app.vercel.app/api';
+                    const userId = localStorage.getItem('userId');
+                    const method = paymentMethod.dataset.method;
+                    
+                    const response = await fetch(`${API_URL}/recharge`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            amount: parseFloat(amount),
+                            paymentMethod: method
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Recharge of ₹${amount} successful!`);
+                        
+                        // Update local storage
+                        localStorage.setItem('userBalance', result.newBalance);
+                        document.getElementById('currentBalance').textContent = `₹${result.newBalance}`;
+                        
+                        // Reset form
+                        document.getElementById('amountInput').value = '';
+                        document.querySelectorAll('.amount-btn').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        document.querySelectorAll('.payment-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                            opt.querySelector('.payment-radio').checked = false;
+                        });
+                        
+                        // Go back to home
+                        setTimeout(() => {
+                            window.location.href = 'home.html';
+                        }, 1500);
+                    } else {
+                        alert(result.message || 'Recharge failed');
+                    }
+                } catch (error) {
+                    alert('Server error. Please try again.');
+                } finally {
+                    btn.textContent = 'Recharge Now';
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
