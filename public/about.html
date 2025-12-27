@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { 
             margin: 0; 
@@ -11,28 +12,62 @@
             box-sizing: border-box; 
             font-family: 'Segoe UI', Arial, sans-serif; 
         }
+        
         body { 
-            background: #f5f5f5; 
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
+            color: #fff;
         }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
         .header { 
             display: flex; 
             align-items: center; 
             padding: 20px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
+        
         .back-btn { 
             font-size: 24px; 
-            color: #333; 
+            color: #fff; 
             margin-right: 15px; 
             text-decoration: none; 
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
         }
+        
+        .back-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        
         .page-title { 
             font-size: 20px; 
-            color: #333; 
-            font-weight: bold; 
+            color: #fff; 
+            font-weight: 600; 
             flex: 1;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
         }
         
         .hero-image {
@@ -40,54 +75,215 @@
             height: 250px;
             object-fit: cover;
             display: block;
+            border-bottom: 3px solid rgba(0, 210, 255, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .content { 
-            background: white; 
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             padding: 25px;
-            border-radius: 10px;
             margin: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
         h3 { 
-            color: #333; 
+            color: #fff; 
             margin: 20px 0 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #4CAF50;
+            border-bottom: 2px solid #00d2ff;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
         }
+        
         p { 
-            color: #666; 
+            color: #a0a0d0; 
             line-height: 1.6; 
             margin-bottom: 15px; 
             font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-list {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-item:hover {
+            background: rgba(0, 210, 255, 0.1);
+            transform: translateX(5px);
+            border-color: rgba(0, 210, 255, 0.3);
+        }
+        
+        .feature-item:before {
+            content: "✓";
+            color: #00ffaa;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
         }
         
         .contact-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .contact-info p {
-            margin-bottom: 10px;
+        .contact-info h3 {
+            color: #00d2ff;
+            margin-top: 0;
+        }
+        
+        .contact-detail {
             display: flex;
             align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
         
-        .contact-info p:before {
-            content: "📧";
-            margin-right: 10px;
+        .contact-detail:hover {
+            background: rgba(0, 210, 255, 0.1);
+            transform: translateX(5px);
         }
         
-        .contact-info p:last-child:before {
-            content: "📱";
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #00d2ff;
+            font-size: 18px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+        
+        .contact-text {
+            flex: 1;
+            color: #a0a0d0;
+            font-size: 15px;
+        }
+        
+        .contact-text strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 210, 255, 0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .stat-item:hover::after {
+            left: 100%;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            color: #00ffaa;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #a0a0d0;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content, .stats {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .stats {
+            animation-delay: 0.2s;
+            opacity: 0;
         }
         
         /* Responsive */
         @media (max-width: 480px) {
             .content {
-                margin: 10px;
+                margin: 15px;
                 padding: 20px;
             }
             
@@ -102,18 +298,100 @@
             p {
                 font-size: 15px;
             }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .contact-detail {
+                padding: 10px;
+            }
+            
+            .contact-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
         }
         
         @media (min-width: 768px) {
             body {
                 max-width: 450px;
                 margin: 0 auto;
-                background: white;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
             }
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
         }
     </style>
 </head>
 <body>
+    <!-- Glowing Background -->
+    <div class="glow-bg"></div>
+    
     <!-- Header -->
     <div class="header">
         <a href="/profile" class="back-btn">←</a>
@@ -123,7 +401,8 @@
     <!-- Hero Image -->
     <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
          alt="Happy Invest" 
-         class="hero-image">
+         class="hero-image"
+         onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
     
     <!-- Content -->
     <div class="content">
@@ -137,20 +416,232 @@
         <h3>Our Mission</h3>
         <p>To empower investors with innovative financial solutions, transparent operations, and exceptional customer support while contributing to India's renewable energy goals.</p>
         
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">10,000+</div>
+                <div class="stat-label">Happy Investors</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">₹5Cr+</div>
+                <div class="stat-label">Invested</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Support</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Secure</div>
+            </div>
+        </div>
+        
         <h3>Why Choose Us?</h3>
-        <p>• Daily Returns & Transparent Operations</p>
-        <p>• Secure & Regulated Investments</p>
-        <p>• 24/7 Customer Support</p>
-        <p>• Easy Withdrawal Process</p>
-        <p>• Referral Commission System</p>
+        <div class="feature-list">
+            <div class="feature-item">
+                <p>Daily Returns & Transparent Operations</p>
+            </div>
+            <div class="feature-item">
+                <p>Secure & Regulated Investments</p>
+            </div>
+            <div class="feature-item">
+                <p>24/7 Customer Support</p>
+            </div>
+            <div class="feature-item">
+                <p>Easy Withdrawal Process</p>
+            </div>
+            <div class="feature-item">
+                <p>Referral Commission System</p>
+            </div>
+        </div>
         
         <div class="contact-info">
             <h3>Contact Information</h3>
-            <p>Email: support@happy-invest.com</p>
-            <p>Telegram Support: @Royal_smart_boy</p>
-            <p>Customer Care: +91-XXXXXXXXXX</p>
-            <p>Office Hours: 9:00 AM - 6:00 PM (Mon-Sat)</p>
+            
+            <div class="contact-detail">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-text">
+                    <strong>Email</strong>
+                    support@happy-invest.com
+                </div>
+            </div>
+            
+            <div class="contact-detail">
+                <div class="contact-icon">
+                    <i class="fab fa-telegram"></i>
+                </div>
+                <div class="contact-text">
+                    <strong>Telegram Support</strong>
+                    @Royal_smart_boy
+                </div>
+            </div>
+            
+            <div class="contact-detail">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-text">
+                    <strong>Customer Care</strong>
+                    +91-XXXXXXXXXX
+                </div>
+            </div>
+            
+            <div class="contact-detail">
+                <div class="contact-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="contact-text">
+                    <strong>Office Hours</strong>
+                    9:00 AM - 6:00 PM (Mon-Sat)
+                </div>
+            </div>
         </div>
     </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // Clean URL navigation
+        function navigateTo(cleanPath) {
+            // Add click animation
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            // Show loading indicator
+            showLoading();
+            
+            // Route mapping
+            const routes = {
+                '/home': 'home.html',
+                '/profile': 'profile.html',
+                '/products': 'products.html',
+                '/team': 'team.html',
+                '/about': 'about.html'
+            };
+            
+            if (routes[cleanPath]) {
+                // Update browser history with clean URL
+                history.pushState(null, '', cleanPath);
+                
+                // After a short delay, navigate to actual file
+                setTimeout(() => {
+                    window.location.href = routes[cleanPath];
+                }, 300);
+            } else {
+                // If route doesn't exist, show error
+                setTimeout(() => {
+                    hideLoading();
+                    alert('Page not found: ' + cleanPath);
+                }, 300);
+            }
+        }
+
+        function showLoading() {
+            // Create loading overlay
+            const loading = document.createElement('div');
+            loading.id = 'pageLoading';
+            loading.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:1000;">
+                    <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:30px; border-radius:15px; text-align:center;">
+                        <div style="width:50px; height:50px; border:3px solid transparent; border-top-color:#00d2ff; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 15px;"></div>
+                        <p style="color:white;">Loading...</p>
+                    </div>
+                </div>
+                <style>@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
+            `;
+            document.body.appendChild(loading);
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('pageLoading');
+            if (loading) {
+                loading.remove();
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            const currentPath = window.location.pathname;
+            const routes = {
+                '/home': 'home.html',
+                '/profile': 'profile.html',
+                '/products': 'products.html',
+                '/team': 'team.html',
+                '/about': 'about.html'
+            };
+            
+            if (routes[currentPath]) {
+                window.location.href = routes[currentPath];
+            }
+        });
+
+        // Update URL to clean version
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update browser URL to clean version
+            if (window.location.pathname.endsWith('about.html')) {
+                history.replaceState(null, '', '/about');
+            }
+            
+            // Add hover effects
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            const contactDetails = document.querySelectorAll('.contact-detail');
+            contactDetails.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+
+        // Add floating animation to background
+        document.addEventListener('mousemove', function(e) {
+            const glowBg = document.querySelector('.glow-bg');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            glowBg.style.background = `
+                radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+            `;
+        });
+    </script>
 </body>
 </html>
