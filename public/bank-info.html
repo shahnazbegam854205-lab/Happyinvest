@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bank Info - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .balance-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        /* Bank Info Display */
+        .info-display {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .info-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Form Section */
+        .form-section {
+            margin-top: 30px;
+        }
+        
+        .form-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 18px;
+        }
+        
+        .input-label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+        }
+        
+        .form-input:focus {
+            border-color: #000;
+            outline: none;
+        }
+        
+        /* Save Button */
+        .save-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn">←</a>
+        <h1 class="page-title">Bank Info</h1>
+        <div class="balance-display">₹12.00</div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Current Bank Info -->
+        <div class="info-display" id="currentInfo">
+            <div class="info-row">
+                <span class="info-label">Account Holder</span>
+                <span class="info-value" id="currentHolder">Not set</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Account Type</span>
+                <span class="info-value" id="currentType">SAVINGS</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">IFSC Code</span>
+                <span class="info-value" id="currentIFSC">Not set</span>
+            </div>
+        </div>
+        
+        <!-- Update Form -->
+        <div class="form-section">
+            <h3 class="form-title">Holder Name</h3>
+            
+            <form id="bankForm">
+                <div class="input-group">
+                    <label class="input-label">Account Holder Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="holderName" 
+                           placeholder="Enter account holder name"
+                           required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Account Number</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="accountNumber" 
+                           placeholder="Enter account number"
+                           required
+                           minlength="9"
+                           maxlength="18">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Confirm Account Number</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="confirmAccount" 
+                           placeholder="Re-enter account number"
+                           required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Account IFSC</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="ifscCode" 
+                           placeholder="Enter IFSC code"
+                           required
+                           pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+                           title="Enter valid IFSC code (e.g., SBIN0001234)">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Confirm IFSC Code</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="confirmIFSC" 
+                           placeholder="Re-enter IFSC code"
+                           required>
+                </div>
+                
+                <button type="submit" class="save-btn" id="saveBtn">Save Details</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load saved bank details
+            const savedBankDetails = localStorage.getItem('bankDetails');
+            if (savedBankDetails) {
+                const bankDetails = JSON.parse(savedBankDetails);
+                
+                document.getElementById('currentHolder').textContent = bankDetails.holderName || 'Not set';
+                document.getElementById('currentIFSC').textContent = bankDetails.ifscCode || 'Not set';
+                
+                // Pre-fill form
+                document.getElementById('holderName').value = bankDetails.holderName || '';
+                document.getElementById('accountNumber').value = bankDetails.accountNumber || '';
+                document.getElementById('confirmAccount').value = bankDetails.accountNumber || '';
+                document.getElementById('ifscCode').value = bankDetails.ifscCode || '';
+                document.getElementById('confirmIFSC').value = bankDetails.ifscCode || '';
+            }
+            
+            // Form validation
+            document.getElementById('bankForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const holderName = document.getElementById('holderName').value.trim();
+                const accountNumber = document.getElementById('accountNumber').value.trim();
+                const confirmAccount = document.getElementById('confirmAccount').value.trim();
+                const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
+                const confirmIFSC = document.getElementById('confirmIFSC').value.trim().toUpperCase();
+                
+                // Validation
+                if (!holderName || holderName.length < 3) {
+                    alert('Please enter valid account holder name');
+                    return;
+                }
+                
+                if (!accountNumber || accountNumber.length < 9 || accountNumber.length > 18) {
+                    alert('Please enter valid account number (9-18 digits)');
+                    return;
+                }
+                
+                if (accountNumber !== confirmAccount) {
+                    alert('Account numbers do not match');
+                    return;
+                }
+                
+                if (!ifscCode.match(/^[A-Z]{4}0[A-Z0-9]{6}$/)) {
+                    alert('Please enter valid IFSC code (e.g., SBIN0001234)');
+                    return;
+                }
+                
+                if (ifscCode !== confirmIFSC) {
+                    alert('IFSC codes do not match');
+                    return;
+                }
+                
+                const btn = document.getElementById('saveBtn');
+                btn.textContent = 'Saving...';
+                btn.disabled = true;
+                
+                try {
+                    const API_URL = 'https://your-vercel-app.vercel.app/api';
+                    const userId = localStorage.getItem('userId');
+                    
+                    const response = await fetch(`${API_URL}/save-bank`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            bankDetails: {
+                                holderName: holderName,
+                                accountNumber: accountNumber,
+                                ifscCode: ifscCode,
+                                accountType: 'SAVINGS'
+                            }
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Save to localStorage
+                        const bankDetails = {
+                            holderName: holderName,
+                            accountNumber: accountNumber,
+                            ifscCode: ifscCode,
+                            accountType: 'SAVINGS'
+                        };
+                        
+                        localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+                        
+                        // Update display
+                        document.getElementById('currentHolder').textContent = holderName;
+                        document.getElementById('currentIFSC').textContent = ifscCode;
+                        
+                        alert('Bank details saved successfully!');
+                        
+                        // Redirect to withdrawal page
+                        setTimeout(() => {
+                            window.location.href = 'withdraw.html';
+                        }, 1000);
+                    } else {
+                        alert(result.message || 'Failed to save bank details');
+                    }
+                } catch (error) {
+                    alert('Server error. Please try again.');
+                } finally {
+                    btn.textContent = 'Save Details';
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
