@@ -20,6 +20,62 @@
       "dest": "/public/register.html"
     },
     {
+      "src": "/about",
+      "dest": "/public/about.html"
+    },
+    {
+      "src": "/bank-info",
+      "dest": "/public/bank-info.html"
+    },
+    {
+      "src": "/checkin",
+      "dest": "/public/checkin.html"
+    },
+    {
+      "src": "/gift-code",
+      "dest": "/public/gift-code.html"
+    },
+    {
+      "src": "/home",
+      "dest": "/public/home.html"
+    },
+    {
+      "src": "/income-record",
+      "dest": "/public/income-record.html"
+    },
+    {
+      "src": "/invite-earn",
+      "dest": "/public/invite-earn.html"
+    },
+    {
+      "src": "/my-collection",
+      "dest": "/public/my-collection.html"
+    },
+    {
+      "src": "/products",
+      "dest": "/public/products.html"
+    },
+    {
+      "src": "/profile",
+      "dest": "/public/profile.html"
+    },
+    {
+      "src": "/recharge",
+      "dest": "/public/recharge.html"
+    },
+    {
+      "src": "/records",
+      "dest": "/public/records.html"
+    },
+    {
+      "src": "/team",
+      "dest": "/public/team.html"
+    },
+    {
+      "src": "/withdraw",
+      "dest": "/public/withdraw.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
