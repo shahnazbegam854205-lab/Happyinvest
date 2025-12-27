@@ -5,30 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Happy Invest</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
-        body { background: white; padding: 20px; }
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .back-btn { font-size: 24px; color: #333; margin-right: 15px; text-decoration: none; }
-        .page-title { font-size: 20px; color: #333; font-weight: bold; }
-        .content { background: #f8f9fa; padding: 20px; border-radius: 10px; }
-        h3 { color: #333; margin-bottom: 15px; }
-        p { color: #666; line-height: 1.6; margin-bottom: 15px; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+        }
+        body { 
+            background: #f5f5f5; 
+            min-height: 100vh;
+        }
+        .header { 
+            display: flex; 
+            align-items: center; 
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .back-btn { 
+            font-size: 24px; 
+            color: #333; 
+            margin-right: 15px; 
+            text-decoration: none; 
+        }
+        .page-title { 
+            font-size: 20px; 
+            color: #333; 
+            font-weight: bold; 
+            flex: 1;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .content { 
+            background: white; 
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        h3 { 
+            color: #333; 
+            margin: 20px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        p { 
+            color: #666; 
+            line-height: 1.6; 
+            margin-bottom: 15px; 
+            font-size: 16px;
+        }
+        
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .contact-info p {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-info p:before {
+            content: "📧";
+            margin-right: 10px;
+        }
+        
+        .contact-info p:last-child:before {
+            content: "📱";
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .content {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .hero-image {
+                height: 200px;
+            }
+            
+            h3 {
+                font-size: 18px;
+            }
+            
+            p {
+                font-size: 15px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                background: white;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <div class="header">
-        <a href="profile.html" class="back-btn">←</a>
+        <a href="/profile" class="back-btn">←</a>
         <h1 class="page-title">About Company</h1>
     </div>
+    
+    <!-- Hero Image -->
+    <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+         alt="Happy Invest" 
+         class="hero-image">
+    
+    <!-- Content -->
     <div class="content">
         <h3>About Happy Invest</h3>
-        <p>Happy Invest is a leading investment platform that provides daily income opportunities through renewable energy investments.</p>
-        <p>We specialize in wind energy projects and offer various investment plans with daily returns.</p>
+        <p>Happy Invest is a premier investment platform specializing in renewable energy projects, offering daily income opportunities through sustainable investments.</p>
+        <p>We partner with leading wind energy projects across India, providing investors with transparent returns and a secure investment environment.</p>
+        
+        <h3>Our Vision</h3>
+        <p>To revolutionize the investment landscape by making renewable energy investments accessible to everyone while ensuring sustainable growth and reliable returns.</p>
+        
         <h3>Our Mission</h3>
-        <p>To provide sustainable investment opportunities with transparent returns and excellent customer support.</p>
-        <h3>Contact</h3>
-        <p>Email: support@happy-invest.com</p>
-        <p>Telegram: @Royal_smart_boy</p>
+        <p>To empower investors with innovative financial solutions, transparent operations, and exceptional customer support while contributing to India's renewable energy goals.</p>
+        
+        <h3>Why Choose Us?</h3>
+        <p>• Daily Returns & Transparent Operations</p>
+        <p>• Secure & Regulated Investments</p>
+        <p>• 24/7 Customer Support</p>
+        <p>• Easy Withdrawal Process</p>
+        <p>• Referral Commission System</p>
+        
+        <div class="contact-info">
+            <h3>Contact Information</h3>
+            <p>Email: support@happy-invest.com</p>
+            <p>Telegram Support: @Royal_smart_boy</p>
+            <p>Customer Care: +91-XXXXXXXXXX</p>
+            <p>Office Hours: 9:00 AM - 6:00 PM (Mon-Sat)</p>
+        </div>
     </div>
 </body>
 </html>
