@@ -11,87 +11,10 @@
     }
   ],
   "routes": [
-    // API routes first
     {
       "src": "/api/(.*)",
       "dest": "/api/index.js"
     },
-    
-    // ALL HTML pages WITHOUT .html extension
-    {
-      "src": "/about",
-      "dest": "/public/about.html"
-    },
-    {
-      "src": "/bank-info",
-      "dest": "/public/bank-info.html"
-    },
-    {
-      "src": "/checkin",
-      "dest": "/public/checkin.html"
-    },
-    {
-      "src": "/gift-code",
-      "dest": "/public/gift-code.html"
-    },
-    {
-      "src": "/home",
-      "dest": "/public/home.html"
-    },
-    {
-      "src": "/income-record",
-      "dest": "/public/income-record.html"
-    },
-    {
-      "src": "/invite-earn",
-      "dest": "/public/invite-earn.html"
-    },
-    {
-      "src": "/my-collection",
-      "dest": "/public/my-collection.html"
-    },
-    {
-      "src": "/products",
-      "dest": "/public/products.html"
-    },
-    {
-      "src": "/profile",
-      "dest": "/public/profile.html"
-    },
-    {
-      "src": "/recharge",
-      "dest": "/public/recharge.html"
-    },
-    {
-      "src": "/records",
-      "dest": "/public/records.html"
-    },
-    {
-      "src": "/register",
-      "dest": "/public/register.html"
-    },
-    {
-      "src": "/team",
-      "dest": "/public/team.html"
-    },
-    {
-      "src": "/withdraw",
-      "dest": "/public/withdraw.html"
-    },
-    
-    // Homepage (index.html auto)
-    {
-      "src": "/",
-      "dest": "/public/index.html"
-    },
-    
-    // Static assets (CSS, JS, images, etc.)
-    {
-      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|ttf|eot|json))",
-      "dest": "/public/$1"
-    },
-    
-    // Fallback for all other files
     {
       "src": "/(.*)",
       "dest": "/public/$1"
