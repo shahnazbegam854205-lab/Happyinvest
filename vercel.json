@@ -6,15 +6,48 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    // API routes
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.js",
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
     },
+    
+    // Automatic HTML routes WITHOUT .html extension
+    // Ye sabhi HTML files ko automatically handle karega
+    {
+      "src": "/([^/.]+)",
+      "dest": "/public/$1.html",
+      "check": true
+    },
+    
+    // Home page
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    
+    // Static assets (CSS, JS, images, fonts, etc.)
+    {
+      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|json|mp4|webm|pdf))",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/public/$1"
+    },
+    
+    // For direct HTML access (backward compatibility)
+    {
+      "src": "/(.*)\\.html",
+      "dest": "/public/$1.html"
+    },
+    
+    // Fallback - serve from public folder
     {
       "src": "/(.*)",
       "dest": "/public/$1"
