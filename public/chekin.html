@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Daily Check-in - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        /* Check-in Card */
+        .checkin-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px 20px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(103, 126, 234, 0.3);
+        }
+        
+        .checkin-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .checkin-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .checkin-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .reward-amount {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Check-in Button */
+        .checkin-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .checkin-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .checkin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Streak Info */
+        .streak-info {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        
+        .streak-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .streak-days {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .day-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .day-past {
+            background: #28a745;
+            color: white;
+        }
+        
+        .day-today {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .day-future {
+            background: #f8f9fa;
+            color: #999;
+            border: 1px solid #eee;
+        }
+        
+        .streak-rewards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .reward-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .reward-day {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .reward-amount-small {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn">←</a>
+        <h1 class="page-title">Daily Check-in</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Check-in Card -->
+        <div class="checkin-card">
+            <div class="checkin-icon">📅</div>
+            <h2 class="checkin-title">Daily Check-in</h2>
+            <p class="checkin-subtitle">Check in daily to earn rewards and gift codes!</p>
+            
+            <div class="reward-amount" id="todayReward">₹50</div>
+            
+            <button class="checkin-btn" id="checkinBtn">CHECK IN NOW</button>
+        </div>
+        
+        <!-- Streak Info -->
+        <div class="streak-info">
+            <h3 class="streak-title">Weekly Streak</h3>
+            
+            <div class="streak-days" id="streakDays">
+                <!-- Days will be added by JavaScript -->
+            </div>
+            
+            <h3 class="streak-title">Weekly Rewards</h3>
+            <div class="streak-rewards">
+                <div class="reward-item">
+                    <div class="reward-day">Day 3</div>
+                    <div class="reward-amount-small">Gift Code</div>
+                </div>
+                <div class="reward-item">
+                    <div class="reward-day">Day 7</div>
+                    <div class="reward-amount-small">₹500 Bonus</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        window.addEventListener('DOMContentLoaded', async function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load check-in status
+            await loadCheckinStatus();
+        });
+        
+        async function loadCheckinStatus() {
+            try {
+                const API_URL = 'https://your-vercel-app.vercel.app/api';
+                const userId = localStorage.getItem('userId');
+                
+                // Check if already checked in today
+                const response = await fetch(`${API_URL}/checkin-status/${userId}`);
+                const result = await response.json();
+                
+                const checkinBtn = document.getElementById('checkinBtn');
+                
+                if (result.success) {
+                    if (result.checkedInToday) {
+                        checkinBtn.textContent = 'ALREADY CHECKED IN TODAY';
+                        checkinBtn.disabled = true;
+                    } else {
+                        checkinBtn.textContent = 'CHECK IN NOW';
+                        checkinBtn.disabled = false;
+                    }
+                    
+                    // Load streak days
+                    loadStreakDays(result.streak || 0);
+                }
+            } catch (error) {
+                console.error('Error loading check-in status:', error);
+            }
+        }
+        
+        function loadStreakDays(currentStreak) {
+            const streakDaysDiv = document.getElementById('streakDays');
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const today = new Date().getDay(); // 0 = Sunday
+            
+            streakDaysDiv.innerHTML = '';
+            
+            days.forEach((day, index) => {
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-box';
+                dayBox.textContent = day;
+                
+                if (index < currentStreak) {
+                    dayBox.classList.add('day-past');
+                } else if (index === currentStreak) {
+                    dayBox.classList.add('day-today');
+                } else {
+                    dayBox.classList.add('day-future');
+                }
+                
+                streakDaysDiv.appendChild(dayBox);
+            });
+        }
+        
+        // Check-in button click
+        document.getElementById('checkinBtn').addEventListener('click', async function() {
+            const btn = this;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            
+            try {
+                const API_URL = 'https://your-vercel-app.vercel.app/api';
+                const userId = localStorage.getItem('userId');
+                
+                const response = await fetch(`${API_URL}/checkin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Check-in successful! You earned ₹${result.reward}. ${result.giftCode ? 'Gift Code: ' + result.giftCode : ''}`);
+                    
+                    // Update balance
+                    const currentBalance = parseFloat(localStorage.getItem('userBalance') || 0);
+                    const newBalance = currentBalance + result.reward;
+                    localStorage.setItem('userBalance', newBalance);
+                    
+                    // Update button
+                    btn.textContent = 'ALREADY CHECKED IN TODAY';
+                    
+                    // Reload streak
+                    loadStreakDays(result.streak || 1);
+                } else {
+                    alert(result.message || 'Check-in failed');
+                    btn.textContent = 'CHECK IN NOW';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                alert('Server error. Please try again.');
+                btn.textContent = 'CHECK IN NOW';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
