@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Invest - Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Full Mobile Container */
+        .mobile-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Banner Image - Full Width */
+        .banner-container {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .banner-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* White Form Container */
+        .form-container {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            margin-top: -20px;
+            position: relative;
+            z-index: 10;
+            padding: 30px 25px 40px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Form Title */
+        .form-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        .form-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        
+        /* Input Fields */
+        .input-group {
+            margin-bottom: 18px;
+        }
+        
+        .input-label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        /* Phone Input */
+        .phone-input-wrapper {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        
+        .country-code {
+            background: #f0f0f0;
+            padding: 15px;
+            color: #333;
+            font-weight: 500;
+            border-right: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+            font-size: 15px;
+        }
+        
+        .phone-input {
+            flex: 1;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            background: white;
+            outline: none;
+            color: #333;
+        }
+        
+        /* Regular Inputs */
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #fafafa;
+            outline: none;
+            color: #333;
+        }
+        
+        .phone-input:focus,
+        .form-input:focus {
+            border-color: #666;
+            background: white;
+        }
+        
+        /* Referral Code Note */
+        .optional-note {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* Register Button */
+        .register-button {
+            width: 100%;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            margin: 25px 0 20px;
+            transition: opacity 0.3s;
+        }
+        
+        .register-button:hover {
+            opacity: 0.9;
+        }
+        
+        .register-button:active {
+            opacity: 0.8;
+        }
+        
+        .register-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Loading Spinner */
+        .loading-container {
+            text-align: center;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Login Link */
+        .login-container {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .login-text {
+            color: #666;
+            font-size: 15px;
+        }
+        
+        .login-link {
+            color: #000;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Error Message */
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .banner-container {
+                height: 200px;
+            }
+            
+            .form-container {
+                padding: 25px 20px 35px;
+            }
+            
+            .form-title {
+                font-size: 22px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                background: #f5f5f5;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+            
+            .mobile-container {
+                max-width: 400px;
+                min-height: auto;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Banner Image - Full Width -->
+        <div class="banner-container">
+            <img src="https://i.ibb.co/LX4MBNG4/file-0000000089207207b3a29dceb7bd48b8.png" 
+                 alt="Happy Invest" 
+                 class="banner-image">
+        </div>
+        
+        <!-- Register Form -->
+        <div class="form-container">
+            <h2 class="form-title">Create Account</h2>
+            <p class="form-subtitle">Register to start your investment journey</p>
+            
+            <form id="registerForm">
+                <!-- Full Name -->
+                <div class="input-group">
+                    <label class="input-label">Enter Your Full Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="fullName" 
+                           placeholder="Your full name" 
+                           required>
+                    <div class="error-message" id="nameError"></div>
+                </div>
+                
+                <!-- Mobile Number -->
+                <div class="input-group">
+                    <label class="input-label">Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="country-code">+91</div>
+                        <input type="tel" 
+                               class="phone-input" 
+                               id="mobile" 
+                               placeholder="Mobile number" 
+                               required 
+                               maxlength="10"
+                               inputmode="numeric">
+                    </div>
+                    <div class="error-message" id="mobileError"></div>
+                </div>
+                
+                <!-- Password -->
+                <div class="input-group">
+                    <label class="input-label">Enter Your Password</label>
+                    <input type="password" 
+                           class="form-input" 
+                           id="password" 
+                           placeholder="Create password" 
+                           required 
+                           minlength="6">
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                
+                <!-- Referral Code -->
+                <div class="input-group">
+                    <label class="input-label">Enter referral code (Optional)</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="referralCode" 
+                           placeholder="Referral code">
+                    <div class="optional-note">Leave blank if you don't have one</div>
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div class="loading-container" id="loading">
+                    <div class="spinner"></div>
+                    <p>Creating account...</p>
+                </div>
+                
+                <!-- Register Button -->
+                <button type="submit" class="register-button" id="registerBtn">REGISTER NOW</button>
+            </form>
+            
+            <!-- Login Link -->
+            <div class="login-container">
+                <span class="login-text">Already have an account?</span>
+                <a href="index.html" class="login-link">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Backend API URL (Vercel deployment)
+        const API_BASE_URL = 'https://your-vercel-app.vercel.app/api';
+        
+        // Form submission handler
+        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const fullName = document.getElementById('fullName').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const password = document.getElementById('password').value;
+            const referralCode = document.getElementById('referralCode').value.trim();
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Validate inputs
+            let isValid = true;
+            
+            // Validate name
+            if (!fullName) {
+                showError('nameError', 'Please enter your full name');
+                isValid = false;
+            } else if (fullName.length < 2) {
+                showError('nameError', 'Name must be at least 2 characters');
+                isValid = false;
+            }
+            
+            // Validate mobile
+            if (!mobile) {
+                showError('mobileError', 'Please enter mobile number');
+                isValid = false;
+            } else if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+                showError('mobileError', 'Please enter valid 10-digit number');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showError('passwordError', 'Please enter password');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Processing...';
+            
+            try {
+                // Call backend API
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: fullName,
+                        phone: mobile,
+                        password: password,
+                        referralCode: referralCode || null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Store user data
+                    localStorage.setItem('userId', result.userId || result.user.id);
+                    localStorage.setItem('userName', fullName);
+                    localStorage.setItem('userPhone', mobile);
+                    localStorage.setItem('userBalance', 0);
+                    localStorage.setItem('referralCode', result.referralCode || '');
+                    
+                    // Show success message
+                    alert('Registration successful! Welcome to Happy Invest.');
+                    
+                    // Redirect to home page
+                    window.location.href = 'home.html';
+                    
+                } else {
+                    throw new Error(result.message || 'Registration failed');
+                }
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                showError('mobileError', error.message || 'Registration failed. Please try again.');
+                
+                // Focus on mobile input if error
+                document.getElementById('mobile').focus();
+            } finally {
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'REGISTER NOW';
+            }
+        });
+        
+        // Helper functions
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+        
+        function clearErrors() {
+            const errors = document.querySelectorAll('.error-message');
+            errors.forEach(error => {
+                error.textContent = '';
+                error.style.display = 'none';
+            });
+        }
+        
+        // Page load actions
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            if (localStorage.getItem('userId')) {
+                window.location.href = 'home.html';
+                return;
+            }
+            
+            // Auto-focus on first input
+            document.getElementById('fullName').focus();
+            
+            // Mobile number input formatting
+            document.getElementById('mobile').addEventListener('input', function(e) {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+            });
+            
+            // Check URL for referral code
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                document.getElementById('referralCode').value = refCode;
+            }
+        });
+    </script>
+</body>
+</html>
