@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Products - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 15px;
+        }
+        
+        /* Plans Sections */
+        .plans-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* Plan Cards Container */
+        .plans-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Plan Card */
+        .plan-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .plan-image-container {
+            width: 100%;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .plan-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .plan-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .plan-content {
+            padding: 20px;
+        }
+        
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .plan-name {
+            font-size: 20px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .plan-duration {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .plan-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .plan-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .plan-price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .plan-price {
+            font-size: 24px;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .invest-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .invest-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .confirm-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn">←</a>
+        <h1 class="page-title">Products</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Daily Plans -->
+        <div class="plans-section">
+            <h2 class="section-title">Investment Plans</h2>
+            
+            <div class="plans-container" id="plansContainer">
+                <!-- Plans will be loaded by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Invest Confirmation Modal -->
+    <div class="modal" id="investModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal()">×</div>
+            <h3 class="modal-title" id="modalTitle">Confirm Investment</h3>
+            
+            <div class="plan-stats" id="modalStats">
+                <!-- Stats will be filled by JavaScript -->
+            </div>
+            
+            <p style="color: #666; margin: 15px 0; font-size: 14px;">
+                Your balance: <span id="userBalanceDisplay">₹0.00</span>
+            </p>
+            
+            <button class="confirm-btn" id="confirmInvestBtn">Confirm Investment</button>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // Plan data with images
+        const plans = [
+            {
+                id: "wind_1",
+                name: "Wind 1",
+                duration: "22 Days",
+                price: "₹800.00",
+                dailyIncome: "₹279.00",
+                totalIncome: "₹6,138.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Daily income with daily withdrawal option"
+            },
+            {
+                id: "wind_2",
+                name: "Wind 2",
+                duration: "9 Days",
+                price: "₹560.00",
+                dailyIncome: "₹1,447.00",
+                totalIncome: "₹13,023.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Short term high return investment"
+            },
+            {
+                id: "wind_3",
+                name: "Wind 3",
+                duration: "10 Days",
+                price: "₹1,000.00",
+                dailyIncome: "₹3,900.00",
+                totalIncome: "₹39,000.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Premium daily income plan"
+            },
+            {
+                id: "wind_4",
+                name: "Wind 4",
+                duration: "6 Days",
+                price: "₹1,600.00",
+                dailyIncome: "₹4,730.00",
+                totalIncome: "₹28,380.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Quick return investment"
+            },
+            {
+                id: "wind_5",
+                name: "Wind 5",
+                duration: "8 Days",
+                price: "$1,600.00",
+                dailyIncome: "$7,350.00",
+                totalIncome: "$58,800.00",
+                type: "VIP Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "International currency investment"
+            },
+            {
+                id: "wind_6",
+                name: "Wind 6",
+                duration: "4 Days",
+                price: "¥2,800.00",
+                dailyIncome: "¥17,687.00",
+                totalIncome: "¥70,748.00",
+                type: "VIP Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Yuan denominated investment"
+            },
+            {
+                id: "wind_7",
+                name: "Wind 7",
+                duration: "1 Days",
+                price: "$5,000.00",
+                dailyIncome: "$32,600.00",
+                totalIncome: "$32,600.00",
+                type: "VIP Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "One day super return plan"
+            },
+            {
+                id: "wind_power_a",
+                name: "Wind Power - A",
+                duration: "3 Days",
+                price: "¥450.00",
+                dailyIncome: "¥1,830.00",
+                totalIncome: "¥5,490.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Entry level wind power plan"
+            },
+            {
+                id: "wind_power_b",
+                name: "Wind Power - B",
+                duration: "4 Days",
+                price: "¥900.00",
+                dailyIncome: "¥3,900.00",
+                totalIncome: "¥15,600.00",
+                type: "Daily Plan",
+                image: "https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg",
+                description: "Medium wind power investment"
+            }
+        ];
+
+        let selectedPlan = null;
+        
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        function openModal(plan) {
+            selectedPlan = plan;
+            document.getElementById('modalTitle').textContent = `Invest in ${plan.name}`;
+            document.getElementById('userBalanceDisplay').textContent = `₹${parseFloat(localStorage.getItem('userBalance') || 0).toFixed(2)}`;
+            
+            // Set modal stats
+            document.getElementById('modalStats').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${plan.price}</div>
+                    <div class="stat-label">Price</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${plan.dailyIncome}</div>
+                    <div class="stat-label">Daily Income</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${plan.totalIncome}</div>
+                    <div class="stat-label">Total Income</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${plan.duration}</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            `;
+            
+            document.getElementById('investModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('investModal').style.display = 'none';
+            selectedPlan = null;
+        }
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load plans
+            const plansContainer = document.getElementById('plansContainer');
+            
+            plans.forEach(plan => {
+                const planCard = document.createElement('div');
+                planCard.className = 'plan-card';
+                planCard.dataset.planId = plan.id;
+                
+                planCard.innerHTML = `
+                    <div class="plan-image-container">
+                        <img src="${plan.image}" alt="${plan.name}" class="plan-image">
+                        <div class="plan-badge">${plan.type}</div>
+                    </div>
+                    
+                    <div class="plan-content">
+                        <div class="plan-header">
+                            <h3 class="plan-name">${plan.name}</h3>
+                            <div class="plan-duration">${plan.duration}</div>
+                        </div>
+                        
+                        <p class="plan-description">${plan.description}</p>
+                        
+                        <div class="plan-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${plan.dailyIncome}</div>
+                                <div class="stat-label">Daily Income</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${plan.totalIncome}</div>
+                                <div class="stat-label">Total Income</div>
+                            </div>
+                        </div>
+                        
+                        <div class="plan-price-section">
+                            <div class="plan-price">${plan.price}</div>
+                            <button class="invest-btn" data-plan-id="${plan.id}">
+                                Invest Now →
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                plansContainer.appendChild(planCard);
+            });
+            
+            // Add click event to invest buttons
+            document.querySelectorAll('.invest-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const planId = this.dataset.planId;
+                    const plan = plans.find(p => p.id === planId);
+                    if (plan) {
+                        openModal(plan);
+                    }
+                });
+            });
+            
+            // Confirm investment
+            document.getElementById('confirmInvestBtn').addEventListener('click', async function() {
+                if (!selectedPlan) return;
+                
+                const btn = this;
+                btn.textContent = 'Processing...';
+                btn.disabled = true;
+                
+                try {
+                    const API_URL = 'https://your-vercel-app.vercel.app/api';
+                    const userId = localStorage.getItem('userId');
+                    
+                    const response = await fetch(`${API_URL}/invest`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            planId: selectedPlan.id
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`Investment in ${selectedPlan.name} successful!`);
+                        
+                        // Update user balance
+                        localStorage.setItem('userBalance', result.newBalance);
+                        
+                        // Close modal
+                        closeModal();
+                        
+                        // Redirect to my collection
+                        setTimeout(() => {
+                            window.location.href = 'my-collection.html';
+                        }, 1500);
+                    } else {
+                        alert(result.message || 'Investment failed');
+                    }
+                } catch (error) {
+                    alert('Server error. Please try again.');
+                } finally {
+                    btn.textContent = 'Confirm Investment';
+                    btn.disabled = false;
+                }
+            });
+            
+            // Close modal on outside click
+            document.getElementById('investModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
