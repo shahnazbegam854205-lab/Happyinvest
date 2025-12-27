@@ -363,7 +363,7 @@
                 document.getElementById('currentBalance').textContent = `₹${parseFloat(userBalance).toFixed(2)}`;
                 
                 // Load additional stats from API
-                const API_URL = 'https://happyinvest.vercel.app/api';
+                const API_URL = 'https://growdays.vercel.app/api';
                 const userId = localStorage.getItem('userId');
                 
                 const response = await fetch(`${API_URL}/user/${userId}`);
