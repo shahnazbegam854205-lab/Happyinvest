@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Team - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .website-url {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .page-title {
+            font-size: 22px;
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        /* Team Levels */
+        .team-levels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .level-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .level-name {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .level-commission {
+            font-size: 24px;
+            color: #28a745;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .level-stats {
+            margin-top: 15px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Shared Team */
+        .shared-team-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* Team Members */
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .member-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            background: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .member-details {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .member-detail {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        @media (max-width: 360px) {
+            .team-levels {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .level-card {
+                padding: 15px 10px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="website-url">https://happy-invest.com</div>
+        <h1 class="page-title">Team</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Team Levels -->
+        <div class="team-levels">
+            <div class="level-card">
+                <div class="level-name">First Level</div>
+                <div class="level-commission" id="level1Commission">10%</div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level1Recharges">₹0.00</div>
+                    <div class="stat-label">Recharges</div>
+                </div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level1Members">0</div>
+                    <div class="stat-label">Members</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-name">Second Level</div>
+                <div class="level-commission" id="level2Commission">2%</div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level2Recharges">0</div>
+                    <div class="stat-label">Recharges</div>
+                </div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level2Members">0</div>
+                    <div class="stat-label">Members</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-name">Third Level</div>
+                <div class="level-commission" id="level3Commission">1%</div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level3Recharges">0</div>
+                    <div class="stat-label">Recharges</div>
+                </div>
+                <div class="level-stats">
+                    <div class="stat-value" id="level3Members">0</div>
+                    <div class="stat-label">Members</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shared Team -->
+        <div class="shared-team-section">
+            <h3 class="section-title">Shared Team</h3>
+            
+            <div class="empty-state" id="emptyTeam">
+                <div class="empty-icon">👥</div>
+                <p class="empty-text">No team members yet. Share your referral link to grow your team!</p>
+            </div>
+            
+            <div class="team-members" id="teamMembers" style="display: none;">
+                <!-- Team members will be added by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        window.addEventListener('DOMContentLoaded', async function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load team data
+            await loadTeamData();
+        });
+        
+        async function loadTeamData() {
+            try {
+                const API_URL = 'https://your-vercel-app.vercel.app/api';
+                const userId = localStorage.getItem('userId');
+                
+                // Load team stats
+                const statsResponse = await fetch(`${API_URL}/team-stats/${userId}`);
+                const statsResult = await statsResponse.json();
+                
+                if (statsResult.success) {
+                    const stats = statsResult.stats;
+                    
+                    // Update level stats
+                    document.getElementById('level1Recharges').textContent = `₹${(stats.level1Recharges || 0).toFixed(2)}`;
+                    document.getElementById('level1Members').textContent = stats.level1Members || 0;
+                    
+                    document.getElementById('level2Recharges').textContent = stats.level2Recharges || 0;
+                    document.getElementById('level2Members').textContent = stats.level2Members || 0;
+                    
+                    document.getElementById('level3Recharges').textContent = stats.level3Recharges || 0;
+                    document.getElementById('level3Members').textContent = stats.level3Members || 0;
+                }
+                
+                // Load team members
+                const teamResponse = await fetch(`${API_URL}/team-members/${userId}`);
+                const teamResult = await teamResponse.json();
+                
+                const emptyTeam = document.getElementById('emptyTeam');
+                const teamMembers = document.getElementById('teamMembers');
+                
+                if (teamResult.success && teamResult.members && teamResult.members.length > 0) {
+                    // Hide empty state, show team members
+                    emptyTeam.style.display = 'none';
+                    teamMembers.style.display = 'flex';
+                    
+                    // Clear previous members
+                    teamMembers.innerHTML = '';
+                    
+                    // Add each team member
+                    teamResult.members.forEach(member => {
+                        const memberCard = document.createElement('div');
+                        memberCard.className = 'member-card';
+                        
+                        const firstName = member.name ? member.name.split(' ')[0] : 'User';
+                        const firstLetter = firstName.charAt(0).toUpperCase();
+                        
+                        memberCard.innerHTML = `
+                            <div class="member-avatar">${firstLetter}</div>
+                            <div class="member-info">
+                                <div class="member-name">${member.name || 'Unknown User'}</div>
+                                <div class="member-details">
+                                    <div class="member-detail">Joined: ${formatDate(member.joinDate)}</div>
+                                    <div class="member-detail">Level: ${member.level || 1}</div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        teamMembers.appendChild(memberCard);
+                    });
+                } else {
+                    // Show empty state
+                    emptyTeam.style.display = 'block';
+                    teamMembers.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('Error loading team data:', error);
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short'
+            });
+        }
+    </script>
+</body>
+</html>
