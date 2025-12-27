@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Records - Happy Invest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Records List */
+        .records-section {
+            margin-top: 20px;
+        }
+        
+        .records-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            max-width: 300px;
+        }
+        
+        /* Records Table */
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            display: none;
+        }
+        
+        .records-table th,
+        .records-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        .records-table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .records-table td {
+            color: #333;
+        }
+        
+        .status-completed {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #000;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="home.html" class="back-btn">←</a>
+        <h1 class="page-title">Withdrawn Records</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Stats -->
+        <div class="stats-section">
+            <div class="stat-item">
+                <div class="stat-value" id="totalWithdrawn">₹0.00</div>
+                <div class="stat-label">Total Withdrawn</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalReceived">₹0.00</div>
+                <div class="stat-label">Total Received</div>
+            </div>
+        </div>
+        
+        <!-- Records -->
+        <div class="records-section">
+            <h3 class="records-title">Withdrawal History</h3>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📊</div>
+                <p class="empty-text">No withdrawal records found</p>
+            </div>
+            
+            <!-- Records Table -->
+            <table class="records-table" id="recordsTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody">
+                    <!-- Records will be added by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('home.html')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('products.html')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('team.html')">
+            <div class="nav-icon">👥</div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('profile.html')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        window.addEventListener('DOMContentLoaded', async function() {
+            if (!localStorage.getItem('userId')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Load withdrawal records
+            await loadWithdrawalRecords();
+        });
+        
+        async function loadWithdrawalRecords() {
+            try {
+                const API_URL = 'https://your-vercel-app.vercel.app/api';
+                const userId = localStorage.getItem('userId');
+                
+                const response = await fetch(`${API_URL}/withdrawal-history/${userId}`);
+                const result = await response.json();
+                
+                const emptyState = document.getElementById('emptyState');
+                const recordsTable = document.getElementById('recordsTable');
+                const recordsBody = document.getElementById('recordsBody');
+                
+                if (result.success && result.withdrawals && result.withdrawals.length > 0) {
+                    // Hide empty state, show table
+                    emptyState.style.display = 'none';
+                    recordsTable.style.display = 'table';
+                    
+                    // Calculate totals
+                    let totalWithdrawn = 0;
+                    let totalReceived = 0;
+                    
+                    // Clear previous records
+                    recordsBody.innerHTML = '';
+                    
+                    // Add each record
+                    result.withdrawals.forEach(record => {
+                        const row = document.createElement('tr');
+                        
+                        // Format date
+                        const date = new Date(record.date);
+                        const formattedDate = date.toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                        
+                        // Calculate totals
+                        totalWithdrawn += parseFloat(record.amount);
+                        if (record.status === 'completed') {
+                            totalReceived += parseFloat(record.amount);
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>₹${parseFloat(record.amount).toFixed(2)}</td>
+                            <td class="status-${record.status}">${record.status.charAt(0).toUpperCase() + record.status.slice(1)}</td>
+                        `;
+                        
+                        recordsBody.appendChild(row);
+                    });
+                    
+                    // Update stats
+                    document.getElementById('totalWithdrawn').textContent = `₹${totalWithdrawn.toFixed(2)}`;
+                    document.getElementById('totalReceived').textContent = `₹${totalReceived.toFixed(2)}`;
+                    
+                } else {
+                    // Show empty state
+                    emptyState.style.display = 'flex';
+                    recordsTable.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading records:', error);
+                // Show empty state on error
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('recordsTable').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
