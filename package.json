@@ -1,10 +1,26 @@
 {
   "name": "happy-invest-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Happy Invest API for Vercel Deployment",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js",
+    "vercel-build": "echo 'No build required for Node.js API'"
+  },
+  "engines": {
+    "node": "18.x || 20.x"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "firebase-admin": "^11.11.0"
-  }
+    "firebase-admin": "^11.11.0",
+    "bcryptjs": "^2.4.3",
+    "node-cron": "^3.0.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "keywords": ["investment", "api", "firebase"],
+  "author": "Happy Invest",
+  "license": "MIT"
 }
