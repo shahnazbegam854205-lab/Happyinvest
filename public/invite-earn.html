@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invite & Earn - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header with Banner Image */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff3366, #ff9966);
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+        }
+        
+        /* Banner Image */
+        .banner-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #ff3366;
+            margin-right: 15px;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 51, 102, 0.1);
+            border: 2px solid rgba(255, 51, 102, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-3px);
+            background: rgba(255, 51, 102, 0.2);
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.4);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .page-title::before {
+            content: '👥';
+            margin-right: 10px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .section-subtitle {
+            font-size: 14px;
+            color: #a0a0d0;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        /* Referral Info */
+        .referral-info {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .referral-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .info-item {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #a0a0d0;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label::before {
+            content: '📌';
+            margin-right: 8px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        
+        .code-box {
+            background: rgba(0, 210, 255, 0.1);
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 3px;
+            color: #00d2ff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .code-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 210, 255, 0.3);
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+        
+        .code-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .code-box:hover::after {
+            left: 100%;
+        }
+        
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 18px 10px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .action-btn:hover::after {
+            left: 100%;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: white;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 210, 255, 0.4);
+        }
+        
+        .share-btn {
+            background: linear-gradient(90deg, #ff3366, #ff9966);
+            color: white;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 51, 102, 0.4);
+        }
+        
+        /* Commission Table */
+        .commission-section {
+            margin-top: 30px;
+        }
+        
+        .commission-title {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .commission-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, #ff3366, #ff9966);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+        }
+        
+        .commission-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .commission-table th,
+        .commission-table td {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .commission-table th {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+        
+        .commission-table td {
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .commission-table tr:hover td {
+            background: rgba(255, 255, 255, 0.05);
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .commission-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Earnings Card */
+        .earnings-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .earnings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+        
+        .earnings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .earnings-title {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .earnings-amount {
+            font-size: 28px;
+            color: #00ffaa;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .earnings-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            color: #00d2ff;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #a0a0d0;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff3366, #ff9966);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .referral-info, .earnings-card, .action-buttons, .commission-section {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .referral-info {
+            animation-delay: 0.1s;
+        }
+        
+        .earnings-card {
+            animation-delay: 0.2s;
+        }
+        
+        .action-buttons {
+            animation-delay: 0.3s;
+        }
+        
+        .commission-section {
+            animation-delay: 0.4s;
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .banner-image {
+                height: 120px;
+            }
+            
+            .code-box {
+                font-size: 20px;
+                padding: 15px;
+            }
+            
+            .action-btn {
+                padding: 15px 8px;
+                font-size: 14px;
+            }
+            
+            .commission-table th,
+            .commission-table td {
+                padding: 15px 10px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .banner-image {
+                border-radius: 15px;
+            }
+            
+            .bottom-nav {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg" id="glowBg"></div>
+    
+    <!-- Header with Banner Image -->
+    <div class="header">
+        <!-- Banner Image -->
+        <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+             alt="Invite & Earn" 
+             class="banner-image"
+             onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
+        
+        <div class="header-content">
+            <a href="/home" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">Invite & Earn</h1>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="section-title">Invite & Earn Rewards</h2>
+        <p class="section-subtitle">Share your code and earn instant commissions from your network</p>
+        
+        <!-- Earnings Card -->
+        <div class="earnings-card">
+            <div class="earnings-header">
+                <h3 class="earnings-title">Total Referral Earnings</h3>
+                <div class="earnings-amount" id="totalEarnings">₹0.00</div>
+            </div>
+            
+            <div class="earnings-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalReferrals">0</div>
+                    <div class="stat-label">Total Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeReferrals">0</div>
+                    <div class="stat-label">Active Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">10%</div>
+                    <div class="stat-label">Level 1 Commission</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3%</div>
+                    <div class="stat-label">Level 2 Commission</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Referral Info -->
+        <div class="referral-info">
+            <div class="info-item">
+                <div class="info-label">Your Referral Code</div>
+                <div class="code-box" id="referralCodeDisplay">109499</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Your Referral Link</div>
+                <div class="info-value" id="referralLink">https://growdays.vercel.app/register?ref=109499</div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn copy-btn" id="copyBtn">
+                <i class="fas fa-copy"></i> Copy Link
+            </button>
+            <button class="action-btn share-btn" id="shareBtn">
+                <i class="fas fa-share-alt"></i> Share Now
+            </button>
+        </div>
+        
+        <!-- Commission Structure -->
+        <div class="commission-section">
+            <h3 class="commission-title">Commission Structure</h3>
+            <table class="commission-table">
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Relationship</th>
+                        <th>Commission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Direct Referrals</td>
+                        <td>10%</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Friends of Friends</td>
+                        <td>3%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('/invite-earn')">
+            <div class="nav-icon"><i class="fas fa-user-plus"></i></div>
+            <div class="nav-name">Invite</div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://growdays.vercel.app/api';
+        
+        function navigateTo(page) {
+            // Add click animation
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            // Navigate to page
+            window.location.href = page;
+        }
+        
+        async function fetchReferralData() {
+            try {
+                const userId = localStorage.getItem('userId');
+                
+                // Fetch referral stats
+                const response = await fetch(`${API_BASE_URL}/referral-stats/${userId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('totalReferrals').textContent = 
+                            data.stats.totalReferrals || 0;
+                        document.getElementById('activeReferrals').textContent = 
+                            data.stats.activeReferrals || 0;
+                        document.getElementById('totalEarnings').textContent = 
+                            `₹${parseFloat(data.stats.totalEarnings || 0).toFixed(2)}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching referral data:', error);
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check login
+            if (!localStorage.getItem('userId')) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Load user's referral code
+            const userReferralCode = localStorage.getItem('referralCode') || '109499';
+            const referralLink = `https://growdays.vercel.app/register?ref=${userReferralCode}`;
+            
+            document.getElementById('referralCodeDisplay').textContent = userReferralCode;
+            document.getElementById('referralLink').textContent = referralLink;
+            
+            // Fetch referral data
+            await fetchReferralData();
+            
+            // Copy link functionality
+            document.getElementById('copyBtn').addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                navigator.clipboard.writeText(referralLink)
+                    .then(() => {
+                        // Show success message
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        this.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.background = 'linear-gradient(90deg, #00d2ff, #3a7bd5)';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Failed to copy link');
+                    });
+            });
+            
+            // Share functionality
+            document.getElementById('shareBtn').addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join Happy Invest',
+                        text: 'Join Happy Invest using my referral code and earn together! Your referral code: ' + userReferralCode,
+                        url: referralLink
+                    }).catch(err => {
+                        console.log('Share cancelled or failed:', err);
+                    });
+                } else {
+                    // Fallback: copy to clipboard
+                    navigator.clipboard.writeText(`Join Happy Invest using my referral code: ${userReferralCode}\n${referralLink}`)
+                        .then(() => {
+                            const originalText = this.innerHTML;
+                            this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                            this.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
+                            
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.style.background = 'linear-gradient(90deg, #ff3366, #ff9966)';
+                            }, 2000);
+                            
+                            alert('Referral link copied! Share it on WhatsApp, Facebook, or other platforms.');
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy: ', err);
+                            alert('Failed to copy link');
+                        });
+                }
+            });
+            
+            // Interactive background effect
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
+            
+            // Add click effect to code box
+            document.getElementById('referralCodeDisplay').addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+                
+                navigator.clipboard.writeText(userReferralCode)
+                    .then(() => {
+                        const originalText = this.textContent;
+                        this.textContent = 'COPIED!';
+                        this.style.color = '#00ffaa';
+                        
+                        setTimeout(() => {
+                            this.textContent = originalText;
+                            this.style.color = '#00d2ff';
+                        }, 1500);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+            });
+        });
+        
+        // Auto-refresh data every 30 seconds
+        setInterval(async () => {
+            await fetchReferralData();
+        }, 30000);
+    </script>
+</body>
+</html>
