@@ -872,7 +872,7 @@
                     if (result.success && result.user.referralLink) {
                         document.getElementById('referralUrl').textContent = result.user.referralLink;
                     } else if (result.user.referralCode) {
-                        document.getElementById('referralUrl').textContent = `https://growdays/register?ref=${result.user.referralCode}`;
+                        document.getElementById('referralUrl').textContent = `https://growday.vercel.app/register?ref=${result.user.referralCode}`;
                     }
                 }
                 
