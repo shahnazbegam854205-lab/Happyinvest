@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Withdrawal Records - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header with Banner Image */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff9966, #ff3366);
+            box-shadow: 0 0 15px rgba(255, 153, 102, 0.7);
+        }
+        
+        /* Banner Image */
+        .banner-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #ff9966;
+            margin-right: 15px;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 153, 102, 0.1);
+            border: 2px solid rgba(255, 153, 102, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 153, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-3px);
+            background: rgba(255, 153, 102, 0.2);
+            box-shadow: 0 6px 20px rgba(255, 153, 102, 0.4);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .page-title::before {
+            content: '📊';
+            margin-right: 10px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 0 20px;
+        }
+        
+        /* Stats Cards */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2);
+            border-color: rgba(0, 210, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            color: #00d2ff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+        
+        .stat-card:nth-child(2) .stat-value {
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #a0a0d0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Records Section */
+        .records-section {
+            margin-top: 20px;
+        }
+        
+        .records-title {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .records-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, #ff9966, #ff3366);
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 153, 102, 0.5);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .empty-icon {
+            font-size: 70px;
+            color: #a0a0d0;
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(160, 160, 208, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: #a0a0d0;
+            line-height: 1.5;
+            max-width: 300px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Records Table */
+        .records-table-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .records-table thead {
+            background: rgba(0, 210, 255, 0.1);
+        }
+        
+        .records-table th,
+        .records-table td {
+            padding: 20px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+        
+        .records-table th {
+            color: #00d2ff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+        
+        .records-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .records-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .records-table td {
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        
+        .status-completed {
+            background: rgba(0, 255, 170, 0.1);
+            color: #00ffaa;
+            border: 2px solid rgba(0, 255, 170, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.2);
+        }
+        
+        .status-pending {
+            background: rgba(255, 153, 102, 0.1);
+            color: #ff9966;
+            border: 2px solid rgba(255, 153, 102, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 153, 102, 0.2);
+        }
+        
+        .status-processing {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+        }
+        
+        .status-failed {
+            background: rgba(255, 51, 102, 0.1);
+            color: #ff3366;
+            border: 2px solid rgba(255, 51, 102, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.2);
+        }
+        
+        /* Withdrawal Amount */
+        .withdrawal-amount {
+            font-weight: 700;
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        /* Transaction ID */
+        .transaction-id {
+            font-size: 12px;
+            color: #a0a0d0;
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff9966, #ff3366);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(255, 153, 102, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 153, 102, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stats-section, .records-section {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .stats-section {
+            animation-delay: 0.1s;
+        }
+        
+        .records-section {
+            animation-delay: 0.2s;
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .banner-image {
+                height: 120px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .records-table th,
+            .records-table td {
+                padding: 15px 10px;
+                font-size: 13px;
+            }
+            
+            .status-badge {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .banner-image {
+                border-radius: 15px;
+            }
+            
+            .bottom-nav {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg" id="glowBg"></div>
+    
+    <!-- Header with Banner Image -->
+    <div class="header">
+        <!-- Banner Image -->
+        <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+             alt="Withdrawal Records" 
+             class="banner-image"
+             onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
+        
+        <div class="header-content">
+            <a href="/records" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">Withdrawal Records</h1>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Stats Cards -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value" id="totalWithdrawn">₹0.00</div>
+                <div class="stat-label">Total Withdrawn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalReceived">₹0.00</div>
+                <div class="stat-label">Total Received</div>
+            </div>
+        </div>
+        
+        <!-- Records -->
+        <div class="records-section">
+            <h3 class="records-title">Withdrawal History</h3>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <p class="empty-text">No withdrawal records found</p>
+            </div>
+            
+            <!-- Records Table -->
+            <div class="records-table-container" id="recordsTable">
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody">
+                        <!-- Records will be added by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // Same server pe backend hai
+        const API_BASE_URL = window.location.origin + '/api';
+        
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // Get user data from localStorage
+        function getUserData() {
+            const userData = localStorage.getItem('happyInvestUser');
+            if (userData) {
+                return JSON.parse(userData);
+            }
+            return null;
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Get status class
+        function getStatusClass(status) {
+            switch(status.toLowerCase()) {
+                case 'completed': return 'status-completed';
+                case 'pending': return 'status-pending';
+                case 'processing': return 'status-processing';
+                case 'failed': 
+                case 'rejected': return 'status-failed';
+                default: return 'status-pending';
+            }
+        }
+        
+        // Format status text
+        function formatStatus(status) {
+            switch(status.toLowerCase()) {
+                case 'completed': return 'Completed';
+                case 'pending': return 'Pending';
+                case 'processing': return 'In Process';
+                case 'failed': return 'Failed';
+                case 'rejected': return 'Rejected';
+                default: return 'Pending';
+            }
+        }
+        
+        // Load withdrawal records
+        async function loadWithdrawalRecords() {
+            try {
+                const userData = getUserData();
+                if (!userData || !userData.id) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                // Load user's withdrawal history
+                const response = await fetch(`${API_BASE_URL}/withdrawal-history/${userData.id}`);
+                const result = await response.json();
+                
+                const emptyState = document.getElementById('emptyState');
+                const recordsTable = document.getElementById('recordsTable');
+                const recordsBody = document.getElementById('recordsBody');
+                
+                if (result.success && result.withdrawals && result.withdrawals.length > 0) {
+                    // Hide empty state, show table
+                    emptyState.style.display = 'none';
+                    recordsTable.style.display = 'block';
+                    
+                    // Calculate totals
+                    let totalWithdrawn = 0;
+                    let totalReceived = 0;
+                    
+                    // Clear previous records
+                    recordsBody.innerHTML = '';
+                    
+                    // Sort withdrawals by date (newest first)
+                    const sortedWithdrawals = result.withdrawals.sort((a, b) => 
+                        new Date(b.date) - new Date(a.date)
+                    );
+                    
+                    // Add each record
+                    sortedWithdrawals.forEach((record, index) => {
+                        const row = document.createElement('tr');
+                        
+                        // Format date
+                        const formattedDate = formatDate(record.date);
+                        
+                        // Calculate totals
+                        const amount = parseFloat(record.amount || 0);
+                        totalWithdrawn += amount;
+                        if (record.status.toLowerCase() === 'completed') {
+                            totalReceived += amount;
+                        }
+                        
+                        // Get status info
+                        const statusClass = getStatusClass(record.status);
+                        const statusText = formatStatus(record.status);
+                        
+                        // Animation delay
+                        row.style.animationDelay = `${index * 0.05}s`;
+                        row.style.animation = 'fadeInUp 0.5s ease-out forwards';
+                        row.style.opacity = '0';
+                        
+                        // Create row content
+                        row.innerHTML = `
+                            <td>
+                                ${formattedDate}
+                                ${record.id ? `<div class="transaction-id">${record.id}</div>` : ''}
+                            </td>
+                            <td class="withdrawal-amount">₹${amount.toFixed(2)}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        `;
+                        
+                        recordsBody.appendChild(row);
+                    });
+                    
+                    // Update stats
+                    updateStats(totalWithdrawn, totalReceived);
+                    
+                    // Also update from user data if available
+                    if (userData.withdrawn) {
+                        document.getElementById('totalWithdrawn').textContent = `₹${parseFloat(userData.withdrawn).toFixed(2)}`;
+                    }
+                    
+                } else {
+                    // Show empty state
+                    emptyState.style.display = 'flex';
+                    recordsTable.style.display = 'none';
+                    
+                    // Still show user's withdrawn amount if available
+                    if (userData.withdrawn) {
+                        document.getElementById('totalWithdrawn').textContent = `₹${parseFloat(userData.withdrawn).toFixed(2)}`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading withdrawal records:', error);
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('recordsTable').style.display = 'none';
+            }
+        }
+        
+        // Update stats with animation
+        function updateStats(totalWithdrawn, totalReceived) {
+            const totalWithdrawnElem = document.getElementById('totalWithdrawn');
+            const totalReceivedElem = document.getElementById('totalReceived');
+            
+            // Update with animation
+            [totalWithdrawnElem, totalReceivedElem].forEach((elem, index) => {
+                const value = index === 0 ? totalWithdrawn : totalReceived;
+                elem.textContent = `₹${value.toFixed(2)}`;
+                
+                elem.style.transition = 'all 0.3s ease';
+                elem.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    elem.style.transform = 'scale(1)';
+                }, 150);
+            });
+        }
+        
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            if (!getUserData()) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Interactive background effect
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
+            
+            // Add hover effects to stat cards
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Load withdrawal records
+            await loadWithdrawalRecords();
+            
+            // Refresh every 30 seconds
+            setInterval(async () => {
+                await loadWithdrawalRecords();
+            }, 30000);
+        });
+        
+        // Navigation button animations
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Animation effect
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
