@@ -776,21 +776,12 @@
     </div>
 
     <script>
-        // API Configuration - Same server pe backend
-        const API_BASE_URL = window.location.origin + '/api';
+        // API Configuration
+        const API_BASE_URL = 'https://growday.vercel.app/api';
         
         // Navigation function
         function navigateTo(page) {
             window.location.href = page;
-        }
-        
-        // Get user data
-        function getUserData() {
-            const userData = localStorage.getItem('happyInvestUser');
-            if (userData) {
-                return JSON.parse(userData);
-            }
-            return null;
         }
         
         // Show notification
@@ -857,30 +848,31 @@
         }
         
         // Load team data
-        async function loadTeamData() {
-            const userData = getUserData();
-            if (!userData || !userData.id) {
-                window.location.href = '/';
-                return;
-            }
-            
+        async function loadTeamData(userId) {
             try {
                 // Load user data for referral link
-                const userResponse = await fetch(`${API_BASE_URL}/user/${userData.id}`);
+                const userResponse = await fetch(`${API_BASE_URL}/user/${userId}`);
                 if (userResponse.ok) {
                     const result = await userResponse.json();
-                    if (result.success && result.user.referralLink) {
-                        document.getElementById('referralUrl').textContent = result.user.referralLink;
-                    } else if (result.user.referralCode) {
-                        document.getElementById('referralUrl').textContent = `https://growday.vercel.app/register?ref=${result.user.referralCode}`;
+                    if (result.success) {
+                        const user = result.user;
+                        let referralLink = user.referralLink;
+                        
+                        if (!referralLink && user.referralCode) {
+                            referralLink = `https://growday.vercel.app/register?ref=${user.referralCode}`;
+                        }
+                        
+                        if (referralLink) {
+                            document.getElementById('referralUrl').textContent = referralLink;
+                        }
                     }
                 }
                 
                 // Load team stats
-                await loadTeamStats(userData.id);
+                await loadTeamStats(userId);
                 
                 // Load team members
-                await loadTeamMembers(userData.id);
+                await loadTeamMembers(userId);
                 
             } catch (error) {
                 console.error('Error loading team data:', error);
@@ -900,7 +892,7 @@
                     // Update direct team members (Level 1)
                     document.getElementById('level1Members').textContent = stats.totalMembers || 0;
                     document.getElementById('level1Commission').textContent = `₹${(stats.totalCommission || 0).toFixed(2)}`;
-                    document.getElementById('level1Investments').textContent = stats.totalInvestment || 0;
+                    document.getElementById('level1Investments').textContent = stats.activeInvestors || 0;
                     
                     // Note: Aapke backend mein sirf direct team ka data hai
                     // Level 2 aur Level 3 ke liye calculation karna padega
@@ -1086,22 +1078,33 @@
         
         // Initialize page
         window.addEventListener('DOMContentLoaded', async function() {
-            // Check if user is logged in
-            const userData = getUserData();
-            if (!userData) {
-                window.location.href = '/';
+            // ✅ FIXED: Check authentication using correct localStorage keys (same as recharge)
+            const userId = localStorage.getItem('userId');
+            const userPhone = localStorage.getItem('userPhone');
+            
+            console.log('🔍 Team Page - Checking login status...');
+            console.log('User ID:', userId);
+            console.log('User Phone:', userPhone);
+            
+            if (!userId || !userPhone) {
+                console.log('❌ User not logged in, redirecting to login');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
                 return;
             }
+            
+            console.log('✅ User logged in, loading team data...');
             
             // Add hover effects
             addHoverEffects();
             
             // Load team data
-            await loadTeamData();
+            await loadTeamData(userId);
             
             // Auto-refresh team data every 30 seconds
             setInterval(async () => {
-                await loadTeamData();
+                await loadTeamData(userId);
             }, 30000);
         });
         
