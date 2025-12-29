@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bank Info - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header with Banner Image */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
+        }
+        
+        /* Banner Image */
+        .banner-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            font-size: 24px;
+            color: #00ffaa;
+            margin-right: 15px;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 255, 170, 0.1);
+            border: 2px solid rgba(0, 255, 170, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-3px);
+            background: rgba(0, 255, 170, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 255, 170, 0.4);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .page-title::before {
+            content: '🏦';
+            margin-right: 10px;
+        }
+        
+        .balance-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+            background: rgba(0, 255, 170, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(0, 255, 170, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 0 20px;
+        }
+        
+        /* Current Bank Info Card */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title::before {
+            content: '💳';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .info-row:hover {
+            transform: translateX(5px);
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #a0a0d0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label::before {
+            content: '📌';
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+        
+        .info-value.empty::before {
+            content: 'Not set';
+            color: #ff3366;
+            font-weight: 500;
+        }
+        
+        /* Form Section */
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .form-title {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-title::before {
+            content: '✏️';
+            margin-right: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .input-label {
+            display: block;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-label::before {
+            content: '📍';
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input::placeholder {
+            color: #a0a0d0;
+        }
+        
+        .form-input:focus {
+            border-color: #00d2ff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-input:valid {
+            border-color: rgba(0, 255, 170, 0.3);
+        }
+        
+        .form-input:invalid:not(:focus):not(:placeholder-shown) {
+            border-color: rgba(255, 51, 102, 0.3);
+        }
+        
+        /* Save Button */
+        .save-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .save-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 255, 170, 0.6);
+            background: linear-gradient(90deg, #00ffcc, #00dd99);
+        }
+        
+        .save-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+        
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .save-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .save-btn:hover:not(:disabled)::after {
+            left: 100%;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .info-card, .form-section {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .info-card {
+            animation-delay: 0.1s;
+        }
+        
+        .form-section {
+            animation-delay: 0.2s;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(0, 255, 170, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 255, 170, 0.3);
+            transition: transform 0.5s ease;
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.error {
+            background: rgba(255, 51, 102, 0.9);
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .banner-image {
+                height: 120px;
+            }
+            
+            .info-card, .form-section {
+                padding: 20px;
+            }
+            
+            .form-input {
+                padding: 14px 16px;
+            }
+            
+            .save-btn {
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .banner-image {
+                border-radius: 15px;
+            }
+            
+            .bottom-nav {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg" id="glowBg"></div>
+    
+    <!-- Header with Banner Image -->
+    <div class="header">
+        <!-- Banner Image -->
+        <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+             alt="Bank Information" 
+             class="banner-image"
+             onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
+        
+        <div class="header-content">
+            <a href="/profile" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="page-title">Bank Info</h1>
+            <div class="balance-display" id="balanceDisplay">₹0.00</div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Current Bank Info Card -->
+        <div class="info-card">
+            <h3 class="card-title">Current Bank Details</h3>
+            
+            <div class="info-row">
+                <span class="info-label">Account Holder</span>
+                <span class="info-value" id="currentHolder"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Account Type</span>
+                <span class="info-value" id="currentType">SAVINGS</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Account Number</span>
+                <span class="info-value" id="currentAccount"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">IFSC Code</span>
+                <span class="info-value" id="currentIFSC"></span>
+            </div>
+        </div>
+        
+        <!-- Update Form -->
+        <div class="form-section">
+            <h3 class="form-title">Update Bank Details</h3>
+            
+            <form id="bankForm">
+                <div class="input-group">
+                    <label class="input-label">Account Holder Name</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="holderName" 
+                           placeholder="Enter full name as in bank"
+                           required
+                           minlength="3">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Account Number</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="accountNumber" 
+                           placeholder="Enter account number"
+                           required
+                           minlength="9"
+                           maxlength="18"
+                           pattern="[0-9]+">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Confirm Account Number</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="confirmAccount" 
+                           placeholder="Re-enter account number"
+                           required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">IFSC Code</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="ifscCode" 
+                           placeholder="Enter IFSC code (e.g., SBIN0001234)"
+                           required
+                           pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+                           title="Enter valid IFSC code">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Confirm IFSC Code</label>
+                    <input type="text" 
+                           class="form-input" 
+                           id="confirmIFSC" 
+                           placeholder="Re-enter IFSC code"
+                           required>
+                </div>
+                
+                <button type="submit" class="save-btn" id="saveBtn">
+                    <i class="fas fa-save"></i> Save Bank Details
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        // ✅ Same server pe hai to /api use karein
+        const API_BASE_URL = '/api'; 
+        
+        // ==================== HELPER FUNCTIONS ====================
+        function navigateTo(page) {
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            window.location.href = page;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Format account number for display ONLY (mask middle digits)
+        function maskAccountNumber(accountNumber) {
+            if (!accountNumber) return '';
+            if (accountNumber.length <= 4) return '****' + accountNumber;
+            return '****' + accountNumber.slice(-4);
+        }
+        
+        // ==================== USER DATA FUNCTIONS ====================
+        async function fetchUserData() {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                // Fetch user's complete data
+                const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && result.user) {
+                    const userData = result.user;
+                    const bankDetails = userData.bankDetails || {};
+                    
+                    // Update balance display
+                    document.getElementById('balanceDisplay').textContent = 
+                        `₹${parseFloat(userData.balance || 0).toFixed(2)}`;
+                    
+                    // Update bank info display
+                    const currentHolder = document.getElementById('currentHolder');
+                    const currentAccount = document.getElementById('currentAccount');
+                    const currentIFSC = document.getElementById('currentIFSC');
+                    
+                    if (bankDetails.holderName && bankDetails.accountNumber) {
+                        // ✅ DISPLAY में MASKED दिखाएं
+                        currentHolder.textContent = bankDetails.holderName;
+                        currentHolder.classList.remove('empty');
+                        
+                        // ✅ Display में masked account number दिखाएं
+                        currentAccount.textContent = maskAccountNumber(bankDetails.accountNumber);
+                        currentAccount.classList.remove('empty');
+                        
+                        currentIFSC.textContent = bankDetails.ifscCode || '';
+                        currentIFSC.classList.remove('empty');
+                        
+                        // ✅ FORM में केवल holder name और IFSC (security के लिए)
+                        document.getElementById('holderName').value = bankDetails.holderName || '';
+                        // Account number न डालें - user को fresh enter करना होगा
+                        document.getElementById('accountNumber').value = '';
+                        document.getElementById('confirmAccount').value = '';
+                        document.getElementById('ifscCode').value = bankDetails.ifscCode || '';
+                        document.getElementById('confirmIFSC').value = bankDetails.ifscCode || '';
+                    } else {
+                        currentHolder.textContent = '';
+                        currentHolder.classList.add('empty');
+                        
+                        currentAccount.textContent = '';
+                        currentAccount.classList.add('empty');
+                        
+                        currentIFSC.textContent = '';
+                        currentIFSC.classList.add('empty');
+                    }
+                    
+                    // Update localStorage
+                    localStorage.setItem('userBalance', userData.balance || 0);
+                    if (bankDetails.holderName) {
+                        localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+        
+        // ==================== FORM VALIDATION ====================
+        function setupFormValidation() {
+            const accountNumberInput = document.getElementById('accountNumber');
+            const confirmAccountInput = document.getElementById('confirmAccount');
+            const ifscInput = document.getElementById('ifscCode');
+            const confirmIFSCInput = document.getElementById('confirmIFSC');
+            
+            accountNumberInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (this.value.length > 18) {
+                    this.value = this.value.slice(0, 18);
+                }
+                
+                // Validate against confirm field
+                if (confirmAccountInput.value && this.value !== confirmAccountInput.value) {
+                    confirmAccountInput.style.borderColor = '#ff3366';
+                } else {
+                    confirmAccountInput.style.borderColor = '';
+                }
+            });
+            
+            confirmAccountInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                if (accountNumberInput.value && this.value !== accountNumberInput.value) {
+                    this.style.borderColor = '#ff3366';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+            
+            ifscInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                
+                // Validate against confirm field
+                if (confirmIFSCInput.value && this.value !== confirmIFSCInput.value) {
+                    confirmIFSCInput.style.borderColor = '#ff3366';
+                } else {
+                    confirmIFSCInput.style.borderColor = '';
+                }
+            });
+            
+            confirmIFSCInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                
+                if (ifscInput.value && this.value !== ifscInput.value) {
+                    this.style.borderColor = '#ff3366';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+        }
+        
+        // ==================== FORM SUBMISSION ====================
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const holderName = document.getElementById('holderName').value.trim();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            const confirmAccount = document.getElementById('confirmAccount').value.trim();
+            const ifscCode = document.getElementById('ifscCode').value.trim().toUpperCase();
+            const confirmIFSC = document.getElementById('confirmIFSC').value.trim().toUpperCase();
+            
+            // Validation
+            if (!holderName || holderName.length < 3) {
+                showToast('Please enter valid account holder name (min 3 characters)', 'error');
+                document.getElementById('holderName').focus();
+                return;
+            }
+            
+            if (!accountNumber || accountNumber.length < 9 || accountNumber.length > 18) {
+                showToast('Please enter valid account number (9-18 digits)', 'error');
+                document.getElementById('accountNumber').focus();
+                return;
+            }
+            
+            if (!/^\d+$/.test(accountNumber)) {
+                showToast('Account number should contain only digits', 'error');
+                document.getElementById('accountNumber').focus();
+                return;
+            }
+            
+            if (accountNumber !== confirmAccount) {
+                showToast('Account numbers do not match', 'error');
+                document.getElementById('confirmAccount').focus();
+                return;
+            }
+            
+            if (!ifscCode.match(/^[A-Z]{4}0[A-Z0-9]{6}$/)) {
+                showToast('Please enter valid IFSC code (e.g., SBIN0001234)', 'error');
+                document.getElementById('ifscCode').focus();
+                return;
+            }
+            
+            if (ifscCode !== confirmIFSC) {
+                showToast('IFSC codes do not match', 'error');
+                document.getElementById('confirmIFSC').focus();
+                return;
+            }
+            
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+            
+            try {
+                const userId = localStorage.getItem('userId');
+                
+                // ✅ Database में FULL account number store करें
+                const bankDetails = {
+                    holderName: holderName,
+                    accountNumber: accountNumber, // ✅ Full account number
+                    ifscCode: ifscCode,
+                    accountType: 'SAVINGS'
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/save-bank`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        bankDetails: bankDetails
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update display (MASKED दिखाएं)
+                    document.getElementById('currentHolder').textContent = holderName;
+                    document.getElementById('currentHolder').classList.remove('empty');
+                    
+                    // ✅ DISPLAY में MASKED दिखाएं
+                    document.getElementById('currentAccount').textContent = maskAccountNumber(accountNumber);
+                    document.getElementById('currentAccount').classList.remove('empty');
+                    
+                    document.getElementById('currentIFSC').textContent = ifscCode;
+                    document.getElementById('currentIFSC').classList.remove('empty');
+                    
+                    // Save to localStorage
+                    localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+                    
+                    // Show success notification
+                    showToast('Bank details saved successfully!');
+                    
+                    // Update button to show success
+                    btn.innerHTML = '<i class="fas fa-check"></i> Saved Successfully!';
+                    btn.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
+                    
+                    // Reset button after delay
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.background = '';
+                    }, 2000);
+                    
+                    // Clear form account fields (security)
+                    document.getElementById('accountNumber').value = '';
+                    document.getElementById('confirmAccount').value = '';
+                    
+                } else {
+                    showToast(result.message || 'Failed to save bank details', 'error');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('Bank save error:', error);
+                showToast('Server error. Please try again.', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check login
+            if (!localStorage.getItem('userId')) {
+                window.location.href = '/';
+                return;
+            }
+            
+            // Update balance from localStorage first
+            const userBalance = localStorage.getItem('userBalance') || '0.00';
+            document.getElementById('balanceDisplay').textContent = `₹${parseFloat(userBalance).toFixed(2)}`;
+            
+            // Fetch user data
+            await fetchUserData();
+            
+            // Setup form validation
+            setupFormValidation();
+            
+            // Form submission
+            document.getElementById('bankForm').addEventListener('submit', handleFormSubmit);
+            
+            // Add input focus effects
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Interactive background effect
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
+            
+            // Auto-refresh balance every 30 seconds
+            setInterval(async () => {
+                if (document.visibilityState === 'visible') {
+                    await fetchUserData();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
