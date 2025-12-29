@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profile - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 20px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-avatar::after {
+            content: '👤';
+            position: absolute;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        
+        .profile-avatar img.loaded + .profile-avatar::after {
+            display: none;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 22px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .profile-id {
+            font-size: 14px;
+            color: #a0a0d0;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+        
+        /* Account Summary */
+        .account-summary {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .account-summary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .summary-title {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 20px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(0, 210, 255, 0.5);
+        }
+        
+        .summary-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .summary-item:hover::after {
+            left: 100%;
+        }
+        
+        .summary-value {
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .balance .summary-value {
+            color: #00ffaa;
+            text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+        
+        .summary-label {
+            font-size: 13px;
+            color: #a0a0d0;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 210, 255, 0.1);
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.1);
+        }
+        
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .action-btn:hover::after {
+            left: 100%;
+        }
+        
+        .action-icon {
+            font-size: 24px;
+            color: #00d2ff;
+            margin-bottom: 8px;
+        }
+        
+        .action-text {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        /* My Account Menu */
+        .account-menu {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .account-menu::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .menu-title {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .menu-list {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .menu-item {
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            padding-left: 10px;
+            padding-right: 10px;
+            border-radius: 10px;
+            transform: translateX(5px);
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #00d2ff;
+            font-size: 18px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+        
+        .menu-text {
+            flex: 1;
+            font-size: 16px;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .menu-arrow {
+            color: #a0a0d0;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+        
+        .menu-item:hover .menu-arrow {
+            transform: translateX(5px);
+            color: #00d2ff;
+        }
+        
+        /* Logout Button */
+        .logout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(255, 65, 108, 0.4);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(-2px);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            color: #a0a0d0;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Currency symbol */
+        .currency {
+            font-size: 16px;
+            vertical-align: top;
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            background: #ff416c;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .profile-avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .profile-name {
+                font-size: 20px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-item {
+                padding: 15px 0;
+            }
+            
+            .menu-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+                margin-right: 12px;
+            }
+            
+            .menu-text {
+                font-size: 15px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .account-summary, .account-menu, .logout-btn, .quick-actions {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .quick-actions {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+        
+        .account-menu {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+        
+        .logout-btn {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+        
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, #ff3366, #ff9966);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            font-weight: 600;
+            max-width: 300px;
+        }
+        
+        .toast.success {
+            background: linear-gradient(90deg, #00cc88, #00ffaa);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg" id="glowBg"></div>
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="profile-header">
+            <div class="profile-avatar" id="userAvatar">
+                <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
+                     alt="Vishal Logo" 
+                     onload="this.classList.add('loaded')"
+                     onerror="this.onerror=null; this.classList.add('loaded'); this.style.display='none';">
+            </div>
+            <div class="profile-info">
+                <h2 class="profile-name" id="userName">Vishal</h2>
+                <p class="profile-id" id="userId">ID: Loading...</p>
+                <p class="profile-id" id="userPhone" style="font-size: 12px; margin-top: 2px;">Phone: Loading...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Account Summary -->
+        <div class="account-summary">
+            <h3 class="summary-title">Account Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item balance">
+                    <div class="summary-value" id="userBalance">
+                        <span class="currency">₹</span>0.00
+                    </div>
+                    <div class="summary-label">Balance</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="rechargeBalance">
+                        <span class="currency">₹</span>0.00
+                    </div>
+                    <div class="summary-label">Total Recharged</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="withdrawnAmount">
+                        <span class="currency">₹</span>0
+                    </div>
+                    <div class="summary-label">Withdrawn</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-btn" onclick="navigateTo('/recharge')">
+                <div class="action-icon"><i class="fas fa-coins"></i></div>
+                <div class="action-text">Recharge</div>
+            </div>
+            <div class="action-btn" onclick="navigateTo('/withdraw')">
+                <div class="action-icon"><i class="fas fa-wallet"></i></div>
+                <div class="action-text">Withdraw</div>
+            </div>
+            <div class="action-btn" onclick="navigateTo('/checkin')">
+                <div class="action-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="action-text">Daily Check-in</div>
+            </div>
+            <div class="action-btn" onclick="navigateTo('/invite-earn')">
+                <div class="action-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="action-text">Invite & Earn</div>
+            </div>
+        </div>
+        
+        <!-- My Account Menu -->
+        <div class="account-menu">
+            <h3 class="menu-title">My Account</h3>
+            <ul class="menu-list">
+                <li class="menu-item" onclick="navigateTo('/about')">
+                    <div class="menu-icon"><i class="fas fa-building"></i></div>
+                    <div class="menu-text">About Company</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/income-record')">
+                    <div class="menu-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="menu-text">Income Record</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/records')">
+                    <div class="menu-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="menu-text">Withdraw Record</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/gift-code')">
+                    <div class="menu-icon"><i class="fas fa-gift"></i></div>
+                    <div class="menu-text">Gift Code</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                    <span class="notification-badge" id="giftBadge">New</span>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/my-collection')">
+                    <div class="menu-icon"><i class="fas fa-box"></i></div>
+                    <div class="menu-text">My Collection</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/bank-info')">
+                    <div class="menu-icon"><i class="fas fa-university"></i></div>
+                    <div class="menu-text">Bank Information</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="navigateTo('/team')">
+                    <div class="menu-icon"><i class="fas fa-users"></i></div>
+                    <div class="menu-text">Team</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+                <li class="menu-item" onclick="showHelp()">
+                    <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                    <div class="menu-text">Help & Support</div>
+                    <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Logout Button -->
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const API_BASE_URL = window.location.origin + '/api'; // Same server
+        let userData = null;
+        
+        // ==================== ROUTING SYSTEM ====================
+        const routes = {
+            '/': 'index.html',
+            '/home': 'home.html',
+            '/profile': 'profile.html',
+            '/products': 'products.html',
+            '/team': 'team.html',
+            '/about': 'about.html',
+            '/income-record': 'income-record.html',
+            '/records': 'records.html',
+            '/gift-code': 'gift-code.html',
+            '/my-collection': 'my-collection.html',
+            '/bank-info': 'bank-info.html',
+            '/recharge': 'recharge.html',
+            '/withdraw': 'withdraw.html',
+            '/checkin': 'checkin.html',
+            '/invite-earn': 'invite-earn.html'
+        };
+
+        function navigateTo(cleanPath) {
+            // Add click animation
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    button.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            // Show loading indicator
+            showLoading();
+            
+            // Check if route exists
+            if (routes[cleanPath]) {
+                // Update browser history with clean URL
+                history.pushState(null, '', cleanPath);
+                
+                // After a short delay, navigate to actual file
+                setTimeout(() => {
+                    window.location.href = routes[cleanPath];
+                }, 300);
+            } else {
+                // If route doesn't exist, show error
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Page not found: ' + cleanPath, 'error');
+                }, 300);
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            const currentPath = window.location.pathname;
+            if (routes[currentPath]) {
+                window.location.href = routes[currentPath];
+            }
+        });
+
+        // Update all links on page load to use clean URLs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update browser URL to clean version if on .html page
+            const currentPage = window.location.pathname;
+            if (currentPage.endsWith('.html')) {
+                const cleanPath = '/' + currentPage.split('/').pop().replace('.html', '');
+                if (routes[cleanPath]) {
+                    history.replaceState(null, '', cleanPath);
+                }
+            }
+        });
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function showToast(message, type = 'info') {
+            // Remove existing toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function showLoading() {
+            // Create loading overlay
+            const loading = document.createElement('div');
+            loading.id = 'pageLoading';
+            loading.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:1000;">
+                    <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:30px; border-radius:15px; text-align:center;">
+                        <div style="width:50px; height:50px; border:3px solid transparent; border-top-color:#00d2ff; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 15px;"></div>
+                        <p style="color:white;">Loading...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loading);
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('pageLoading');
+            if (loading) {
+                loading.remove();
+            }
+        }
+        
+        function formatCurrency(amount) {
+            return '₹' + parseFloat(amount || 0).toFixed(2);
+        }
+        
+        function maskPhone(phone) {
+            if (!phone) return 'Not set';
+            if (phone.length >= 10) {
+                return phone.substring(0, 3) + '****' + phone.substring(7);
+            }
+            return phone;
+        }
+        
+        function maskUserId(userId) {
+            if (!userId) return 'N/A';
+            if (userId.length > 8) {
+                return userId.substring(0, 4) + '...' + userId.substring(userId.length - 4);
+            }
+            return userId;
+        }
+
+        // ==================== USER DATA FUNCTIONS ====================
+        async function loadUserData() {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    window.location.href = '/';
+                    return;
+                }
+                
+                // Try to load from API first
+                try {
+                    const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success && result.user) {
+                            userData = result.user;
+                            updateProfileDisplay(userData);
+                            return;
+                        }
+                    }
+                } catch (apiError) {
+                    console.log('API not available, using localStorage data');
+                }
+                
+                // Fallback to localStorage data
+                updateProfileDisplayFromLocalStorage();
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                updateProfileDisplayFromLocalStorage();
+            }
+        }
+        
+        function updateProfileDisplay(data) {
+            // Update user info
+            document.getElementById('userName').textContent = data.name || 'User';
+            document.getElementById('userId').textContent = `ID: ${maskUserId(data.id || localStorage.getItem('userId'))}`;
+            document.getElementById('userPhone').textContent = `Phone: ${maskPhone(data.phone)}`;
+            
+            // Update balances with Indian Rupee (₹)
+            document.getElementById('userBalance').innerHTML = 
+                `<span class="currency">₹</span>${parseFloat(data.balance || 0).toFixed(2)}`;
+            document.getElementById('rechargeBalance').innerHTML = 
+                `<span class="currency">₹</span>${parseFloat(data.rechargeBalance || 0).toFixed(2)}`;
+            document.getElementById('withdrawnAmount').innerHTML = 
+                `<span class="currency">₹</span>${parseFloat(data.withdrawn || 0).toFixed(0)}`;
+            
+            // Update localStorage with fresh data
+            localStorage.setItem('userName', data.name || 'User');
+            localStorage.setItem('userPhone', data.phone || '');
+            localStorage.setItem('userBalance', data.balance || 0);
+            
+            // Show check-in badge if not checked in today
+            updateCheckinBadge(data);
+        }
+        
+        function updateProfileDisplayFromLocalStorage() {
+            const userName = localStorage.getItem('userName') || 'User';
+            const userPhone = localStorage.getItem('userPhone') || '';
+            const userBalance = localStorage.getItem('userBalance') || '0';
+            const userId = localStorage.getItem('userId') || '';
+            
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userId').textContent = `ID: ${maskUserId(userId)}`;
+            document.getElementById('userPhone').textContent = `Phone: ${maskPhone(userPhone)}`;
+            
+            // Use Indian Rupee (₹) instead of Korean Won
+            document.getElementById('userBalance').innerHTML = 
+                `<span class="currency">₹</span>${parseFloat(userBalance).toFixed(2)}`;
+            document.getElementById('rechargeBalance').innerHTML = 
+                `<span class="currency">₹</span>0.00`;
+            document.getElementById('withdrawnAmount').innerHTML = 
+                `<span class="currency">₹</span>0`;
+        }
+        
+        async function updateCheckinBadge(userData) {
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) return;
+                
+                const response = await fetch(`${API_BASE_URL}/checkin-status/${userId}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && !result.checkedInToday) {
+                        // Show badge on check-in menu item
+                        const checkinMenuItem = document.querySelector('.menu-item[onclick*="checkin"]');
+                        if (checkinMenuItem) {
+                            const badge = document.createElement('span');
+                            badge.className = 'notification-badge';
+                            badge.textContent = '1';
+                            badge.style.right = '40px';
+                            checkinMenuItem.appendChild(badge);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Could not check check-in status');
+            }
+        }
+
+        // ==================== EVENT HANDLERS ====================
+        function logout() {
+            // Add glowing effect to logout button
+            const logoutBtn = document.querySelector('.logout-btn');
+            logoutBtn.style.boxShadow = '0 0 30px rgba(255, 65, 108, 0.8)';
+            
+            setTimeout(() => {
+                logoutBtn.style.boxShadow = '0 10px 20px rgba(255, 65, 108, 0.3)';
+                
+                if (confirm('Are you sure you want to logout?')) {
+                    // Add exit animation
+                    document.body.style.opacity = '0.7';
+                    document.body.style.transform = 'scale(0.95)';
+                    document.body.style.transition = 'all 0.3s ease';
+                    
+                    setTimeout(() => {
+                        // Clear localStorage except maybe some preferences
+                        localStorage.removeItem('userId');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userPhone');
+                        localStorage.removeItem('userBalance');
+                        localStorage.removeItem('referralCode');
+                        localStorage.removeItem('referralLink');
+                        
+                        // Navigate to login page with clean URL
+                        history.pushState(null, '', '/');
+                        window.location.href = 'index.html';
+                    }, 300);
+                }
+            }, 300);
+        }
+        
+        function showHelp() {
+            const helpOptions = [
+                '📞 Customer Support: 123-456-7890',
+                '📧 Email: support@happyinvest.com',
+                '💬 WhatsApp: +91 9876543210',
+                '📱 Telegram: @happyinvest_support',
+                '🕒 Hours: 9AM - 6PM (Mon-Sat)'
+            ];
+            
+            const helpText = helpOptions.join('\n');
+            alert('Help & Support:\n\n' + helpText);
+        }
+
+        // ==================== INITIALIZATION ====================
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            if (!localStorage.getItem('userId')) {
+                navigateTo('/');
+                return;
+            }
+            
+            // Setup background effect
+            setupBackgroundEffect();
+            
+            // Load user data
+            await loadUserData();
+            
+            // Setup hover effects
+            setupHoverEffects();
+            
+            // Show welcome message
+            setTimeout(() => {
+                const userName = localStorage.getItem('userName') || 'User';
+                showToast(`Welcome back, ${userName}!`, 'success');
+            }, 1000);
+        });
+        
+        function setupBackgroundEffect() {
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                if (!glowBg) return;
+                
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
+        }
+        
+        function setupHoverEffects() {
+            // Menu items hover
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            // Action buttons hover
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Summary items hover
+            const summaryItems = document.querySelectorAll('.summary-item');
+            summaryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        }
+        
+        // Auto-refresh user data every minute
+        setInterval(async () => {
+            if (document.visibilityState === 'visible') {
+                await loadUserData();
+            }
+        }, 60000);
+        
+        // Initialize default data if not exists
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', 'user_' + Date.now());
+            localStorage.setItem('userName', 'Vishal');
+            localStorage.setItem('userPhone', '9811234814');
+            localStorage.setItem('userBalance', '12.00');
+            localStorage.setItem('referralCode', 'HAPPY' + Math.floor(Math.random() * 10000));
+        }
+    </script>
+</body>
+</html>
