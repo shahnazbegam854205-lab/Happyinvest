@@ -76,6 +76,10 @@
       "dest": "/public/withdraw.html"
     },
     {
+      "src": "/H4ppy",
+      "dest": "/public/H4ppy.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
