@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Team - Happy Invest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+            color: #fff;
+        }
+        
+        /* Glowing background effect */
+        .glow-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        /* Header with Referral Link */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Background pattern image */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 0;
+            border-radius: 0 0 25px 25px;
+        }
+        
+        .referral-title {
+            font-size: 16px;
+            color: #a0a0d0;
+            margin-bottom: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+        
+        .referral-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .referral-box:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color = rgba(0, 210, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
+        }
+        
+        .website-url {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 10px;
+            font-family: monospace;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            min-width: 60px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.6);
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Back Button */
+        .back-btn { 
+            font-size: 24px; 
+            color: #fff; 
+            margin-right: 15px; 
+            text-decoration: none; 
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            z-index: 2;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        
+        /* SMALL Team Cards Grid */
+        .team-levels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+        
+        .level-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.2);
+            border-color = rgba(0, 210, 255, 0.3);
+        }
+        
+        .level-name {
+            font-size: 12px;
+            color: #a0a0d0;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .level-commission {
+            font-size: 18px;
+            color: #00ffaa;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .level-stats {
+            margin-top: 6px;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .stat-label {
+            font-size: 9px;
+            color: #a0a0d0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 500;
+        }
+        
+        /* Commission Rows */
+        .commission-rows {
+            padding: 0 15px;
+            margin-top: 15px;
+        }
+        
+        .commission-row {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            padding: 15px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .commission-row:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border-color = rgba(0, 210, 255, 0.3);
+        }
+        
+        .commission-row::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .commission-row:hover::after {
+            left: 100%;
+        }
+        
+        .commission-label {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .commission-value {
+            font-size: 16px;
+            color: #00ffaa;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        /* TEAM MEMBERS SECTION */
+        .team-members-section {
+            padding: 0 15px;
+            margin-top: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title::before {
+            content: '👥';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .members-list {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        /* Scrollbar Styling */
+        .members-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .members-list::-webkit-scrollbar-track {
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .members-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 10px;
+        }
+        
+        .member-card {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .member-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border-color = rgba(0, 210, 255, 0.3);
+        }
+        
+        .member-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .member-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .member-card:hover::after {
+            left: 100%;
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 12px;
+            box-shadow: 0 3px 10px rgba(0, 210, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+        
+        .member-info {
+            flex: 1;
+            z-index: 1;
+        }
+        
+        .member-name {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .member-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .member-detail {
+            font-size: 11px;
+            color: #a0a0d0;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .member-detail span {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .empty-members {
+            text-align: center;
+            padding: 40px 15px;
+            color: #a0a0d0;
+        }
+        
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid transparent;
+            border-top-color: #00d2ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 4px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #a0a0d0;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-name {
+            font-size: 11px;
+            color: #a0a0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon,
+        .nav-item.active .nav-name {
+            color: #fff;
+            text-shadow: 0 0 8px rgba(0, 210, 255, 0.7);
+        }
+        
+        .nav-item:hover:not(.active) .nav-icon,
+        .nav-item:hover:not(.active) .nav-name {
+            color: #fff;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .team-levels, .commission-rows, .team-members-section {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .team-levels {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+        
+        .commission-rows {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+        
+        .team-members-section {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .team-levels {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                padding: 12px;
+            }
+            
+            .level-card {
+                padding: 12px 8px;
+                min-height: 100px;
+                border-radius: 10px;
+            }
+            
+            .level-name {
+                font-size: 11px;
+            }
+            
+            .level-commission {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .stat-value {
+                font-size: 13px;
+            }
+            
+            .stat-label {
+                font-size: 8px;
+            }
+            
+            .referral-box {
+                padding: 12px 12px;
+            }
+            
+            .copy-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+                min-width: 50px;
+            }
+            
+            .team-members-section {
+                padding: 0 12px;
+            }
+            
+            .members-list {
+                padding: 12px;
+                max-height: 250px;
+            }
+            
+            .member-card {
+                padding: 10px;
+            }
+            
+            .member-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+            
+            .member-name {
+                font-size: 13px;
+            }
+            
+            .member-detail {
+                font-size: 10px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .header::before {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .bottom-nav {
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Glowing Background -->
+    <div class="glow-bg"></div>
+    
+    <!-- Header with Referral Link -->
+    <div class="header">
+        <a href="/profile" class="back-btn">←</a>
+        
+        <div class="referral-title">Your Referral Link</div>
+        
+        <div class="referral-box">
+            <div class="website-url" id="referralUrl">Loading...</div>
+            <button class="copy-btn" onclick="copyReferralLink()">COPY</button>
+        </div>
+        
+        <h1 class="page-title">Team</h1>
+    </div>
+    
+    <!-- SMALL Team Cards -->
+    <div class="team-levels">
+        <!-- First Level -->
+        <div class="level-card">
+            <div class="level-name">First Level</div>
+            <div class="level-commission">18.7%</div>
+            <div class="level-stats">
+                <div class="stat-value" id="level1Members">0</div>
+                <div class="stat-label">Members</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level1Commission">₹0</div>
+                <div class="stat-label">Commission</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level1Investments">0</div>
+                <div class="stat-label">Investments</div>
+            </div>
+        </div>
+        
+        <!-- Second Level -->
+        <div class="level-card">
+            <div class="level-name">Second Level</div>
+            <div class="level-commission">5%</div>
+            <div class="level-stats">
+                <div class="stat-value" id="level2Members">0</div>
+                <div class="stat-label">Members</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level2Commission">₹0</div>
+                <div class="stat-label">Commission</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level2Investments">0</div>
+                <div class="stat-label">Investments</div>
+            </div>
+        </div>
+        
+        <!-- Third Level -->
+        <div class="level-card">
+            <div class="level-name">Third Level</div>
+            <div class="level-commission">2%</div>
+            <div class="level-stats">
+                <div class="stat-value" id="level3Members">0</div>
+                <div class="stat-label">Members</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level3Commission">₹0</div>
+                <div class="stat-label">Commission</div>
+            </div>
+            <div class="level-stats">
+                <div class="stat-value" id="level3Investments">0</div>
+                <div class="stat-label">Investments</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Commission Details -->
+    <div class="commission-rows">
+        <div class="commission-row">
+            <div class="commission-label">Total Team Members</div>
+            <div class="commission-value" id="totalMembers">0</div>
+        </div>
+        
+        <div class="commission-row">
+            <div class="commission-label">Total Commission</div>
+            <div class="commission-value" id="totalCommission">₹0</div>
+        </div>
+        
+        <div class="commission-row">
+            <div class="commission-label">Total Team Investment</div>
+            <div class="commission-value" id="totalInvestment">₹0</div>
+        </div>
+    </div>
+    
+    <!-- TEAM MEMBERS SECTION -->
+    <div class="team-members-section">
+        <h2 class="section-title">Direct Team Members</h2>
+        <div class="members-list" id="membersList">
+            <div class="loading" id="loadingMembers">
+                <div class="loading-spinner"></div>
+            </div>
+            <div class="empty-members" id="emptyMembers" style="display: none;">
+                <div class="empty-icon">👥</div>
+                <p class="empty-text">No team members yet.<br>Share your referral link to grow your team!</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="navigateTo('/home')">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-name">Home</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/products')">
+            <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="nav-name">Products</div>
+        </div>
+        <div class="nav-item active" onclick="navigateTo('/team')">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-name">Team</div>
+        </div>
+        <div class="nav-item" onclick="navigateTo('/profile')">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-name">Profile</div>
+        </div>
+    </div>
+
+    <script>
+        // ✅ UPDATED: API Configuration - Relative path use karo
+        const API_BASE_URL = '/api';
+        
+        // Navigation function
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'rgba(0, 255, 170, 0.9)' : 'rgba(255, 51, 102, 0.9)'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                z-index: 1000;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+                animation: slideInRight 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // Copy referral link
+        function copyReferralLink() {
+            const referralUrl = document.getElementById('referralUrl');
+            const text = referralUrl.textContent;
+            
+            if (text === 'Loading...' || !text) {
+                showNotification('Referral link not available', 'error');
+                return;
+            }
+            
+            // Create temporary textarea
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Update button
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="fas fa-check"></i> COPIED';
+            btn.style.background = 'linear-gradient(135deg, #00ffaa, #00cc88)';
+            btn.disabled = true;
+            
+            showNotification('Referral link copied!');
+            
+            setTimeout(() => {
+                btn.innerHTML = 'COPY';
+                btn.style.background = 'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)';
+                btn.disabled = false;
+            }, 2000);
+        }
+        
+        // Load team data
+        async function loadTeamData(userId) {
+            try {
+                // Load user data for referral link
+                const userResponse = await fetch(`${API_BASE_URL}/user/${userId}`);
+                if (userResponse.ok) {
+                    const result = await userResponse.json();
+                    if (result.success) {
+                        const user = result.user;
+                        let referralLink = user.referralLink;
+                        
+                        if (!referralLink && user.referralCode) {
+                            // ✅ Generate referral link from current domain
+                            referralLink = `${window.location.origin}/register?ref=${user.referralCode}`;
+                        }
+                        
+                        if (referralLink) {
+                            document.getElementById('referralUrl').textContent = referralLink;
+                        }
+                    }
+                }
+                
+                // Load team stats
+                await loadTeamStats(userId);
+                
+                // Load team members
+                await loadTeamMembers(userId);
+                
+            } catch (error) {
+                console.error('Error loading team data:', error);
+                showNotification('Failed to load team data', 'error');
+            }
+        }
+        
+        // Load team stats
+        async function loadTeamStats(userId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/team-stats/${userId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    
+                    // Update direct team members (Level 1)
+                    document.getElementById('level1Members').textContent = stats.totalMembers || 0;
+                    document.getElementById('level1Commission').textContent = `₹${(stats.totalCommission || 0).toFixed(2)}`;
+                    document.getElementById('level1Investments').textContent = stats.activeInvestors || 0;
+                    
+                    // Note: Aapke backend mein sirf direct team ka data hai
+                    // Level 2 aur Level 3 ke liye calculation karna padega
+                    // Temporary values
+                    document.getElementById('level2Members').textContent = '0';
+                    document.getElementById('level2Commission').textContent = '₹0';
+                    document.getElementById('level2Investments').textContent = '0';
+                    
+                    document.getElementById('level3Members').textContent = '0';
+                    document.getElementById('level3Commission').textContent = '₹0';
+                    document.getElementById('level3Investments').textContent = '0';
+                    
+                    // Update totals
+                    document.getElementById('totalMembers').textContent = stats.totalMembers || 0;
+                    document.getElementById('totalCommission').textContent = `₹${(stats.totalCommission || 0).toFixed(2)}`;
+                    document.getElementById('totalInvestment').textContent = `₹${(stats.totalInvestment || 0).toFixed(2)}`;
+                    
+                    // Animate updates
+                    animateStatUpdates();
+                }
+            } catch (error) {
+                console.error('Error loading team stats:', error);
+            }
+        }
+        
+        // Load team members
+        async function loadTeamMembers(userId) {
+            const loadingMembers = document.getElementById('loadingMembers');
+            const emptyMembers = document.getElementById('emptyMembers');
+            const membersList = document.getElementById('membersList');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/team-members/${userId}`);
+                const result = await response.json();
+                
+                loadingMembers.style.display = 'none';
+                
+                if (result.success && result.members && result.members.length > 0) {
+                    emptyMembers.style.display = 'none';
+                    renderTeamMembers(result.members);
+                } else {
+                    emptyMembers.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading team members:', error);
+                loadingMembers.style.display = 'none';
+                emptyMembers.style.display = 'block';
+            }
+        }
+        
+        // Render team members
+        function renderTeamMembers(members) {
+            const membersList = document.getElementById('membersList');
+            membersList.innerHTML = '';
+            
+            // Sort by join date (newest first)
+            members.sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+            
+            members.forEach((member, index) => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'member-card';
+                
+                // Animation delay
+                memberCard.style.animationDelay = `${index * 0.1}s`;
+                memberCard.style.animation = 'fadeIn 0.5s ease-out forwards';
+                memberCard.style.opacity = '0';
+                
+                // Get first letter for avatar
+                const firstName = member.name ? member.name.split(' ')[0] : 'U';
+                const firstLetter = firstName.charAt(0).toUpperCase();
+                
+                // Format date
+                let formattedDate = 'N/A';
+                if (member.joinDate) {
+                    const date = new Date(member.joinDate);
+                    formattedDate = date.toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                }
+                
+                // Format phone
+                let formattedPhone = member.phone || 'N/A';
+                if (formattedPhone !== 'N/A' && formattedPhone.length === 10) {
+                    formattedPhone = `${formattedPhone.substring(0, 3)}****${formattedPhone.substring(7)}`;
+                }
+                
+                // Create member card HTML
+                memberCard.innerHTML = `
+                    <div class="member-avatar">${firstLetter}</div>
+                    <div class="member-info">
+                        <div class="member-name">${member.name || 'Unknown User'}</div>
+                        <div class="member-details">
+                            <div class="member-detail">Phone: <span>${formattedPhone}</span></div>
+                            <div class="member-detail">Joined: <span>${formattedDate}</span></div>
+                            <div class="member-detail">
+                                Investment: 
+                                <span>₹${(member.totalInvested || 0).toFixed(2)}</span>
+                            </div>
+                            <div class="member-detail">
+                                Status: 
+                                <span style="color: ${member.hasInvested ? '#00ffaa' : '#ff9966'}">
+                                    ${member.hasInvested ? 'Invested' : 'Not Invested'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                membersList.appendChild(memberCard);
+            });
+        }
+        
+        // Animate stat updates
+        function animateStatUpdates() {
+            const statValues = document.querySelectorAll('.stat-value, .commission-value');
+            
+            statValues.forEach(value => {
+                value.style.transition = 'all 0.3s ease';
+                value.style.transform = 'scale(1.1)';
+                
+                if (value.textContent.includes('₹')) {
+                    value.style.color = '#00ffaa';
+                }
+                
+                setTimeout(() => {
+                    value.style.transform = 'scale(1)';
+                    setTimeout(() => {
+                        value.style.color = '';
+                    }, 300);
+                }, 150);
+            });
+        }
+        
+        // Add hover effects
+        function addHoverEffects() {
+            // Level cards hover
+            document.querySelectorAll('.level-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Commission rows hover
+            document.querySelectorAll('.commission-row').forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            // Navigation items click animation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        }
+        
+        // Interactive background
+        document.addEventListener('mousemove', function(e) {
+            const glowBg = document.querySelector('.glow-bg');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            glowBg.style.background = `
+                radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+            `;
+        });
+        
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            const userId = localStorage.getItem('userId');
+            const userPhone = localStorage.getItem('userPhone');
+            
+            console.log('🔍 Team Page - Checking login status...');
+            console.log('User ID:', userId);
+            console.log('User Phone:', userPhone);
+            
+            if (!userId || !userPhone) {
+                console.log('❌ User not logged in, redirecting to login');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                return;
+            }
+            
+            console.log('✅ User logged in, loading team data...');
+            
+            // Add hover effects
+            addHoverEffects();
+            
+            // Load team data
+            await loadTeamData(userId);
+            
+            // Auto-refresh team data every 30 seconds
+            setInterval(async () => {
+                await loadTeamData(userId);
+            }, 30000);
+        });
+        
+        // Add animation styles
+        const animationStyles = document.createElement('style');
+        animationStyles.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(animationStyles);
+    </script>
+</body>
+</html>
