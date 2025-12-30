@@ -216,8 +216,8 @@
             left: 100%;
         }
         
-        /* Bank Info Row */
-        .bank-info {
+        /* User Info Row */
+        .user-info-row {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -226,20 +226,57 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .bank-icon {
+        .user-avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            background: linear-gradient(135deg, #ff3366, #ff9966);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .user-id {
+            font-size: 12px;
+            color: #a0a0d0;
+            margin-top: 2px;
+        }
+        
+        /* Bank Info */
+        .bank-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .bank-icon {
+            font-size: 20px;
+            color: #00d2ff;
+        }
+        
+        .bank-details {
+            flex: 1;
         }
         
         .bank-name {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: #fff;
         }
         
@@ -249,35 +286,36 @@
             margin-top: 2px;
         }
         
-        /* User Details */
-        .user-details {
+        /* Transaction Details */
+        .transaction-details {
             display: grid;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 15px;
         }
         
         .detail-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
             font-size: 13px;
-        }
-        
-        .detail-icon {
-            color: #00d2ff;
-            width: 20px;
-            text-align: center;
         }
         
         .detail-label {
             color: #a0a0d0;
-            min-width: 70px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .detail-value {
             color: #fff;
             font-weight: 500;
-            flex: 1;
+        }
+        
+        .detail-icon {
+            width: 20px;
+            text-align: center;
+            color: #00d2ff;
         }
         
         /* Amount Section */
@@ -295,7 +333,7 @@
         }
         
         .amount-value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #00ffaa;
             text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
@@ -493,7 +531,7 @@
                 font-size: 12px;
             }
             
-            .bank-name {
+            .user-name {
                 font-size: 14px;
             }
             
@@ -586,7 +624,7 @@
             <div class="nav-icon"><i class="fas fa-users"></i></div>
             <div class="nav-name">Team</div>
         </div>
-        <div class="nav-item active" onclick="navigateTo('/checkin')">
+        <div class="nav-item active" onclick="navigateTo('/trust')">
             <div class="nav-icon"><i class="fas fa-shield-alt"></i></div>
             <div class="nav-name">Proofs</div>
         </div>
@@ -655,34 +693,58 @@
             }
         }
         
-        // Format phone number
+        // Format phone number (hide middle digits)
         function formatPhone(phone) {
-            if (!phone || phone === 'N/A') return 'N/A';
+            if (!phone || phone === 'N/A') return '**** ******';
             if (phone.length === 10) {
                 return phone.substring(0, 2) + '******' + phone.substring(8);
             }
-            return phone;
+            return '**** ******';
         }
         
-        // Format account number
+        // Format account number (show only last 4 digits)
         function formatAccountNumber(accountNumber) {
-            if (!accountNumber || accountNumber === 'N/A') return 'N/A';
+            if (!accountNumber || accountNumber === 'N/A') return '**** **** ****';
             // Show only last 4 digits
-            return '******' + accountNumber.slice(-4);
+            return '**** **** ' + accountNumber.slice(-4);
         }
         
-        // Format user name
-        function formatUserName(userName) {
-            if (!userName || userName === 'User' || userName === 'N/A') return 'U*** User';
+        // Get user initials for avatar
+        function getUserInitials(userName) {
+            if (!userName || userName === 'User' || userName === 'N/A') return 'U';
             
             const parts = userName.split(' ');
             if (parts.length >= 2) {
-                const firstName = parts[0];
-                const lastName = parts[1];
-                return firstName.charAt(0) + '*** ' + lastName;
+                return parts[0].charAt(0) + parts[1].charAt(0);
             } else {
-                return userName.charAt(0) + '*** User';
+                return userName.charAt(0);
             }
+        }
+        
+        // Get bank icon
+        function getBankIcon(bankName) {
+            const bankIcons = {
+                'HDFC': '🏦',
+                'SBI': '🏛️',
+                'ICICI': '🏢',
+                'Axis': '💳',
+                'PNB': '🏛️',
+                'Kotak': '🏢',
+                'Yes': '💳',
+                'IDFC': '🏦',
+                'default': '🏦'
+            };
+            
+            if (!bankName) return bankIcons.default;
+            
+            const bankNameUpper = bankName.toUpperCase();
+            for (const [key, icon] of Object.entries(bankIcons)) {
+                if (bankNameUpper.includes(key.toUpperCase())) {
+                    return icon;
+                }
+            }
+            
+            return bankIcons.default;
         }
         
         // Filter withdrawals
@@ -789,38 +851,19 @@
             let html = '';
             
             withdrawals.forEach((withdrawal, index) => {
-                // Format data
-                const userName = formatUserName(withdrawal.userName || withdrawal.displayName);
+                // Get data
+                const userName = withdrawal.userName || withdrawal.displayName || 'User';
+                const userInitials = getUserInitials(userName);
                 const phone = formatPhone(withdrawal.userPhone);
                 const accountNumber = formatAccountNumber(withdrawal.bankDetails?.accountNumber);
                 const amount = withdrawal.amount ? `₹${withdrawal.amount.toLocaleString('en-IN')}` : '₹0';
                 const timeAgo = getTimeAgo(withdrawal.date);
                 const status = withdrawal.status || 'completed';
                 
-                // Get bank name
-                let bankName = withdrawal.bankDetails?.bankName || 'Bank';
-                let bankType = 'Savings Account';
-                
-                // Map bank names to icons/colors
-                const bankIcons = {
-                    'HDFC': '🏦',
-                    'SBI': '🏛️',
-                    'ICICI': '🏢',
-                    'Axis': '💳',
-                    'PNB': '🏛️',
-                    'Kotak': '🏢',
-                    'Yes': '💳',
-                    'IDFC': '🏦',
-                    'default': '🏦'
-                };
-                
-                let bankIcon = '🏦';
-                for (const [key, icon] of Object.entries(bankIcons)) {
-                    if (bankName.toUpperCase().includes(key.toUpperCase())) {
-                        bankIcon = icon;
-                        break;
-                    }
-                }
+                // Get bank details
+                const bankName = withdrawal.bankDetails?.bankName || 'Bank';
+                const bankIcon = getBankIcon(bankName);
+                const bankType = withdrawal.bankDetails?.accountType || 'Savings Account';
                 
                 // Status badge
                 let statusClass = 'status-completed';
@@ -842,32 +885,39 @@
                 
                 html += `
                     <div class="withdrawal-card" style="animation-delay: ${animationDelay}">
+                        <!-- User Info -->
+                        <div class="user-info-row">
+                            <div class="user-avatar">${userInitials}</div>
+                            <div class="user-details">
+                                <div class="user-name">${userName}</div>
+                                <div class="user-id">User ID: ${withdrawal.userId ? withdrawal.userId.substring(0, 8) + '...' : 'N/A'}</div>
+                            </div>
+                        </div>
+                        
                         <!-- Bank Info -->
                         <div class="bank-info">
                             <div class="bank-icon">${bankIcon}</div>
-                            <div>
+                            <div class="bank-details">
                                 <div class="bank-name">${bankName}</div>
                                 <div class="bank-type">${bankType}</div>
                             </div>
                         </div>
                         
-                        <!-- User Details -->
-                        <div class="user-details">
+                        <!-- Transaction Details -->
+                        <div class="transaction-details">
                             <div class="detail-row">
-                                <div class="detail-icon">👤</div>
-                                <div class="detail-label">Name:</div>
-                                <div class="detail-value">${userName}</div>
-                            </div>
-                            
-                            <div class="detail-row">
-                                <div class="detail-icon">📱</div>
-                                <div class="detail-label">Phone:</div>
+                                <div class="detail-label">
+                                    <span class="detail-icon">📱</span>
+                                    <span>Phone:</span>
+                                </div>
                                 <div class="detail-value">${phone}</div>
                             </div>
                             
                             <div class="detail-row">
-                                <div class="detail-icon">💳</div>
-                                <div class="detail-label">A/C No:</div>
+                                <div class="detail-label">
+                                    <span class="detail-icon">💳</span>
+                                    <span>Account No:</span>
+                                </div>
                                 <div class="detail-value">${accountNumber}</div>
                             </div>
                         </div>
