@@ -472,7 +472,7 @@ app.post('/api/register', async (req, res) => {
             level: 1,
             teamCount: 0,
             referralEarnings: 0,
-            referralLink: `https://growday.vercel.app/register?ref=${userReferralCode}`,
+            referralLink: `https://richday.vercel.app/register?ref=${userReferralCode}`,
             bankDetails: null,
             dailyCheckin: {
                 lastCheckin: null,
