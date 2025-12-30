@@ -246,12 +246,16 @@
             font-size: 16px;
             font-weight: 700;
             color: #fff;
+            margin-bottom: 4px;
         }
         
-        .user-id {
+        /* Account Holder Name */
+        .account-holder-name {
             font-size: 12px;
             color: #a0a0d0;
-            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         /* Bank Info */
@@ -709,6 +713,14 @@
             return '**** **** ' + accountNumber.slice(-4);
         }
         
+        // Get account holder name from bank details
+        function getAccountHolderName(bankDetails) {
+            if (bankDetails && bankDetails.accountHolderName) {
+                return bankDetails.accountHolderName;
+            }
+            return 'Account Holder';
+        }
+        
         // Get user initials for avatar
         function getUserInitials(userName) {
             if (!userName || userName === 'User' || userName === 'N/A') return 'U';
@@ -856,6 +868,7 @@
                 const userInitials = getUserInitials(userName);
                 const phone = formatPhone(withdrawal.userPhone);
                 const accountNumber = formatAccountNumber(withdrawal.bankDetails?.accountNumber);
+                const accountHolderName = getAccountHolderName(withdrawal.bankDetails);
                 const amount = withdrawal.amount ? `₹${withdrawal.amount.toLocaleString('en-IN')}` : '₹0';
                 const timeAgo = getTimeAgo(withdrawal.date);
                 const status = withdrawal.status || 'completed';
@@ -890,7 +903,10 @@
                             <div class="user-avatar">${userInitials}</div>
                             <div class="user-details">
                                 <div class="user-name">${userName}</div>
-                                <div class="user-id">User ID: ${withdrawal.userId ? withdrawal.userId.substring(0, 8) + '...' : 'N/A'}</div>
+                                <div class="account-holder-name">
+                                    <i class="fas fa-user-circle"></i>
+                                    ${accountHolderName}
+                                </div>
                             </div>
                         </div>
                         
