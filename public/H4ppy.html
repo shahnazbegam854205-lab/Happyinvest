@@ -532,6 +532,31 @@
             font-weight: 500;
         }
         
+        .info-value.account-number {
+            color: #00ffaa;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        
+        .copy-account-btn {
+            background: rgba(0, 210, 255, 0.2);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-account-btn:hover {
+            background: rgba(0, 210, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -856,6 +881,7 @@
                 id="adminPassword"
                 placeholder="Enter admin password"
                 class="password-input"
+                value="random"
             >
             <div id="loginError" style="
                 color: #ff3366;
@@ -883,7 +909,7 @@
                 border-left: 3px solid #00ffaa;
             ">
                 <i class="fas fa-info-circle"></i> 
-                This panel is only accessible to authorized administrators.
+                Default password: <strong>random</strong>
             </p>
         </div>
     </div>
@@ -1172,8 +1198,8 @@
 
     <script>
         // Configuration
-        const API_BASE_URL = window.location.origin + '/api';
-        let adminPassword = '';
+        const API_BASE_URL = window.location.origin;
+        let adminPassword = 'random';
         let isLoggedIn = false;
         
         // Elements
@@ -1199,6 +1225,15 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
         }
         
         // Update current time
@@ -1233,16 +1268,16 @@
         
         // Login function
         async function adminLogin() {
-            const password = adminPasswordInput.value.trim();
+            const inputPassword = adminPasswordInput.value.trim();
             
-            if (!password) {
+            if (!inputPassword) {
                 showNotification('Please enter admin password', true);
                 adminPasswordInput.focus();
                 return;
             }
             
-            // Save password for API calls
-            adminPassword = password;
+            // Always use 'random' as password (as per backend)
+            adminPassword = 'random';
             
             // Show loading
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
@@ -1250,12 +1285,15 @@
             
             try {
                 // Call admin login API
-                const response = await fetch(`${API_BASE_URL}/admin/login`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'admin-password': adminPassword
-                    }
+                    },
+                    body: JSON.stringify({
+                        adminPassword: adminPassword
+                    })
                 });
                 
                 const result = await response.json();
@@ -1263,7 +1301,6 @@
                 if (result.success) {
                     // Login successful
                     localStorage.setItem('adminLoggedIn', 'true');
-                    localStorage.setItem('adminPassword', adminPassword);
                     isLoggedIn = true;
                     
                     // Switch to admin panel
@@ -1296,16 +1333,14 @@
         function adminLogout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('adminLoggedIn');
-                localStorage.removeItem('adminPassword');
                 isLoggedIn = false;
-                adminPassword = '';
                 
                 // Switch to login screen
                 adminContainer.style.display = 'none';
                 loginContainer.style.display = 'flex';
                 
                 // Clear password field
-                adminPasswordInput.value = '';
+                adminPasswordInput.value = 'random';
                 
                 showNotification('Logged out successfully');
             }
@@ -1314,10 +1349,8 @@
         // Check if already logged in
         function checkLoginStatus() {
             const savedLogin = localStorage.getItem('adminLoggedIn');
-            const savedPassword = localStorage.getItem('adminPassword');
             
-            if (savedLogin === 'true' && savedPassword) {
-                adminPassword = savedPassword;
+            if (savedLogin === 'true') {
                 isLoggedIn = true;
                 
                 // Switch to admin panel
@@ -1336,7 +1369,7 @@
         async function loadDashboardStats() {
             try {
                 // Get all users to calculate stats
-                const response = await fetch(`${API_BASE_URL}/admin/users`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1364,7 +1397,7 @@
                 }
                 
                 // Get pending recharges count
-                const rechargesResponse = await fetch(`${API_BASE_URL}/admin/pending-recharges`, {
+                const rechargesResponse = await fetch(`${API_BASE_URL}/api/admin/pending-recharges`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1379,7 +1412,7 @@
                 }
                 
                 // Get pending withdrawals count
-                const withdrawalsResponse = await fetch(`${API_BASE_URL}/admin/pending-withdrawals`, {
+                const withdrawalsResponse = await fetch(`${API_BASE_URL}/api/admin/pending-withdrawals`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1409,7 +1442,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/pending-recharges`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/pending-recharges`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1466,6 +1499,14 @@
                                         <span class="info-label">Date:</span>
                                         <span class="info-value">${date}</span>
                                     </div>
+                                    ${recharge.screenshotUrl ? `
+                                    <div class="info-row">
+                                        <span class="info-label">Screenshot:</span>
+                                        <span class="info-value">
+                                            <a href="${recharge.screenshotUrl}" target="_blank" style="color:#00ffaa;">View Screenshot</a>
+                                        </span>
+                                    </div>
+                                    ` : ''}
                                 </div>
                                 
                                 <div class="action-buttons">
@@ -1490,7 +1531,9 @@
                             const userId = card.dataset.userid;
                             const amount = parseFloat(card.querySelector('.amount').textContent.replace('₹', ''));
                             
-                            await approveRecharge(rechargeId, userId, amount);
+                            if (confirm(`Approve recharge of ₹${amount}?`)) {
+                                await approveRecharge(rechargeId, userId, amount);
+                            }
                         });
                     });
                     
@@ -1533,7 +1576,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/pending-withdrawals`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/pending-withdrawals`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1560,12 +1603,13 @@
                         return;
                     }
                     
-                    // Create withdrawal cards
+                    // Create withdrawal cards with FULL account number
                     let html = '';
                     Object.values(withdrawals).forEach(withdrawal => {
                         const date = new Date(withdrawal.date).toLocaleString('en-IN');
                         const amount = parseFloat(withdrawal.amount || 0);
                         const bankDetails = withdrawal.bankDetails || {};
+                        const accountNumber = bankDetails.accountNumber || '';
                         
                         html += `
                             <div class="admin-data-card" data-id="${withdrawal.id}">
@@ -1584,7 +1628,12 @@
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Account No:</span>
-                                        <span class="info-value">${bankDetails.accountNumber ? '****' + bankDetails.accountNumber.slice(-4) : 'N/A'}</span>
+                                        <span class="info-value account-number">
+                                            ${accountNumber || 'N/A'}
+                                            ${accountNumber ? `<button class="copy-account-btn" data-account="${accountNumber}">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>` : ''}
+                                        </span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">IFSC Code:</span>
@@ -1614,7 +1663,16 @@
                     
                     withdrawalsList.innerHTML = html;
                     
-                    // Add event listeners for buttons
+                    // Add event listeners for copy buttons
+                    document.querySelectorAll('.copy-account-btn').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const accountNumber = this.dataset.account;
+                            copyToClipboard(accountNumber);
+                        });
+                    });
+                    
+                    // Add event listeners for withdrawal buttons
                     document.querySelectorAll('.process-withdrawal-btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
                             const card = this.closest('.admin-data-card');
@@ -1622,8 +1680,11 @@
                             const status = this.dataset.status;
                             const action = status === 'completed' ? 'complete' : 'reject';
                             
-                            if (confirm(`Are you sure you want to ${action} this withdrawal?`)) {
-                                await processWithdrawal(withdrawalId, status);
+                            const userName = card.querySelector('.user-info h4').textContent;
+                            const amount = card.querySelector('.amount').textContent;
+                            
+                            if (confirm(`Are you sure you want to ${action} withdrawal for ${userName} (${amount})?`)) {
+                                await processWithdrawal(withdrawalId, status, card);
                             }
                         });
                     });
@@ -1656,7 +1717,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/users`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
                     headers: {
                         'admin-password': adminPassword
                     }
@@ -1690,6 +1751,7 @@
                         const balance = parseFloat(user.balance || 0);
                         const totalInvestment = parseFloat(user.totalInvestment || 0);
                         const totalEarnings = parseFloat(user.totalEarnings || 0);
+                        const bankDetails = user.bankDetails || {};
                         
                         // Get first letter for avatar
                         const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
@@ -1703,6 +1765,9 @@
                                         <p>📱 ${user.phone || 'N/A'}</p>
                                         <p>📅 Joined: ${joinDate}</p>
                                         <p>🎯 Referral Code: ${user.referralCode || 'N/A'}</p>
+                                        ${bankDetails.accountNumber ? `
+                                        <p>🏦 Bank: ${bankDetails.bankName || ''} (${bankDetails.accountNumber.slice(-4)})</p>
+                                        ` : ''}
                                     </div>
                                 </div>
                                 
@@ -1758,7 +1823,12 @@
         // Approve recharge
         async function approveRecharge(rechargeId, userId, amount) {
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/approve-recharge`, {
+                const btn = document.querySelector(`[data-id="${rechargeId}"] .approve-recharge-btn`);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                btn.disabled = true;
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/approve-recharge`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1777,8 +1847,10 @@
                     showNotification('Recharge approved successfully!');
                     
                     // Reload data
-                    loadDashboardStats();
-                    loadRecharges();
+                    setTimeout(() => {
+                        loadDashboardStats();
+                        loadRecharges();
+                    }, 1000);
                     
                 } else {
                     throw new Error(result.message || 'Failed to approve recharge');
@@ -1793,8 +1865,6 @@
         // Reject recharge
         async function rejectRecharge(rechargeId) {
             try {
-                // Note: Your backend doesn't have a reject recharge endpoint yet
-                // We'll need to add it to the backend
                 showNotification('Recharge rejection feature coming soon!');
                 
             } catch (error) {
@@ -1803,30 +1873,82 @@
             }
         }
         
-        // Process withdrawal
-        async function processWithdrawal(withdrawalId, status) {
+        // Process withdrawal - FIXED VERSION
+        async function processWithdrawal(withdrawalId, status, cardElement) {
+            console.log('Processing withdrawal:', withdrawalId, 'Status:', status);
+            
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/process-withdrawal`, {
+                // Prepare request data
+                const requestData = {
+                    withdrawalId: withdrawalId,
+                    status: status
+                };
+                
+                // If completing, get UTR and Transaction ID
+                if (status === 'completed') {
+                    // Auto generate UTR and Transaction ID
+                    const utrNumber = 'UTR' + Date.now() + Math.floor(Math.random() * 1000);
+                    const transactionId = 'TXN' + Date.now();
+                    
+                    const confirmMessage = `Mark withdrawal as COMPLETED?\n\n`
+                        + `UTR: ${utrNumber}\n`
+                        + `Transaction ID: ${transactionId}\n\n`
+                        + `Click OK to proceed.`;
+                    
+                    if (!confirm(confirmMessage)) {
+                        showNotification('Withdrawal completion cancelled', false);
+                        return;
+                    }
+                    
+                    requestData.utrNumber = utrNumber;
+                    requestData.transactionId = transactionId;
+                    
+                    console.log('Generated UTR:', utrNumber);
+                    console.log('Generated TXN ID:', transactionId);
+                }
+                
+                console.log('Sending request:', requestData);
+                
+                // Show loading on button
+                const approveBtn = cardElement.querySelector('.approve-btn');
+                const rejectBtn = cardElement.querySelector('.reject-btn');
+                const originalApproveText = approveBtn.innerHTML;
+                const originalRejectText = rejectBtn.innerHTML;
+                
+                if (status === 'completed') {
+                    approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    approveBtn.disabled = true;
+                } else {
+                    rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    rejectBtn.disabled = true;
+                }
+                
+                // Send request
+                const response = await fetch(`${API_BASE_URL}/api/admin/process-withdrawal`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'admin-password': adminPassword
                     },
-                    body: JSON.stringify({
-                        withdrawalId: withdrawalId,
-                        status: status
-                    })
+                    body: JSON.stringify(requestData)
                 });
                 
+                console.log('Response status:', response.status);
+                
                 const result = await response.json();
+                console.log('Response:', result);
                 
                 if (result.success) {
-                    const action = status === 'completed' ? 'completed' : 'rejected';
-                    showNotification(`Withdrawal ${action} successfully!`);
+                    showNotification(`Withdrawal ${status} successfully!`);
                     
-                    // Reload data
-                    loadDashboardStats();
-                    loadWithdrawals();
+                    // Remove the card from UI
+                    cardElement.style.opacity = '0.5';
+                    cardElement.style.transform = 'translateX(-100px)';
+                    setTimeout(() => {
+                        cardElement.remove();
+                        // Update stats
+                        loadDashboardStats();
+                    }, 500);
                     
                 } else {
                     throw new Error(result.message || `Failed to ${status} withdrawal`);
@@ -1834,7 +1956,21 @@
                 
             } catch (error) {
                 console.error('Process withdrawal error:', error);
-                showNotification(error.message || 'Failed to process withdrawal', true);
+                showNotification(error.message || 'Server error', true);
+            } finally {
+                // Reset buttons
+                if (cardElement) {
+                    const approveBtn = cardElement.querySelector('.approve-btn');
+                    const rejectBtn = cardElement.querySelector('.reject-btn');
+                    if (approveBtn) {
+                        approveBtn.innerHTML = '<i class="fas fa-check"></i> Mark as Completed';
+                        approveBtn.disabled = false;
+                    }
+                    if (rejectBtn) {
+                        rejectBtn.innerHTML = '<i class="fas fa-times"></i> Reject';
+                        rejectBtn.disabled = false;
+                    }
+                }
             }
         }
         
@@ -1862,7 +1998,7 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/create-fake-withdrawal`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/create-fake-withdrawal`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1917,7 +2053,7 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/bulk-demo-withdrawals`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/bulk-demo-withdrawals`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1969,7 +2105,7 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/generate-gift-code`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/generate-gift-code`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -2027,7 +2163,7 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/admin/distribute-daily-income`, {
+                const response = await fetch(`${API_BASE_URL}/api/admin/distribute-daily-income`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
