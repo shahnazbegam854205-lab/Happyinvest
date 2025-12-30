@@ -76,7 +76,7 @@ const verifyPassword = (password, storedPassword) => {
 // ==================== ADMIN MIDDLEWARE ====================
 const checkAdmin = (req, res, next) => {
     const adminPassword = req.headers['admin-password'] || req.body.adminPassword;
-    const correctPassword = process.env.ADMIN_PASSWORD || 'happy@527876';
+    const correctPassword = process.env.ADMIN_PASSWORD || 'random';
     
     if (adminPassword === correctPassword) {
         next();
