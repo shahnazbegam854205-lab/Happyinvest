@@ -1241,7 +1241,7 @@
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Account No:</span>
-                                        <span class="info-value">${bankDetails.accountNumber || 'N/A'}</span>
+                                        <span class="info-value">${bankDetails.accountNumber ? '****' + bankDetails.accountNumber.slice(-4) : 'N/A'}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">IFSC Code:</span>
