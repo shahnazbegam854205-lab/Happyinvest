@@ -14,10 +14,11 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #0a3d62 100%);
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
             width: 100%;
             overflow-x: hidden;
+            padding-bottom: 70px;
             color: #fff;
         }
         
@@ -28,9 +29,143 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 0, 100, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at 30% 20%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
             z-index: -1;
+        }
+        
+        /* Header with Referral Link */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Background pattern image */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 0;
+            border-radius: 0 0 25px 25px;
+        }
+        
+        .referral-title {
+            font-size: 16px;
+            color: #a0a0d0;
+            margin-bottom: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+        
+        .referral-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .referral-box:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 210, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
+        }
+        
+        .website-url {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 10px;
+            font-family: monospace;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            min-width: 60px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.6);
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Back Button */
+        .back-btn { 
+            font-size: 24px; 
+            color: #fff; 
+            margin-right: 15px; 
+            text-decoration: none; 
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            z-index: 2;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
         
         /* Login Container */
@@ -41,8 +176,81 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
-            max-width: 450px;
-            margin: 0 auto;
+        }
+        
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff3366, #ff9966);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+        
+        .lock-icon i {
+            font-size: 36px;
+            color: white;
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .login-subtitle {
+            color: #a0a0d0;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .password-input {
+            width: 100%;
+            max-width: 320px;
+            padding: 18px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+        
+        .password-input:focus {
+            border-color: #00ffaa;
+            box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
+        }
+        
+        .login-btn {
+            width: 100%;
+            max-width: 320px;
+            background: linear-gradient(135deg, #00ffaa, #00cc88);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.4);
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 255, 170, 0.6);
+        }
+        
+        .login-btn:active {
+            transform: translateY(-1px);
         }
         
         /* Admin Panel Container */
@@ -50,36 +258,40 @@
             display: none;
             flex-direction: column;
             min-height: 100vh;
-            max-width: 450px;
-            margin: 0 auto;
-            padding-bottom: 70px;
         }
         
-        /* Header */
-        .header {
-            background: rgba(0, 0, 0, 0.4);
+        /* Admin Header */
+        .admin-header {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            padding: 25px 20px 20px;
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             position: relative;
-            z-index: 10;
         }
         
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 0;
+            border-radius: 0 0 25px 25px;
         }
         
         .admin-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            flex: 1;
-            min-width: 200px;
+            position: relative;
+            z-index: 1;
         }
         
         .admin-avatar {
@@ -123,6 +335,10 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 4px 15px rgba(255, 51, 102, 0.2);
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            z-index: 2;
         }
         
         .logout-btn:hover {
@@ -130,115 +346,101 @@
             transform: translateY(-2px);
         }
         
-        /* Stats Cards */
-        .stats-container {
-            padding: 20px;
+        /* Admin Stats Cards */
+        .admin-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 10px;
+            padding: 15px;
         }
         
-        .stat-card {
-            background: rgba(255, 255, 255, 0.08);
+        .admin-stat-card {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            min-height: 120px;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-height: 110px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+        .admin-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.2);
+            border-color: rgba(0, 210, 255, 0.3);
         }
         
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-        }
-        
-        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #00ffaa, #00cc88); }
-        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #00d2ff, #3a7bd5); }
-        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #ff9966, #ff3366); }
-        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #9d50bb, #6e48aa); }
-        
-        .stat-icon {
-            font-size: 24px;
-            margin-bottom: 15px;
+        .admin-stat-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
             opacity: 0.8;
         }
         
-        .stat-value {
-            font-size: 24px;
+        .admin-stat-value {
+            font-size: 20px;
+            color: #fff;
             font-weight: 700;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
         
-        .stat-label {
-            font-size: 12px;
+        .admin-stat-label {
+            font-size: 11px;
             color: #a0a0d0;
-            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
+            font-weight: 500;
         }
         
         /* Navigation Tabs */
-        .nav-tabs {
+        .admin-nav-tabs {
             display: flex;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             padding: 5px;
-            margin: 0 20px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin: 15px;
+            margin-top: 20px;
         }
         
-        .nav-tab {
+        .admin-nav-tab {
             flex: 1;
-            padding: 12px 5px;
             text-align: center;
-            font-size: 14px;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            border-radius: 10px;
             transition: all 0.3s ease;
             color: #a0a0d0;
         }
         
-        .nav-tab.active {
-            background: rgba(0, 210, 255, 0.2);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+        .admin-nav-tab.active {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(0, 210, 255, 0.4);
         }
         
-        .nav-tab i {
-            margin-right: 8px;
-            font-size: 16px;
+        .admin-nav-tab:not(.active):hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
         }
         
         /* Content Sections */
-        .content-section {
+        .admin-content-section {
             display: none;
-            padding: 0 20px 20px;
-            animation: fadeIn 0.5s ease-out;
+            padding: 0 15px 15px;
         }
         
-        .content-section.active {
+        .admin-content-section.active {
             display: block;
+            animation: fadeIn 0.5s ease-out;
         }
         
         @keyframes fadeIn {
@@ -246,48 +448,44 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .section-title {
+        .admin-section-title {
             font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
             color: #fff;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
             text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
-            padding-left: 10px;
-            border-left: 4px solid #00ffaa;
         }
         
-        /* Cards Container */
-        .cards-container {
-            display: grid;
-            gap: 15px;
+        .admin-section-title i {
+            margin-right: 10px;
+            color: #00ffaa;
         }
         
-        /* Card Styles */
-        .data-card {
+        /* Data Cards */
+        .admin-data-card {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
         
-        .data-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.1);
+        .admin-data-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 12px 30px rgba(0, 210, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 210, 255, 0.3);
         }
         
-        /* Recharge Card */
-        .recharge-card {
-            border-left: 5px solid #00ffaa;
-        }
-        
-        .recharge-card .card-header {
+        .card-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 15px;
         }
         
@@ -304,7 +502,7 @@
         }
         
         .amount {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #00ffaa;
             text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
@@ -378,11 +576,6 @@
             background: rgba(255, 51, 102, 0.3);
         }
         
-        /* Withdrawal Card */
-        .withdrawal-card {
-            border-left: 5px solid #00d2ff;
-        }
-        
         /* User Card */
         .user-card {
             border-left: 5px solid #ff9966;
@@ -392,33 +585,19 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 15px;
         }
         
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, #ff9966, #ff3366);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
-        }
-        
-        .user-details h4 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-        
-        .user-details p {
-            font-size: 12px;
-            color: #a0a0d0;
-            margin-bottom: 3px;
         }
         
         .user-stats {
@@ -435,23 +614,107 @@
         }
         
         .stat-item .value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #00ffaa;
             margin-bottom: 3px;
         }
         
         .stat-item .label {
-            font-size: 11px;
+            font-size: 10px;
             color: #a0a0d0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
+        /* Trust Actions */
+        .trust-actions {
+            padding: 15px;
+        }
+        
+        .trust-action-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .trust-action-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .trust-action-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .trust-action-text h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .trust-action-text p {
+            font-size: 12px;
+            color: #a0a0d0;
+        }
+        
+        .trust-action-inputs {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .trust-input {
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .trust-input:focus {
+            border-color: #00ffaa;
+            box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
+        }
+        
+        .trust-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .trust-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .trust-checkbox label {
+            font-size: 14px;
+            color: #a0a0d0;
+        }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
+            padding: 40px 20px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             border: 2px dashed rgba(255, 255, 255, 0.1);
@@ -518,17 +781,34 @@
         
         /* Responsive */
         @media (max-width: 360px) {
-            .stats-container {
-                grid-template-columns: 1fr;
+            .admin-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding: 12px;
             }
             
-            .nav-tabs {
-                flex-wrap: wrap;
+            .admin-stat-card {
+                padding: 12px;
+                min-height: 100px;
+                border-radius: 10px;
             }
             
-            .nav-tab {
-                min-width: 50%;
-                padding: 10px 5px;
+            .admin-stat-value {
+                font-size: 18px;
+            }
+            
+            .admin-stat-label {
+                font-size: 10px;
+            }
+            
+            .admin-nav-tabs {
+                padding: 4px;
+                margin: 12px;
+            }
+            
+            .admin-nav-tab {
+                padding: 6px 4px;
+                font-size: 11px;
             }
             
             .user-stats {
@@ -538,102 +818,56 @@
         
         @media (min-width: 768px) {
             body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
             }
             
-            .admin-container {
-                max-width: 450px;
-                width: 100%;
-                border-radius: 20px;
-                overflow: hidden;
-                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+            .header, .admin-header {
+                border-radius: 0 0 25px 25px;
+            }
+            
+            .header::before, .admin-header::before {
+                border-radius: 0 0 25px 25px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Glowing Background -->
-    <div class="glow-bg" id="glowBg"></div>
+    <div class="glow-bg"></div>
     
     <!-- Login Container -->
     <div class="login-container" id="loginContainer">
         <div style="text-align: center; max-width: 320px;">
             <!-- Lock Icon -->
-            <div style="margin-bottom: 30px;">
-                <div style="
-                    width: 80px;
-                    height: 80px;
-                    background: linear-gradient(135deg, #ff3366, #ff9966);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 20px;
-                    box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
-                ">
-                    <i class="fas fa-lock" style="font-size: 36px; color: white;"></i>
-                </div>
-                <h1 style="font-size: 28px; font-weight: 700; color: white; margin-bottom: 10px;">
-                    Admin Panel
-                </h1>
-                <p style="color: #a0a0d0; margin-bottom: 30px;">
-                    Happy Invest Management System
-                </p>
+            <div class="lock-icon">
+                <i class="fas fa-lock"></i>
             </div>
+            
+            <h1 class="login-title">Admin Panel</h1>
+            <p class="login-subtitle">Happy Invest Management System</p>
             
             <!-- Password Input -->
-            <div style="margin-bottom: 25px;">
-                <input 
-                    type="password" 
-                    id="adminPassword"
-                    placeholder="Enter admin password"
-                    style="
-                        width: 100%;
-                        padding: 18px 20px;
-                        border: 2px solid rgba(255, 255, 255, 0.1);
-                        border-radius: 15px;
-                        font-size: 16px;
-                        background: rgba(255, 255, 255, 0.05);
-                        color: #fff;
-                        outline: none;
-                        transition: all 0.3s ease;
-                    "
-                    onfocus="this.style.borderColor='#00ffaa'; this.style.boxShadow='0 0 0 2px rgba(0, 255, 170, 0.2)';"
-                    onblur="this.style.borderColor='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none';"
-                >
-                <div id="loginError" style="
-                    color: #ff3366;
-                    font-size: 12px;
-                    margin-top: 8px;
-                    padding-left: 10px;
-                    display: none;
-                "></div>
-            </div>
+            <input 
+                type="password" 
+                id="adminPassword"
+                placeholder="Enter admin password"
+                class="password-input"
+            >
+            <div id="loginError" style="
+                color: #ff3366;
+                font-size: 12px;
+                margin-top: -15px;
+                margin-bottom: 15px;
+                padding-left: 10px;
+                display: none;
+            "></div>
             
             <!-- Login Button -->
-            <button 
-                id="loginBtn"
-                style="
-                    width: 100%;
-                    background: linear-gradient(135deg, #00ffaa, #00cc88);
-                    color: white;
-                    border: none;
-                    padding: 18px;
-                    font-size: 18px;
-                    font-weight: 700;
-                    border-radius: 15px;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 8px 25px rgba(0, 255, 170, 0.4);
-                    margin-bottom: 20px;
-                "
-                onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 30px rgba(0, 255, 170, 0.6)';"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0, 255, 170, 0.4)';"
-            >
+            <button id="loginBtn" class="login-btn">
                 <i class="fas fa-sign-in-alt"></i> Login to Admin Panel
             </button>
             
@@ -657,66 +891,75 @@
     <!-- Admin Panel Container -->
     <div class="admin-container" id="adminContainer">
         <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <div class="admin-info">
-                    <div class="admin-avatar">A</div>
-                    <div class="admin-text">
-                        <h1>Admin Panel</h1>
-                        <p id="currentTime">Loading...</p>
-                    </div>
+        <div class="admin-header">
+            <a href="/" class="back-btn">←</a>
+            
+            <div class="admin-info">
+                <div class="admin-avatar">A</div>
+                <div class="admin-text">
+                    <h1>Admin Panel</h1>
+                    <p id="currentTime">Loading...</p>
                 </div>
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
             </div>
+            
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
         
-        <!-- Stats Cards -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
+        <!-- Admin Stats Cards -->
+        <div class="admin-stats">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">👥</div>
+                <div class="admin-stat-value" id="totalUsers">0</div>
+                <div class="admin-stat-label">Total Users</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-value" id="totalBalance">₹0</div>
-                <div class="stat-label">Total Balance</div>
+            
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">💰</div>
+                <div class="admin-stat-value" id="totalBalance">₹0</div>
+                <div class="admin-stat-label">Total Balance</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">📥</div>
-                <div class="stat-value" id="pendingRecharges">0</div>
-                <div class="stat-label">Pending Recharges</div>
+            
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📥</div>
+                <div class="admin-stat-value" id="pendingRecharges">0</div>
+                <div class="admin-stat-label">Pending Recharges</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">📤</div>
-                <div class="stat-value" id="pendingWithdrawals">0</div>
-                <div class="stat-label">Pending Withdrawals</div>
+            
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📤</div>
+                <div class="admin-stat-value" id="pendingWithdrawals">0</div>
+                <div class="admin-stat-label">Pending Withdrawals</div>
             </div>
         </div>
         
         <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <div class="nav-tab active" data-tab="recharges">
-                <i class="fas fa-download"></i> Recharges
+        <div class="admin-nav-tabs">
+            <div class="admin-nav-tab active" data-tab="recharges">
+                Recharges
             </div>
-            <div class="nav-tab" data-tab="withdrawals">
-                <i class="fas fa-upload"></i> Withdrawals
+            <div class="admin-nav-tab" data-tab="withdrawals">
+                Withdrawals
             </div>
-            <div class="nav-tab" data-tab="users">
-                <i class="fas fa-users"></i> Users
+            <div class="admin-nav-tab" data-tab="users">
+                Users
             </div>
-            <div class="nav-tab" data-tab="actions">
-                <i class="fas fa-cogs"></i> Actions
+            <div class="admin-nav-tab" data-tab="trust">
+                Trust System
+            </div>
+            <div class="admin-nav-tab" data-tab="actions">
+                Actions
             </div>
         </div>
         
         <!-- Content Sections -->
-        <div class="content-section active" id="rechargesSection">
-            <h3 class="section-title">Pending Recharges</h3>
-            <div class="cards-container" id="rechargesList">
-                <!-- Recharge cards will be loaded here -->
+        <div class="admin-content-section active" id="rechargesSection">
+            <h3 class="admin-section-title">
+                <i class="fas fa-download"></i>
+                Pending Recharges
+            </h3>
+            <div id="rechargesList">
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin"></i>
                     <p>Loading recharge requests...</p>
@@ -724,10 +967,12 @@
             </div>
         </div>
         
-        <div class="content-section" id="withdrawalsSection">
-            <h3 class="section-title">Pending Withdrawals</h3>
-            <div class="cards-container" id="withdrawalsList">
-                <!-- Withdrawal cards will be loaded here -->
+        <div class="admin-content-section" id="withdrawalsSection">
+            <h3 class="admin-section-title">
+                <i class="fas fa-upload"></i>
+                Pending Withdrawals
+            </h3>
+            <div id="withdrawalsList">
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin"></i>
                     <p>Loading withdrawal requests...</p>
@@ -735,10 +980,12 @@
             </div>
         </div>
         
-        <div class="content-section" id="usersSection">
-            <h3 class="section-title">All Users</h3>
-            <div class="cards-container" id="usersList">
-                <!-- User cards will be loaded here -->
+        <div class="admin-content-section" id="usersSection">
+            <h3 class="admin-section-title">
+                <i class="fas fa-users"></i>
+                All Users
+            </h3>
+            <div id="usersList">
                 <div class="loading">
                     <i class="fas fa-spinner fa-spin"></i>
                     <p>Loading users...</p>
@@ -746,102 +993,175 @@
             </div>
         </div>
         
-        <div class="content-section" id="actionsSection">
-            <h3 class="section-title">Admin Actions</h3>
-            <div class="cards-container">
-                <!-- Daily Income Distribution -->
-                <div class="data-card">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <div style="
-                            width: 50px;
-                            height: 50px;
-                            background: linear-gradient(135deg, #00ffaa, #00cc88);
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 22px;
-                        ">
-                            💰
-                        </div>
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px;">
-                                Daily Income Distribution
-                            </h4>
-                            <p style="font-size: 12px; color: #a0a0d0;">
-                                Manually distribute daily income to all active investments
-                            </p>
+        <div class="admin-content-section" id="trustSection">
+            <h3 class="admin-section-title">
+                <i class="fas fa-shield-alt"></i>
+                Trust System
+            </h3>
+            
+            <div class="trust-actions">
+                <!-- Create Fake Withdrawal -->
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">💸</div>
+                        <div class="trust-action-text">
+                            <h4>Create Fake Withdrawal</h4>
+                            <p>Create a fake withdrawal for trust building</p>
                         </div>
                     </div>
-                    <button class="action-btn approve-btn" id="distributeIncomeBtn">
-                        <i class="fas fa-bolt"></i> Distribute Now
-                    </button>
+                    
+                    <div class="trust-action-inputs">
+                        <input type="text" 
+                               id="fakeUserName" 
+                               class="trust-input" 
+                               placeholder="User Name (e.g., Amit Sharma)">
+                        <input type="number" 
+                               id="fakeAmount" 
+                               class="trust-input" 
+                               placeholder="Amount (e.g., 5000)">
+                        <input type="text" 
+                               id="fakeBankName" 
+                               class="trust-input" 
+                               placeholder="Bank Name (e.g., HDFC Bank)">
+                        <textarea id="fakeNote" 
+                                  class="trust-input" 
+                                  placeholder="Note (Optional)"
+                                  rows="2"></textarea>
+                    </div>
+                    
+                    <div class="trust-checkbox">
+                        <input type="checkbox" id="showAsReal">
+                        <label for="showAsReal">Show as real user withdrawal</label>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="createFakeWithdrawalBtn">
+                            <i class="fas fa-plus"></i> Create Withdrawal
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bulk Create Demo Withdrawals -->
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">📊</div>
+                        <div class="trust-action-text">
+                            <h4>Bulk Demo Withdrawals</h4>
+                            <p>Create multiple demo withdrawals automatically</p>
+                        </div>
+                    </div>
+                    
+                    <div class="trust-action-inputs">
+                        <input type="number" 
+                               id="bulkCount" 
+                               class="trust-input" 
+                               value="20"
+                               placeholder="Number of withdrawals to create">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="bulkDemoWithdrawalsBtn">
+                            <i class="fas fa-bolt"></i> Create Bulk
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Generate Gift Code -->
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">🎁</div>
+                        <div class="trust-action-text">
+                            <h4>Generate Gift Code</h4>
+                            <p>Create gift codes for users</p>
+                        </div>
+                    </div>
+                    
+                    <div class="trust-action-inputs">
+                        <input type="number" 
+                               id="giftAmount" 
+                               class="trust-input" 
+                               placeholder="Amount (e.g., 500)">
+                        <input type="number" 
+                               id="giftExpiryDays" 
+                               class="trust-input" 
+                               value="30"
+                               placeholder="Expiry in days">
+                        <input type="number" 
+                               id="giftMaxUses" 
+                               class="trust-input" 
+                               value="1"
+                               placeholder="Max uses">
+                        <input type="text" 
+                               id="giftNote" 
+                               class="trust-input" 
+                               placeholder="Note (Optional)">
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="generateGiftCodeBtn">
+                            <i class="fas fa-gift"></i> Generate Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-content-section" id="actionsSection">
+            <h3 class="admin-section-title">
+                <i class="fas fa-cogs"></i>
+                Admin Actions
+            </h3>
+            
+            <div class="trust-actions">
+                <!-- Daily Income Distribution -->
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">💰</div>
+                        <div class="trust-action-text">
+                            <h4>Daily Income Distribution</h4>
+                            <p>Manually distribute daily income to all active investments</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="distributeIncomeBtn">
+                            <i class="fas fa-bolt"></i> Distribute Now
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- System Stats -->
-                <div class="data-card">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <div style="
-                            width: 50px;
-                            height: 50px;
-                            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 22px;
-                        ">
-                            📊
-                        </div>
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px;">
-                                System Statistics
-                            </h4>
-                            <p style="font-size: 12px; color: #a0a0d0;">
-                                View detailed system statistics and reports
-                            </p>
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">📊</div>
+                        <div class="trust-action-text">
+                            <h4>System Statistics</h4>
+                            <p>View detailed system statistics and reports</p>
                         </div>
                     </div>
-                    <button class="action-btn" id="viewStatsBtn" style="
-                        background: rgba(0, 210, 255, 0.2);
-                        color: #00d2ff;
-                        border: 1px solid rgba(0, 210, 255, 0.3);
-                    ">
-                        <i class="fas fa-chart-bar"></i> View Stats
-                    </button>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="viewStatsBtn">
+                            <i class="fas fa-chart-bar"></i> View Stats
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Refresh Data -->
-                <div class="data-card">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                        <div style="
-                            width: 50px;
-                            height: 50px;
-                            background: linear-gradient(135deg, #ff9966, #ff3366);
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 22px;
-                        ">
-                            🔄
-                        </div>
-                        <div>
-                            <h4 style="font-size: 16px; font-weight: 700; color: white; margin-bottom: 5px;">
-                                Refresh All Data
-                            </h4>
-                            <p style="font-size: 12px; color: #a0a0d0;">
-                                Reload all data from database
-                            </p>
+                <div class="trust-action-card">
+                    <div class="trust-action-header">
+                        <div class="trust-action-icon">🔄</div>
+                        <div class="trust-action-text">
+                            <h4>Refresh All Data</h4>
+                            <p>Reload all data from database</p>
                         </div>
                     </div>
-                    <button class="action-btn" id="refreshDataBtn" style="
-                        background: rgba(255, 153, 102, 0.2);
-                        color: #ff9966;
-                        border: 1px solid rgba(255, 153, 102, 0.3);
-                    ">
-                        <i class="fas fa-sync-alt"></i> Refresh Data
-                    </button>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn approve-btn" id="refreshDataBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -901,13 +1221,13 @@
         
         // Interactive background effect
         document.addEventListener('mousemove', function(e) {
-            const glowBg = document.getElementById('glowBg');
+            const glowBg = document.querySelector('.glow-bg');
             const x = e.clientX / window.innerWidth;
             const y = e.clientY / window.innerHeight;
             
             glowBg.style.background = `
-                radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255, 0, 100, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(0, 150, 255, 0.1) 0%, transparent 50%)
+                radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
             `;
         });
         
@@ -1043,6 +1363,36 @@
                     document.getElementById('totalBalance').textContent = `₹${totalBalance.toFixed(2)}`;
                 }
                 
+                // Get pending recharges count
+                const rechargesResponse = await fetch(`${API_BASE_URL}/admin/pending-recharges`, {
+                    headers: {
+                        'admin-password': adminPassword
+                    }
+                });
+                
+                if (rechargesResponse.ok) {
+                    const rechargesResult = await rechargesResponse.json();
+                    if (rechargesResult.success) {
+                        const recharges = rechargesResult.recharges || {};
+                        document.getElementById('pendingRecharges').textContent = Object.keys(recharges).length;
+                    }
+                }
+                
+                // Get pending withdrawals count
+                const withdrawalsResponse = await fetch(`${API_BASE_URL}/admin/pending-withdrawals`, {
+                    headers: {
+                        'admin-password': adminPassword
+                    }
+                });
+                
+                if (withdrawalsResponse.ok) {
+                    const withdrawalsResult = await withdrawalsResponse.json();
+                    if (withdrawalsResult.success) {
+                        const withdrawals = withdrawalsResult.withdrawals || {};
+                        document.getElementById('pendingWithdrawals').textContent = Object.keys(withdrawals).length;
+                    }
+                }
+                
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
@@ -1075,9 +1425,6 @@
                     const recharges = result.recharges || {};
                     const rechargeCount = Object.keys(recharges).length;
                     
-                    // Update pending count
-                    document.getElementById('pendingRecharges').textContent = rechargeCount;
-                    
                     if (rechargeCount === 0) {
                         rechargesList.innerHTML = `
                             <div class="empty-state">
@@ -1097,7 +1444,7 @@
                         const amount = parseFloat(recharge.amount || 0);
                         
                         html += `
-                            <div class="data-card recharge-card" data-id="${recharge.id}" data-userid="${recharge.userId}">
+                            <div class="admin-data-card" data-id="${recharge.id}" data-userid="${recharge.userId}">
                                 <div class="card-header">
                                     <div class="user-info">
                                         <h4>${recharge.userName || 'User'}</h4>
@@ -1138,7 +1485,7 @@
                     // Add event listeners for buttons
                     document.querySelectorAll('.approve-recharge-btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
-                            const card = this.closest('.data-card');
+                            const card = this.closest('.admin-data-card');
                             const rechargeId = card.dataset.id;
                             const userId = card.dataset.userid;
                             const amount = parseFloat(card.querySelector('.amount').textContent.replace('₹', ''));
@@ -1149,7 +1496,7 @@
                     
                     document.querySelectorAll('.reject-recharge-btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
-                            const card = this.closest('.data-card');
+                            const card = this.closest('.admin-data-card');
                             const rechargeId = card.dataset.id;
                             
                             if (confirm('Are you sure you want to reject this recharge?')) {
@@ -1200,12 +1547,8 @@
                 
                 if (result.success) {
                     const withdrawals = result.withdrawals || {};
-                    const withdrawalCount = Object.keys(withdrawals).length;
                     
-                    // Update pending count
-                    document.getElementById('pendingWithdrawals').textContent = withdrawalCount;
-                    
-                    if (withdrawalCount === 0) {
+                    if (Object.keys(withdrawals).length === 0) {
                         withdrawalsList.innerHTML = `
                             <div class="empty-state">
                                 <div class="empty-icon">
@@ -1225,7 +1568,7 @@
                         const bankDetails = withdrawal.bankDetails || {};
                         
                         html += `
-                            <div class="data-card withdrawal-card" data-id="${withdrawal.id}">
+                            <div class="admin-data-card" data-id="${withdrawal.id}">
                                 <div class="card-header">
                                     <div class="user-info">
                                         <h4>${withdrawal.userName || 'User'}</h4>
@@ -1237,7 +1580,7 @@
                                 <div class="transaction-info">
                                     <div class="info-row">
                                         <span class="info-label">Account Holder:</span>
-                                        <span class="info-value">${bankDetails.holderName || 'N/A'}</span>
+                                        <span class="info-value">${bankDetails.accountHolder || bankDetails.holderName || 'N/A'}</span>
                                     </div>
                                     <div class="info-row">
                                         <span class="info-label">Account No:</span>
@@ -1274,7 +1617,7 @@
                     // Add event listeners for buttons
                     document.querySelectorAll('.process-withdrawal-btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
-                            const card = this.closest('.data-card');
+                            const card = this.closest('.admin-data-card');
                             const withdrawalId = card.dataset.id;
                             const status = this.dataset.status;
                             const action = status === 'completed' ? 'complete' : 'reject';
@@ -1352,10 +1695,10 @@
                         const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
                         
                         html += `
-                            <div class="data-card user-card">
+                            <div class="admin-data-card user-card">
                                 <div class="card-header">
                                     <div class="user-avatar">${firstLetter}</div>
-                                    <div class="user-details">
+                                    <div class="user-info">
                                         <h4>${user.name || 'Unknown User'}</h4>
                                         <p>📱 ${user.phone || 'N/A'}</p>
                                         <p>📅 Joined: ${joinDate}</p>
@@ -1375,6 +1718,18 @@
                                     <div class="stat-item">
                                         <div class="value">₹${totalEarnings.toFixed(2)}</div>
                                         <div class="label">Earnings</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="value">${user.teamCount || 0}</div>
+                                        <div class="label">Team</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="value">₹${user.totalCommission || 0}</div>
+                                        <div class="label">Commission</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="value">${user.hasInvested ? '✅' : '❌'}</div>
+                                        <div class="label">Invested</div>
                                     </div>
                                 </div>
                             </div>
@@ -1439,7 +1794,7 @@
         async function rejectRecharge(rechargeId) {
             try {
                 // Note: Your backend doesn't have a reject recharge endpoint yet
-                // You might want to add one, or we can just remove the button for now
+                // We'll need to add it to the backend
                 showNotification('Recharge rejection feature coming soon!');
                 
             } catch (error) {
@@ -1480,6 +1835,183 @@
             } catch (error) {
                 console.error('Process withdrawal error:', error);
                 showNotification(error.message || 'Failed to process withdrawal', true);
+            }
+        }
+        
+        // Create fake withdrawal
+        async function createFakeWithdrawal() {
+            const userName = document.getElementById('fakeUserName').value.trim();
+            const amount = document.getElementById('fakeAmount').value.trim();
+            const bankName = document.getElementById('fakeBankName').value.trim();
+            const showAsReal = document.getElementById('showAsReal').checked;
+            const note = document.getElementById('fakeNote').value.trim();
+            
+            if (!userName || !amount || !bankName) {
+                showNotification('Please fill all required fields', true);
+                return;
+            }
+            
+            if (parseFloat(amount) < 100) {
+                showNotification('Minimum withdrawal amount is ₹100', true);
+                return;
+            }
+            
+            const btn = document.getElementById('createFakeWithdrawalBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/create-fake-withdrawal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'admin-password': adminPassword
+                    },
+                    body: JSON.stringify({
+                        userName: userName,
+                        amount: parseFloat(amount),
+                        bankName: bankName,
+                        showAsReal: showAsReal,
+                        note: note || 'Admin created withdrawal'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Fake withdrawal created successfully!');
+                    
+                    // Clear form
+                    document.getElementById('fakeUserName').value = '';
+                    document.getElementById('fakeAmount').value = '';
+                    document.getElementById('fakeBankName').value = '';
+                    document.getElementById('fakeNote').value = '';
+                    document.getElementById('showAsReal').checked = false;
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to create fake withdrawal');
+                }
+                
+            } catch (error) {
+                console.error('Create fake withdrawal error:', error);
+                showNotification(error.message || 'Failed to create fake withdrawal', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Bulk create demo withdrawals
+        async function bulkCreateDemoWithdrawals() {
+            const count = document.getElementById('bulkCount').value;
+            
+            if (!count || count < 1) {
+                showNotification('Please enter a valid count', true);
+                return;
+            }
+            
+            const btn = document.getElementById('bulkDemoWithdrawalsBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/bulk-demo-withdrawals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'admin-password': adminPassword
+                    },
+                    body: JSON.stringify({
+                        count: parseInt(count)
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`Created ${result.count || count} demo withdrawals successfully!`);
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to create demo withdrawals');
+                }
+                
+            } catch (error) {
+                console.error('Bulk demo withdrawals error:', error);
+                showNotification(error.message || 'Failed to create demo withdrawals', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Generate gift code
+        async function generateGiftCode() {
+            const amount = document.getElementById('giftAmount').value.trim();
+            const expiryDays = document.getElementById('giftExpiryDays').value.trim();
+            const maxUses = document.getElementById('giftMaxUses').value.trim();
+            const note = document.getElementById('giftNote').value.trim();
+            
+            if (!amount) {
+                showNotification('Please enter gift code amount', true);
+                return;
+            }
+            
+            if (parseFloat(amount) < 10) {
+                showNotification('Minimum gift code amount is ₹10', true);
+                return;
+            }
+            
+            const btn = document.getElementById('generateGiftCodeBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/generate-gift-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'admin-password': adminPassword
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        expiryDays: expiryDays ? parseInt(expiryDays) : 30,
+                        maxUses: maxUses ? parseInt(maxUses) : 1,
+                        note: note || 'Admin generated gift code'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const giftCode = result.giftCode;
+                    showNotification(`Gift code generated: ${giftCode}`);
+                    
+                    // Copy to clipboard
+                    navigator.clipboard.writeText(giftCode).then(() => {
+                        setTimeout(() => {
+                            showNotification(`Gift code ${giftCode} copied to clipboard!`);
+                        }, 1000);
+                    });
+                    
+                    // Clear form
+                    document.getElementById('giftAmount').value = '';
+                    document.getElementById('giftExpiryDays').value = '30';
+                    document.getElementById('giftMaxUses').value = '1';
+                    document.getElementById('giftNote').value = '';
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to generate gift code');
+                }
+                
+            } catch (error) {
+                console.error('Generate gift code error:', error);
+                showNotification(error.message || 'Failed to generate gift code', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         }
         
@@ -1543,10 +2075,10 @@
             logoutBtn.addEventListener('click', adminLogout);
             
             // Tab navigation
-            document.querySelectorAll('.nav-tab').forEach(tab => {
+            document.querySelectorAll('.admin-nav-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     // Remove active class from all tabs
-                    document.querySelectorAll('.nav-tab').forEach(t => {
+                    document.querySelectorAll('.admin-nav-tab').forEach(t => {
                         t.classList.remove('active');
                     });
                     
@@ -1554,7 +2086,7 @@
                     this.classList.add('active');
                     
                     // Hide all sections
-                    document.querySelectorAll('.content-section').forEach(section => {
+                    document.querySelectorAll('.admin-content-section').forEach(section => {
                         section.classList.remove('active');
                     });
                     
@@ -1564,12 +2096,17 @@
                 });
             });
             
+            // Trust system buttons
+            document.getElementById('createFakeWithdrawalBtn').addEventListener('click', createFakeWithdrawal);
+            document.getElementById('bulkDemoWithdrawalsBtn').addEventListener('click', bulkCreateDemoWithdrawals);
+            document.getElementById('generateGiftCodeBtn').addEventListener('click', generateGiftCode);
+            
             // Action buttons
             document.getElementById('distributeIncomeBtn').addEventListener('click', distributeDailyIncome);
             
             document.getElementById('viewStatsBtn').addEventListener('click', function() {
                 // Switch to users tab to show stats
-                document.querySelector('.nav-tab[data-tab="users"]').click();
+                document.querySelector('.admin-nav-tab[data-tab="users"]').click();
                 showNotification('Viewing user statistics');
             });
             
