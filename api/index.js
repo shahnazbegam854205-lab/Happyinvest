@@ -1,9 +1,46 @@
 const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
-const cron = require('node-cron');
+const crypto = require('crypto');
 
 const app = express();
+
+// ==================== RATE LIMITING SETUP ====================
+const requestCounts = new Map();
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.ip || 'unknown';
+    const endpoint = req.path;
+    const key = `${ip}:${endpoint}`;
+    const now = Math.floor(Date.now() / 60000); // Current minute
+    
+    // Get current minute's count
+    const minuteKey = `${key}:${now}`;
+    const currentCount = requestCounts.get(minuteKey) || 0;
+    
+    // Check if exceeded 60 requests per minute
+    if (currentCount >= 60) {
+        return res.status(429).json({
+            success: false,
+            message: 'Too many requests. Please try again in a minute.'
+        });
+    }
+    
+    // Increment count
+    requestCounts.set(minuteKey, currentCount + 1);
+    
+    // Clean up old entries (older than 5 minutes)
+    setTimeout(() => {
+        requestCounts.delete(minuteKey);
+    }, 5 * 60 * 1000);
+    
+    next();
+};
+
+// Apply rate limiting to all routes
+app.use(rateLimiter);
+
+// ==================== EXPRESS MIDDLEWARE ====================
 app.use(cors());
 app.use(express.json());
 
@@ -68,6 +105,20 @@ const generateGiftCode = () => {
     return code;
 };
 
+// ==================== SECURITY FUNCTIONS ====================
+const generateSignature = (userId, timestamp) => {
+    const secret = process.env.API_SECRET || 'happy@527876';
+    return crypto
+        .createHmac('sha256', secret)
+        .update(`${userId}:${timestamp}`)
+        .digest('hex');
+};
+
+const verifySignature = (userId, timestamp, signature) => {
+    const expectedSignature = generateSignature(userId, timestamp);
+    return signature === expectedSignature;
+};
+
 // ==================== SIMPLE PASSWORD FUNCTIONS ====================
 const verifyPassword = (password, storedPassword) => {
     return password === storedPassword;
@@ -78,30 +129,14 @@ const checkAdmin = (req, res, next) => {
     const adminPassword = req.headers['admin-password'] || req.body.adminPassword;
     const correctPassword = process.env.ADMIN_PASSWORD || 'random';
     
-    console.log('🔐 Admin auth check:', { 
-        received: adminPassword ? 'YES' : 'NO',
-        correct: correctPassword,
-        match: adminPassword === correctPassword 
-    });
-    
     if (adminPassword === correctPassword) {
         next();
     } else {
         res.status(401).json({ 
             success: false, 
-            message: 'Unauthorized: Invalid admin password' 
+            message: 'Unauthorized' 
         });
     }
-};
-
-// ==================== DAILY INCOME CRON JOB ====================
-const startDailyIncomeScheduler = () => {
-    cron.schedule('0 9 * * *', async () => {
-        console.log('🔄 Auto: Starting daily income distribution...');
-        await distributeDailyIncome();
-    });
-    
-    console.log('✅ Daily income scheduler started (9:00 AM daily)');
 };
 
 // ==================== NEW INVESTMENT PLANS ====================
@@ -556,7 +591,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. USER LOGIN (SIMPLE PASSWORD COMPARISON)
+// 2. USER LOGIN (WITH SECURE SIGNATURE)
 app.post('/api/login', async (req, res) => {
     try {
         const { phone, password } = req.body;
@@ -596,11 +631,24 @@ app.post('/api/login', async (req, res) => {
         const isValid = verifyPassword(password, userData.password);
         
         if (isValid) {
+            // Generate secure signature for future requests
+            const timestamp = Date.now();
+            const signature = generateSignature(userId, timestamp);
+            
             const userResponse = {
                 id: userId,
-                ...userData
+                ...userData,
+                signature: signature,
+                timestamp: timestamp
             };
             delete userResponse.password;
+            
+            // Save signature in database for verification
+            await db.ref(`userSessions/${userId}`).set({
+                signature: signature,
+                timestamp: timestamp,
+                createdAt: new Date().toISOString()
+            });
             
             res.json({ 
                 success: true, 
@@ -730,7 +778,7 @@ app.get('/api/plans', async (req, res) => {
     }
 });
 
-// 6. INVEST IN PLAN
+// 6. INVEST IN PLAN (UPDATED WITH SECURE TIMING)
 app.post('/api/invest', async (req, res) => {
     try {
         const { userId, planId } = req.body;
@@ -778,8 +826,8 @@ app.post('/api/invest', async (req, res) => {
         });
         
         const investmentId = generateInvestmentId();
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + plan.duration);
+        const investmentTime = Date.now();
+        const nextPayoutTime = investmentTime + (24 * 60 * 60 * 1000); // 24 hours later
         
         const investmentData = {
             id: investmentId,
@@ -789,12 +837,14 @@ app.post('/api/invest', async (req, res) => {
             amount: plan.price,
             dailyIncome: plan.dailyIncome,
             totalIncome: plan.totalIncome,
+            investmentTime: investmentTime,
+            nextPayoutTime: nextPayoutTime,
+            lastPayoutTime: null,
             startDate: new Date().toISOString(),
-            endDate: endDate.toISOString(),
+            endDate: new Date(Date.now() + plan.duration * 24 * 60 * 60 * 1000).toISOString(),
             status: 'active',
             daysRemaining: plan.duration,
             totalEarned: 0,
-            nextPayoutDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
             payoutCount: 0,
             expectedTotal: plan.totalIncome,
             isActive: true,
@@ -889,7 +939,7 @@ app.post('/api/invest', async (req, res) => {
             investmentId: investmentId,
             newBalance: newBalance,
             dailyIncome: plan.dailyIncome,
-            nextPayout: 'Tomorrow at 9:00 AM',
+            nextPayout: new Date(nextPayoutTime).toLocaleString(),
             totalDays: plan.duration,
             totalReturn: plan.totalIncome
         });
@@ -925,7 +975,7 @@ app.get('/api/user-investments/:userId', async (req, res) => {
     }
 });
 
-// 8. CREATE WITHDRAWAL REQUEST (UPDATED FOR TRUST SYSTEM)
+// 8. CREATE WITHDRAWAL REQUEST
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { userId, amount, bankDetails } = req.body;
@@ -1386,7 +1436,346 @@ app.get('/api/withdrawal-history/:userId', async (req, res) => {
     }
 });
 
-// ==================== ADMIN APIs ====================
+// ==================== NEW SECURE INCOME CHECK APIs ====================
+
+// 35. SECURE INCOME CHECK (Main New API)
+app.post('/api/secure-income-check', async (req, res) => {
+    try {
+        const { userId, clientTime, signature } = req.body;
+        const serverTime = Date.now();
+        
+        console.log(`💰 Secure income check for: ${userId}`);
+        
+        // 1. Verify signature
+        if (!verifySignature(userId, clientTime, signature)) {
+            console.log(`❌ Invalid signature for ${userId}`);
+            await db.ref(`security_logs/${userId}/${serverTime}`).set({
+                type: 'invalid_signature',
+                serverTime: serverTime,
+                clientTime: clientTime
+            });
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid request signature'
+            });
+        }
+        
+        // 2. Check time difference (max 2 minutes allowed)
+        const timeDifference = Math.abs(serverTime - clientTime);
+        if (timeDifference > 120000) { // 2 minutes
+            console.log(`⚠️ Time manipulation detected: ${userId}`);
+            
+            // Record cheating attempt
+            await db.ref(`cheating_logs/${userId}/${serverTime}`).set({
+                serverTime: serverTime,
+                clientTime: clientTime,
+                difference: timeDifference,
+                type: 'time_manipulation',
+                penaltyApplied: true
+            });
+            
+            // Add penalty - delay next payout by 1 hour
+            await db.ref(`penalties/${userId}`).set({
+                lastPenalty: serverTime,
+                nextCheckTime: serverTime + 3600000,
+                reason: 'time_manipulation'
+            });
+            
+            return res.json({
+                success: false,
+                message: 'Time manipulation detected! Next income delayed by 1 hour.',
+                realTime: new Date(serverTime).toLocaleString(),
+                yourTime: new Date(clientTime).toLocaleString(),
+                penalty: '1_hour_delay'
+            });
+        }
+        
+        // 3. Check if user is penalized
+        const penaltySnap = await db.ref(`penalties/${userId}`).once('value');
+        const penalty = penaltySnap.val();
+        
+        if (penalty && serverTime < penalty.nextCheckTime) {
+            const remainingTime = penalty.nextCheckTime - serverTime;
+            const remainingMinutes = Math.ceil(remainingTime / 60000);
+            
+            return res.json({
+                success: false,
+                message: `Please wait ${remainingMinutes} minutes before checking again.`,
+                waitTime: remainingTime,
+                reason: penalty.reason || 'penalty_applied'
+            });
+        }
+        
+        // 4. Get user investments
+        const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
+        const investments = investmentsSnap.val() || {};
+        
+        let totalIncome = 0;
+        let processedInvestments = [];
+        
+        // 5. Check each investment
+        for (const invId in investments) {
+            const investment = investments[invId];
+            
+            if (investment.status !== 'active') continue;
+            if (investment.daysRemaining <= 0) continue;
+            
+            // Check if 24 hours have passed since last payout
+            const lastPayout = investment.lastPayoutTime || investment.investmentTime;
+            const hoursPassed = (serverTime - lastPayout) / (1000 * 60 * 60);
+            
+            if (hoursPassed >= 24) {
+                const incomeToAdd = investment.dailyIncome;
+                
+                // Update investment
+                await db.ref(`investments/${userId}/${invId}`).update({
+                    lastPayoutTime: serverTime,
+                    nextPayoutTime: serverTime + (24 * 60 * 60 * 1000),
+                    daysRemaining: investment.daysRemaining - 1,
+                    totalEarned: (investment.totalEarned || 0) + incomeToAdd,
+                    payoutCount: (investment.payoutCount || 0) + 1,
+                    status: investment.daysRemaining - 1 <= 0 ? 'completed' : 'active'
+                });
+                
+                totalIncome += incomeToAdd;
+                processedInvestments.push({
+                    investmentId: invId,
+                    planName: investment.planName,
+                    amount: incomeToAdd
+                });
+                
+                // Record payout
+                await db.ref(`payouts/${userId}/${invId}/${serverTime}`).set({
+                    timestamp: serverTime,
+                    amount: incomeToAdd,
+                    investmentId: invId,
+                    planName: investment.planName
+                });
+            }
+        }
+        
+        // 6. Update user balance if income added
+        if (totalIncome > 0) {
+            const userRef = db.ref(`users/${userId}`);
+            const userSnap = await userRef.once('value');
+            const userData = userSnap.val();
+            
+            const newBalance = (userData.balance || 0) + totalIncome;
+            const newTotalEarnings = (userData.totalEarnings || 0) + totalIncome;
+            
+            await userRef.update({
+                balance: newBalance,
+                totalEarnings: newTotalEarnings,
+                lastIncomeCheck: serverTime
+            });
+            
+            // Record transaction
+            const transactionId = generateTransactionId();
+            await db.ref(`transactions/${userId}/${transactionId}`).set({
+                id: transactionId,
+                type: 'daily_income',
+                amount: totalIncome,
+                timestamp: serverTime,
+                date: new Date().toISOString(),
+                investments: processedInvestments,
+                status: 'completed',
+                note: 'Daily income from investments'
+            });
+            
+            // Update last successful check
+            await db.ref(`lastChecks/${userId}`).set({
+                lastCheck: serverTime,
+                incomeAdded: totalIncome,
+                investmentsCount: processedInvestments.length
+            });
+        }
+        
+        // 7. Get next payout times for response
+        const nextPayouts = [];
+        for (const invId in investments) {
+            const inv = investments[invId];
+            if (inv.status === 'active') {
+                const nextPayout = inv.nextPayoutTime || inv.investmentTime + (24 * 60 * 60 * 1000);
+                const hoursUntilNext = Math.max(0, (nextPayout - serverTime) / (1000 * 60 * 60));
+                
+                nextPayouts.push({
+                    investmentId: invId,
+                    planName: inv.planName,
+                    nextPayoutTime: nextPayout,
+                    hoursRemaining: Math.ceil(hoursUntilNext),
+                    isEligible: hoursUntilNext <= 0
+                });
+            }
+        }
+        
+        // 8. Prepare response
+        const response = {
+            success: true,
+            serverTime: serverTime,
+            incomeAdded: totalIncome,
+            nextCheckTime: serverTime + 3600000, // Can check again in 1 hour
+            processedCount: processedInvestments.length,
+            nextPayouts: nextPayouts,
+            message: totalIncome > 0 
+                ? `🎉 ₹${totalIncome} income added successfully!`
+                : 'No income available yet. Check back later.',
+            security: {
+                checksToday: await getChecksToday(userId),
+                lastPenalty: penalty || null
+            }
+        };
+        
+        // 9. Log this check
+        await db.ref(`incomeChecks/${userId}/${serverTime}`).set({
+            serverTime: serverTime,
+            clientTime: clientTime,
+            incomeAdded: totalIncome,
+            processedInvestments: processedInvestments.length,
+            ip: req.headers['x-forwarded-for'] || req.ip
+        });
+        
+        res.json(response);
+        
+    } catch (error) {
+        console.error('Secure income check error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error',
+            error: error.message 
+        });
+    }
+});
+
+// Helper function to get checks today
+async function getChecksToday(userId) {
+    try {
+        const today = new Date().toDateString();
+        const checksSnap = await db.ref(`incomeChecks/${userId}`)
+            .orderByKey()
+            .limitToLast(50)
+            .once('value');
+        
+        const checks = checksSnap.val() || {};
+        let todayCount = 0;
+        
+        Object.keys(checks).forEach(timestamp => {
+            const checkDate = new Date(parseInt(timestamp)).toDateString();
+            if (checkDate === today) {
+                todayCount++;
+            }
+        });
+        
+        return todayCount;
+    } catch (error) {
+        return 0;
+    }
+}
+
+// 36. GET NEXT INCOME TIME
+app.post('/api/get-next-income', async (req, res) => {
+    try {
+        const { userId, signature, clientTime } = req.body;
+        const serverTime = Date.now();
+        
+        // Verify signature
+        if (!verifySignature(userId, clientTime, signature)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid signature'
+            });
+        }
+        
+        // Get user investments
+        const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
+        const investments = investmentsSnap.val() || {};
+        
+        const result = [];
+        let earliestNextPayout = null;
+        let totalDailyIncome = 0;
+        
+        for (const invId in investments) {
+            const inv = investments[invId];
+            if (inv.status === 'active') {
+                const nextPayout = inv.nextPayoutTime || inv.investmentTime + (24 * 60 * 60 * 1000);
+                const hoursRemaining = Math.max(0, (nextPayout - serverTime) / (1000 * 60 * 60));
+                
+                result.push({
+                    planName: inv.planName,
+                    nextPayout: new Date(nextPayout).toLocaleString(),
+                    hoursRemaining: Math.ceil(hoursRemaining),
+                    dailyIncome: inv.dailyIncome,
+                    isEligible: hoursRemaining <= 0
+                });
+                
+                totalDailyIncome += inv.dailyIncome;
+                
+                // Track earliest next payout
+                if (!earliestNextPayout || nextPayout < earliestNextPayout) {
+                    earliestNextPayout = nextPayout;
+                }
+            }
+        }
+        
+        res.json({
+            success: true,
+            serverTime: serverTime,
+            investments: result,
+            totalDailyIncome: totalDailyIncome,
+            earliestNextPayout: earliestNextPayout ? new Date(earliestNextPayout).toLocaleString() : null,
+            earliestHoursRemaining: earliestNextPayout ? Math.ceil((earliestNextPayout - serverTime) / (1000 * 60 * 60)) : null
+        });
+        
+    } catch (error) {
+        console.error('Get next income error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// 37. REFRESH SIGNATURE
+app.post('/api/refresh-signature', async (req, res) => {
+    try {
+        const { userId, oldSignature, oldTimestamp } = req.body;
+        const serverTime = Date.now();
+        
+        // Verify old signature
+        if (!verifySignature(userId, oldTimestamp, oldSignature)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid old signature'
+            });
+        }
+        
+        // Generate new signature
+        const newTimestamp = serverTime;
+        const newSignature = generateSignature(userId, newTimestamp);
+        
+        // Update in database
+        await db.ref(`userSessions/${userId}`).update({
+            signature: newSignature,
+            timestamp: newTimestamp,
+            lastRefresh: new Date().toISOString()
+        });
+        
+        res.json({
+            success: true,
+            signature: newSignature,
+            timestamp: newTimestamp,
+            expiresIn: 24 * 60 * 60 * 1000 // 24 hours
+        });
+        
+    } catch (error) {
+        console.error('Refresh signature error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// ==================== ADMIN APIs (SAME AS BEFORE) ====================
 
 // 18. ADMIN LOGIN
 app.post('/api/admin/login', checkAdmin, (req, res) => {
@@ -2179,103 +2568,14 @@ app.delete('/api/admin/trust-withdrawal/:withdrawalId', checkAdmin, async (req, 
     }
 });
 
-// ==================== DAILY INCOME DISTRIBUTION FUNCTION ====================
-async function distributeDailyIncome() {
-    console.log('💰 Starting daily income distribution...');
-    
-    try {
-        const investmentsSnapshot = await db.ref('investments').once('value');
-        const allInvestments = investmentsSnapshot.val() || {};
-        
-        let totalDistributed = 0;
-        let usersPaid = 0;
-        
-        for (const userId in allInvestments) {
-            const userInvestments = allInvestments[userId];
-            
-            for (const investmentId in userInvestments) {
-                const investment = userInvestments[investmentId];
-                
-                if (investment.status === 'active' && investment.daysRemaining > 0) {
-                    
-                    const dailyIncome = investment.dailyIncome || 0;
-                    
-                    if (dailyIncome > 0) {
-                        const userRef = db.ref(`users/${userId}`);
-                        const userSnapshot = await userRef.once('value');
-                        const userData = userSnapshot.val();
-                        
-                        const newBalance = (userData.balance || 0) + dailyIncome;
-                        const newTotalEarnings = (userData.totalEarnings || 0) + dailyIncome;
-                        
-                        await userRef.update({
-                            balance: newBalance,
-                            totalEarnings: newTotalEarnings,
-                            lastIncomeDate: new Date().toISOString()
-                        });
-                        
-                        const newTotalEarned = (investment.totalEarned || 0) + dailyIncome;
-                        const newDaysRemaining = investment.daysRemaining - 1;
-                        
-                        let newStatus = 'active';
-                        if (newDaysRemaining <= 0) {
-                            newStatus = 'completed';
-                        }
-                        
-                        await db.ref(`investments/${userId}/${investmentId}`).update({
-                            totalEarned: newTotalEarned,
-                            daysRemaining: newDaysRemaining,
-                            status: newStatus,
-                            lastPayout: new Date().toISOString(),
-                            nextPayoutDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                            payoutCount: (investment.payoutCount || 0) + 1
-                        });
-                        
-                        const transactionId = generateTransactionId();
-                        await db.ref(`transactions/${userId}/${transactionId}`).set({
-                            id: transactionId,
-                            type: 'daily_income',
-                            amount: dailyIncome,
-                            investmentId: investmentId,
-                            planName: investment.planName,
-                            date: new Date().toISOString(),
-                            status: 'completed',
-                            note: `Daily income from ${investment.planName}`
-                        });
-                        
-                        totalDistributed += dailyIncome;
-                        usersPaid++;
-                    }
-                }
-            }
-        }
-        
-        await db.ref('dailyIncomeLogs').push({
-            date: new Date().toISOString(),
-            totalDistributed: totalDistributed,
-            usersPaid: usersPaid,
-            timestamp: Date.now(),
-            type: 'auto_distribution'
-        });
-        
-        console.log(`✅ Daily income complete: ₹${totalDistributed} distributed to ${usersPaid} users`);
-        return { totalDistributed, usersPaid };
-        
-    } catch (error) {
-        console.error('❌ Daily income distribution error:', error);
-        throw error;
-    }
-}
-
-// ==================== HEALTH CHECK ====================
+// 38. HEALTH CHECK
 app.get('/api/health', (req, res) => {
     res.json({ 
         success: true, 
         message: 'API is running',
         timestamp: new Date().toISOString(),
-        version: '3.0.0',
-        plansCount: Object.keys(NEW_PLANS).length,
-        features: ['trust-withdrawal-system', 'gift-code-system']
+        version: '4.0.0',
+        features: ['secure-income-system', 'ddos-protection', 'anti-cheat']
     });
 });
 
@@ -2299,16 +2599,13 @@ app.use((err, req, res, next) => {
 // ==================== START SERVER ====================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`✅ Happy Invest API running on port ${PORT}`);
+    console.log(`✅ Secure Happy Invest API running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`✅ Total APIs: 34 endpoints`);
-    console.log(`✅ Investment Plans: ${Object.keys(NEW_PLANS).length} plans`);
-    console.log(`✅ Trust System: Enabled (Demo withdrawals auto-generated)`);
-    console.log(`✅ Gift Code System: Enabled`);
+    console.log(`✅ Total APIs: 38 endpoints`);
+    console.log(`✅ Rate Limiting: 60 requests/minute per endpoint`);
+    console.log(`✅ Secure Income System: Enabled`);
+    console.log(`✅ Anti-Cheat Protection: Enabled`);
     console.log(`✅ Health Check: http://localhost:${PORT}/api/health`);
-    
-    // Start daily income scheduler
-    startDailyIncomeScheduler();
     
     // Initialize demo withdrawals
     initializeDemoWithdrawals();
