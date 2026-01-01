@@ -531,7 +531,7 @@
     </div>
 
     <script>
-        // ✅ API URL Configuration
+        // ✅ API Configuration
         const API_BASE_URL = window.location.origin + '/api';
         
         // Interactive background effect
@@ -564,7 +564,7 @@
             }
         });
         
-        // Form submission
+        // Form submission - ✅ UPDATED WITH SIGNATURE SUPPORT
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -615,9 +615,10 @@
                 });
                 
                 const result = await response.json();
+                console.log('Login response:', result); // Debug log
                 
                 if (result.success) {
-                    // ✅ IMPORTANT: Store ALL user data including signature for income check
+                    // ✅ CRITICAL: Store ALL user data including signature
                     localStorage.setItem('userId', result.user.id);
                     localStorage.setItem('userName', result.user.name);
                     localStorage.setItem('userPhone', result.user.phone);
@@ -627,13 +628,17 @@
                     localStorage.setItem('referralEarnings', result.user.referralEarnings || 0);
                     localStorage.setItem('withdrawn', result.user.withdrawn || 0);
                     
-                    // ✅ CRITICAL: Save signature and timestamp for secure income check
+                    // ✅ MUST SAVE: Signature and timestamp separately
+                    localStorage.setItem('userSignature', result.user.signature || '');
+                    localStorage.setItem('userTimestamp', result.user.timestamp || Date.now());
+                    
+                    // ✅ Save complete user data
                     localStorage.setItem('userData', JSON.stringify({
                         id: result.user.id,
                         name: result.user.name,
                         phone: result.user.phone,
-                        signature: result.user.signature,      // ← INCOME CHECK KE LIYE
-                        timestamp: result.user.timestamp,      // ← INCOME CHECK KE LIYE
+                        signature: result.user.signature || '',      // ← SIGNATURE
+                        timestamp: result.user.timestamp || Date.now(), // ← TIMESTAMP
                         balance: result.user.balance || 0,
                         referralCode: result.user.referralCode || '',
                         referralEarnings: result.user.referralEarnings || 0,
@@ -650,6 +655,10 @@
                         }
                     }));
                     
+                    // Debug: Check what's saved
+                    console.log('Saved signature:', result.user.signature);
+                    console.log('Saved timestamp:', result.user.timestamp);
+                    
                     // Remember phone if checkbox is checked
                     if (rememberMe) {
                         localStorage.setItem('rememberedPhone', phone);
@@ -662,10 +671,10 @@
                     loginBtn.innerHTML = '<i class="fas fa-check"></i> LOGIN SUCCESSFUL!';
                     loginBtn.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
                     
-                    // Show welcome notification
+                    // Show notification
                     showNotification(`Welcome back, ${result.user.name}!`, 'success');
                     
-                    // Redirect after delay
+                    // Redirect to home after delay
                     setTimeout(() => {
                         window.location.href = '/home';
                     }, 1500);
@@ -685,10 +694,13 @@
                 setTimeout(() => {
                     form.style.animation = '';
                 }, 500);
+                
+                // Show error notification
+                showNotification(error.message, 'error');
             }
         });
         
-        // Notification function
+        // Show notification
         function showNotification(message, type = 'info') {
             // Create notification element
             const notification = document.createElement('div');
@@ -697,9 +709,13 @@
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${type === 'success' ? 'rgba(0, 255, 170, 0.1)' : 'rgba(0, 210, 255, 0.1)'};
+                background: ${type === 'success' ? 'rgba(0, 255, 170, 0.1)' : 
+                            type === 'error' ? 'rgba(255, 0, 100, 0.1)' : 
+                            'rgba(0, 210, 255, 0.1)'};
                 backdrop-filter: blur(10px);
-                border: 1px solid ${type === 'success' ? 'rgba(0, 255, 170, 0.3)' : 'rgba(0, 210, 255, 0.3)'};
+                border: 1px solid ${type === 'success' ? 'rgba(0, 255, 170, 0.3)' : 
+                                 type === 'error' ? 'rgba(255, 0, 100, 0.3)' : 
+                                 'rgba(0, 210, 255, 0.3)'};
                 padding: 15px 20px;
                 border-radius: 10px;
                 color: white;
@@ -716,7 +732,8 @@
             `;
             
             notification.innerHTML = `
-                ${type === 'success' ? '✅' : 'ℹ️'} ${message}
+                ${type === 'success' ? '✅' : 
+                  type === 'error' ? '❌' : 'ℹ️'} ${message}
             `;
             
             document.body.appendChild(notification);
@@ -796,6 +813,10 @@
                     opacity: 0;
                 }
             }
+            
+            .notification {
+                display: none;
+            }
         `;
         document.head.appendChild(style);
         
@@ -837,84 +858,5 @@
             });
         });
     </script>
-</head>
-<body>
-    <!-- Glowing Background -->
-    <div class="glow-bg" id="glowBg"></div>
-    
-    <div class="mobile-container">
-        <!-- Banner Image -->
-        <div class="banner-container">
-            <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
-                 alt="Happy Invest" 
-                 class="banner-image"
-                 onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
-            <div class="banner-overlay"></div>
-            <div class="banner-content">
-                <h1 class="banner-title">Welcome Back</h1>
-                <p class="banner-subtitle">Sign in to continue your investment journey</p>
-            </div>
-        </div>
-        
-        <!-- Login Form -->
-        <div class="form-container">
-            <h2 class="form-title">Sign In</h2>
-            
-            <form id="loginForm">
-                <!-- Phone Input -->
-                <div class="input-group">
-                    <label class="input-label" for="phone">Phone Number</label>
-                    <div class="phone-input-wrapper">
-                        <div class="country-code">+91</div>
-                        <input type="tel" 
-                               class="phone-input" 
-                               id="phone" 
-                               placeholder="10-digit mobile number" 
-                               required 
-                               maxlength="10">
-                    </div>
-                    <div class="error-message" id="phoneError"></div>
-                </div>
-                
-                <!-- Password Input -->
-                <div class="input-group">
-                    <label class="input-label" for="password">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" 
-                               class="password-input" 
-                               id="password" 
-                               placeholder="Enter your password" 
-                               required 
-                               minlength="6">
-                        <div class="password-toggle" id="passwordToggle">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                    </div>
-                    <div class="error-message" id="passwordError"></div>
-                </div>
-                
-                <!-- Remember Me -->
-                <div class="remember-container">
-                    <input type="checkbox" 
-                           id="rememberMe">
-                    <span class="checkmark"></span>
-                    <label for="rememberMe" class="remember-label">Remember me on this device</label>
-                </div>
-                
-                <!-- Login Button -->
-                <button type="submit" class="login-button" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> SIGN IN
-                </button>
-            </form>
-            
-            <!-- Register Link -->
-            <div class="register-container">
-                <span class="register-text">Don't have an account?</span>
-                <a href="/register" class="register-link">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </a>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
