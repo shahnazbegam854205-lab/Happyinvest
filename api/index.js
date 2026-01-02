@@ -104,19 +104,52 @@ const generateGiftCode = () => {
     }
     return code;
 };
+const generateBanId = () => `ban_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-// ==================== SECURITY FUNCTIONS ====================
-const generateSignature = (userId, timestamp) => {
-    const secret = process.env.API_SECRET || 'happy@527876';
-    return crypto
-        .createHmac('sha256', secret)
-        .update(`${userId}:${timestamp}`)
-        .digest('hex');
+// ==================== CHEAT DETECTION & BAN SYSTEM ====================
+const detectAndBanCheater = async (userId, reason, details) => {
+    try {
+        const banId = generateBanId();
+        const banData = {
+            id: banId,
+            userId: userId,
+            reason: reason,
+            details: details,
+            bannedAt: new Date().toISOString(),
+            bannedBy: 'system',
+            status: 'active',
+            expiresAt: null // Permanent ban
+        };
+        
+        // Save ban record
+        await db.ref(`bans/${userId}`).set(banData);
+        
+        // Update user status to banned
+        await db.ref(`users/${userId}/status`).set('banned');
+        
+        // Log cheat attempt
+        await db.ref(`cheatLogs/${userId}/${Date.now()}`).set({
+            timestamp: Date.now(),
+            reason: reason,
+            details: details,
+            action: 'banned'
+        });
+        
+        console.log(`🔨 CHEATER BANNED: ${userId} - ${reason}`);
+        return true;
+    } catch (error) {
+        console.error('Ban error:', error);
+        return false;
+    }
 };
 
-const verifySignature = (userId, timestamp, signature) => {
-    const expectedSignature = generateSignature(userId, timestamp);
-    return signature === expectedSignature;
+const checkIfBanned = async (userId) => {
+    try {
+        const banSnapshot = await db.ref(`bans/${userId}`).once('value');
+        return banSnapshot.exists();
+    } catch (error) {
+        return false;
+    }
 };
 
 // ==================== SIMPLE PASSWORD FUNCTIONS ====================
@@ -139,137 +172,106 @@ const checkAdmin = (req, res, next) => {
     }
 };
 
-// ==================== NEW INVESTMENT PLANS ====================
+// ==================== UPDATED INVESTMENT PLANS ====================
 const NEW_PLANS = {
-    "basic_200": {
-        id: "basic_200",
-        name: "Basic 200",
-        price: 200,
-        currency: "₹",
-        duration: 9,
-        dailyIncome: 49,
-        totalIncome: 441,
-        type: "basic",
-        category: "basic",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 120.5,
-        commissionRate: 0.187
-    },
-    "basic_500": {
-        id: "basic_500",
-        name: "Basic 500",
-        price: 500,
-        currency: "₹",
-        duration: 12,
-        dailyIncome: 122.5,
-        totalIncome: 1470,
-        type: "basic",
-        category: "basic",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 194,
-        commissionRate: 0.187
-    },
-    "basic_1000": {
-        id: "basic_1000",
-        name: "Basic 1000",
-        price: 1000,
+    // BASIC PLANS - DAILY WITHDRAWAL ALLOWED
+    "basic_608": {
+        id: "basic_608",
+        name: "Basic ₹608",
+        price: 608,
         currency: "₹",
         duration: 15,
-        dailyIncome: 245,
-        totalIncome: 3675,
+        dailyIncome: 60,
+        totalIncome: 900,
         type: "basic",
         category: "basic",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 267.5,
-        commissionRate: 0.187
+        withdrawalType: "daily",
+        minWithdrawal: 200,
+        dailyWithdrawal: true,
+        lockedBalance: false
     },
-    "basic_2000": {
-        id: "basic_2000",
-        name: "Basic 2000",
-        price: 2000,
+    "basic_940": {
+        id: "basic_940",
+        name: "Basic ₹940",
+        price: 940,
         currency: "₹",
-        duration: 18,
-        dailyIncome: 490,
-        totalIncome: 8820,
+        duration: 20,
+        dailyIncome: 70,
+        totalIncome: 1400,
         type: "basic",
         category: "basic",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 341,
-        commissionRate: 0.187
+        withdrawalType: "daily",
+        minWithdrawal: 200,
+        dailyWithdrawal: true,
+        lockedBalance: false
     },
-    "basic_5000": {
-        id: "basic_5000",
-        name: "Basic 5000",
-        price: 5000,
+    "basic_1500": {
+        id: "basic_1500",
+        name: "Basic ₹1500",
+        price: 1500,
         currency: "₹",
-        duration: 21,
-        dailyIncome: 1225,
-        totalIncome: 25725,
+        duration: 28,
+        dailyIncome: 120,
+        totalIncome: 3560,
         type: "basic",
         category: "basic",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 414.5,
-        commissionRate: 0.187
+        withdrawalType: "daily",
+        minWithdrawal: 200,
+        dailyWithdrawal: true,
+        lockedBalance: false
     },
-    "vip_25000": {
-        id: "vip_25000",
-        name: "VIP 25000",
-        price: 25000,
+    
+    // VIP PLANS - LOCKED BALANCE (END TERM WITHDRAWAL)
+    "vip_3000": {
+        id: "vip_3000",
+        name: "VIP ₹3000",
+        price: 3000,
         currency: "₹",
-        duration: 24,
-        dailyIncome: 6125,
-        totalIncome: 147000,
+        duration: 28,
+        dailyIncome: 400,
+        totalIncome: 11200,
         type: "vip",
         category: "vip",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 488,
-        commissionRate: 0.20
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
-    "vip_50000": {
-        id: "vip_50000",
-        name: "VIP 50000",
-        price: 50000,
+    "vip_4500": {
+        id: "vip_4500",
+        name: "VIP ₹4500",
+        price: 4500,
         currency: "₹",
-        duration: 27,
-        dailyIncome: 12250,
-        totalIncome: 330750,
+        duration: 35,
+        dailyIncome: 500,
+        totalIncome: 17500,
         type: "vip",
         category: "vip",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 561.5,
-        commissionRate: 0.20
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
-    "vip_75000": {
-        id: "vip_75000",
-        name: "VIP 75000",
-        price: 75000,
+    "vip_6000": {
+        id: "vip_6000",
+        name: "VIP ₹6000",
+        price: 6000,
         currency: "₹",
-        duration: 30,
-        dailyIncome: 18375,
-        totalIncome: 551250,
+        duration: 60,
+        dailyIncome: 780,
+        totalIncome: 46800,
         type: "vip",
         category: "vip",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 635,
-        commissionRate: 0.20
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
-    "vip_100000": {
-        id: "vip_100000",
-        name: "VIP 100000",
-        price: 100000,
-        currency: "₹",
-        duration: 33,
-        dailyIncome: 24500,
-        totalIncome: 808500,
-        type: "vip",
-        category: "vip",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 708.5,
-        commissionRate: 0.20
-    },
+    
+    // RICH PLANS - EXISTING (LOCKED BALANCE)
     "rich_25000": {
         id: "rich_25000",
-        name: "Rich 25000",
+        name: "Rich ₹25000",
         price: 25000,
         currency: "₹",
         duration: 36,
@@ -277,13 +279,14 @@ const NEW_PLANS = {
         totalIncome: 220500,
         type: "rich",
         category: "rich",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 782,
-        commissionRate: 0.25
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
     "rich_50000": {
         id: "rich_50000",
-        name: "Rich 50000",
+        name: "Rich ₹50000",
         price: 50000,
         currency: "₹",
         duration: 39,
@@ -291,13 +294,14 @@ const NEW_PLANS = {
         totalIncome: 477750,
         type: "rich",
         category: "rich",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 855.5,
-        commissionRate: 0.25
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
     "rich_75000": {
         id: "rich_75000",
-        name: "Rich 75000",
+        name: "Rich ₹75000",
         price: 75000,
         currency: "₹",
         duration: 42,
@@ -305,13 +309,14 @@ const NEW_PLANS = {
         totalIncome: 771750,
         type: "rich",
         category: "rich",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 929,
-        commissionRate: 0.25
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
     "rich_100000": {
         id: "rich_100000",
-        name: "Rich 100000",
+        name: "Rich ₹100000",
         price: 100000,
         currency: "₹",
         duration: 45,
@@ -319,13 +324,16 @@ const NEW_PLANS = {
         totalIncome: 1102500,
         type: "rich",
         category: "rich",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 1002.5,
-        commissionRate: 0.25
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
+    
+    // ULTIMATE PLANS - EXISTING (LOCKED BALANCE)
     "ultimate_150000": {
         id: "ultimate_150000",
-        name: "Ultimate 150000",
+        name: "Ultimate ₹150000",
         price: 150000,
         currency: "₹",
         duration: 48,
@@ -333,13 +341,14 @@ const NEW_PLANS = {
         totalIncome: 1764000,
         type: "ultimate",
         category: "ultimate",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 1076,
-        commissionRate: 0.30
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
     "ultimate_250000": {
         id: "ultimate_250000",
-        name: "Ultimate 250000",
+        name: "Ultimate ₹250000",
         price: 250000,
         currency: "₹",
         duration: 51,
@@ -347,13 +356,14 @@ const NEW_PLANS = {
         totalIncome: 3123750,
         type: "ultimate",
         category: "ultimate",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 1149.5,
-        commissionRate: 0.30
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     },
     "ultimate_500000": {
         id: "ultimate_500000",
-        name: "Ultimate 500000",
+        name: "Ultimate ₹500000",
         price: 500000,
         currency: "₹",
         duration: 54,
@@ -361,9 +371,10 @@ const NEW_PLANS = {
         totalIncome: 6615000,
         type: "ultimate",
         category: "ultimate",
-        dailyReturnPercent: 24.5,
-        totalReturnPercent: 1223,
-        commissionRate: 0.30
+        withdrawalType: "end",
+        minWithdrawal: 200,
+        dailyWithdrawal: false,
+        lockedBalance: true
     }
 };
 
@@ -376,28 +387,19 @@ const generateDemoWithdrawals = async () => {
         { name: "Priya Patel", phone: "8765432109" },
         { name: "Raj Kumar", phone: "7654321098" },
         { name: "Sneha Singh", phone: "6543210987" },
-        { name: "Vikram Yadav", phone: "5432109876" },
-        { name: "Rohan Verma", phone: "4321098765" },
-        { name: "Anjali Gupta", phone: "3210987654" },
-        { name: "Sanjay Mehta", phone: "2109876543" },
-        { name: "Kavita Joshi", phone: "1098765432" },
-        { name: "Deepak Nair", phone: "9988776655" }
+        { name: "Vikram Yadav", phone: "5432109876" }
     ];
     
     const banks = [
         { bankName: "HDFC Bank", ifsc: "HDFC0000123" },
         { bankName: "SBI Bank", ifsc: "SBIN0000567" },
         { bankName: "ICICI Bank", ifsc: "ICIC0000890" },
-        { bankName: "Axis Bank", ifsc: "UTIB0000345" },
-        { bankName: "PNB Bank", ifsc: "PUNB0000678" },
-        { bankName: "Kotak Bank", ifsc: "KKBK0000123" },
-        { bankName: "Yes Bank", ifsc: "YESB0000123" },
-        { bankName: "IDFC Bank", ifsc: "IDFB0000123" }
+        { bankName: "Axis Bank", ifsc: "UTIB0000345" }
     ];
     
     const withdrawals = [];
     
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 15; i++) {
         const randomUser = demoUsers[Math.floor(Math.random() * demoUsers.length)];
         const randomBank = banks[Math.floor(Math.random() * banks.length)];
         const randomAmount = Math.floor(Math.random() * (50000 - 1000 + 1)) + 1000;
@@ -434,10 +436,7 @@ const generateDemoWithdrawals = async () => {
         
         withdrawals.push(demoWithdrawal);
         
-        // Save to demo withdrawals
         await db.ref(`trustWithdrawals/demo/${withdrawalId}`).set(demoWithdrawal);
-        
-        // Also save to public trust withdrawals
         await db.ref(`trustWithdrawals/public/${withdrawalId}`).set(demoWithdrawal);
     }
     
@@ -449,7 +448,7 @@ const generateDemoWithdrawals = async () => {
 const initializeDemoWithdrawals = async () => {
     try {
         const demoSnapshot = await db.ref('trustWithdrawals/demo').once('value');
-        if (!demoSnapshot.exists() || Object.keys(demoSnapshot.val()).length < 15) {
+        if (!demoSnapshot.exists() || Object.keys(demoSnapshot.val()).length < 10) {
             await generateDemoWithdrawals();
         }
     } catch (error) {
@@ -459,7 +458,7 @@ const initializeDemoWithdrawals = async () => {
 
 // ==================== API ENDPOINTS ====================
 
-// 1. USER REGISTRATION (NO PASSWORD HASHING)
+// 1. USER REGISTRATION
 app.post('/api/register', async (req, res) => {
     try {
         const { name, phone, password, referralCode } = req.body;
@@ -507,6 +506,7 @@ app.post('/api/register', async (req, res) => {
             referredBy: referralCode || null,
             referredByCode: referralCode || null,
             balance: 0,
+            lockedBalance: 0,
             rechargeBalance: 0,
             withdrawn: 0,
             totalEarnings: 0,
@@ -527,7 +527,13 @@ app.post('/api/register', async (req, res) => {
             firstInvestmentDate: null,
             totalInvestment: 0,
             totalRecharged: 0,
-            trustWithdrawalsCount: 0
+            trustWithdrawalsCount: 0,
+            dailyWithdrawalCount: 0,
+            lastWithdrawalDate: null,
+            cheatAttempts: 0,
+            vipBalance: 0,
+            richBalance: 0,
+            ultimateBalance: 0
         };
         
         await db.ref(`users/${userId}`).set(userData);
@@ -549,7 +555,8 @@ app.post('/api/register', async (req, res) => {
                             joinDate: new Date().toISOString(),
                             hasInvested: false,
                             totalInvested: 0,
-                            commissionEarned: 0
+                            commissionEarned: 0,
+                            referralCompleted: false
                         }];
                         
                         await db.ref(`users/${referrerId}`).update({
@@ -565,7 +572,8 @@ app.post('/api/register', async (req, res) => {
                             level: 1,
                             hasInvested: false,
                             totalInvested: 0,
-                            commissionPaid: 0
+                            commissionPaid: 0,
+                            referralCompleted: false
                         });
                     });
                 }
@@ -591,7 +599,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. USER LOGIN (WITH SECURE SIGNATURE)
+// 2. USER LOGIN (WITH BAN CHECK)
 app.post('/api/login', async (req, res) => {
     try {
         const { phone, password } = req.body;
@@ -628,27 +636,23 @@ app.post('/api/login', async (req, res) => {
             });
         }
         
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account suspended. Contact admin.' 
+            });
+        }
+        
         const isValid = verifyPassword(password, userData.password);
         
         if (isValid) {
-            // Generate secure signature for future requests
-            const timestamp = Date.now();
-            const signature = generateSignature(userId, timestamp);
-            
             const userResponse = {
                 id: userId,
-                ...userData,
-                signature: signature,
-                timestamp: timestamp
+                ...userData
             };
             delete userResponse.password;
-            
-            // Save signature in database for verification
-            await db.ref(`userSessions/${userId}`).set({
-                signature: signature,
-                timestamp: timestamp,
-                createdAt: new Date().toISOString()
-            });
             
             res.json({ 
                 success: true, 
@@ -717,6 +721,15 @@ app.post('/api/recharge', async (req, res) => {
             });
         }
         
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account suspended. Cannot recharge.' 
+            });
+        }
+        
         const userSnapshot = await db.ref(`users/${userId}`).once('value');
         if (!userSnapshot.exists()) {
             return res.status(404).json({ 
@@ -747,7 +760,7 @@ app.post('/api/recharge', async (req, res) => {
         
         res.json({ 
             success: true, 
-            message: 'Recharge request submitted successfully. Waiting for admin approval.',
+            message: 'Recharge request submitted. Waiting for admin approval.',
             rechargeId: rechargeId,
             note: 'Your recharge will be processed within 2-4 hours after admin verification.'
         });
@@ -778,7 +791,7 @@ app.get('/api/plans', async (req, res) => {
     }
 });
 
-// 6. INVEST IN PLAN (UPDATED WITH SECURE TIMING)
+// 6. INVEST IN PLAN (WITH ₹110 REFERRAL)
 app.post('/api/invest', async (req, res) => {
     try {
         const { userId, planId } = req.body;
@@ -787,6 +800,15 @@ app.post('/api/invest', async (req, res) => {
             return res.status(400).json({ 
                 success: false, 
                 message: 'User ID and Plan ID required' 
+            });
+        }
+        
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account suspended. Cannot invest.' 
             });
         }
         
@@ -849,10 +871,9 @@ app.post('/api/invest', async (req, res) => {
             expectedTotal: plan.totalIncome,
             isActive: true,
             lastUpdated: new Date().toISOString(),
-            commissionRate: plan.commissionRate || 0.187,
-            dailyReturnPercent: plan.dailyReturnPercent,
-            totalReturnPercent: plan.totalReturnPercent,
-            category: plan.category
+            planType: plan.type,
+            lockedBalance: plan.lockedBalance || false,
+            withdrawalType: plan.withdrawalType || 'daily'
         };
         
         await db.ref(`investments/${userId}/${investmentId}`).set(investmentData);
@@ -868,7 +889,8 @@ app.post('/api/invest', async (req, res) => {
             status: 'completed'
         });
         
-        if (userData.referredByCode) {
+        // ✅ ₹110 REFERRAL SYSTEM (First investment pe hi)
+        if (userData.referredByCode && !userData.referralCompleted) {
             const referrerSnapshot = await db.ref('users')
                 .orderByChild('referralCode')
                 .equalTo(userData.referredByCode)
@@ -879,56 +901,71 @@ app.post('/api/invest', async (req, res) => {
                     const referrerId = childSnapshot.key;
                     const referrerData = childSnapshot.val();
                     
-                    const commissionAmount = plan.price * plan.commissionRate;
+                    // Check if referrer already got commission for this user
+                    const alreadyGot = referrerData.referrals?.some(
+                        ref => ref.userId === userId && ref.commissionEarned > 0
+                    );
                     
-                    const newReferrerBalance = (referrerData.balance || 0) + commissionAmount;
-                    const newTotalCommission = (referrerData.totalCommission || 0) + commissionAmount;
-                    const newReferralEarnings = (referrerData.referralEarnings || 0) + commissionAmount;
-                    
-                    await db.ref(`users/${referrerId}`).update({
-                        balance: newReferrerBalance,
-                        totalCommission: newTotalCommission,
-                        referralEarnings: newReferralEarnings
-                    });
-                    
-                    await db.ref(`teams/${referrerId}/${userId}`).update({
-                        hasInvested: true,
-                        totalInvested: plan.price,
-                        commissionPaid: commissionAmount,
-                        lastCommissionDate: new Date().toISOString()
-                    });
-                    
-                    const updatedReferrals = (referrerData.referrals || []).map(ref => {
-                        if (ref.userId === userId) {
-                            return {
-                                ...ref,
-                                hasInvested: true,
-                                totalInvested: plan.price,
-                                commissionEarned: commissionAmount,
-                                lastInvestmentDate: new Date().toISOString()
-                            };
-                        }
-                        return ref;
-                    });
-                    
-                    await db.ref(`users/${referrerId}`).update({
-                        referrals: updatedReferrals
-                    });
-                    
-                    const commissionTransactionId = generateTransactionId();
-                    await db.ref(`transactions/${referrerId}/${commissionTransactionId}`).set({
-                        id: commissionTransactionId,
-                        type: 'referral_commission',
-                        amount: commissionAmount,
-                        fromUserId: userId,
-                        fromUserName: userData.name,
-                        investmentAmount: plan.price,
-                        commissionRate: `${plan.commissionRate * 100}%`,
-                        planName: plan.name,
-                        date: new Date().toISOString(),
-                        status: 'completed',
-                        note: `Commission from ${userData.name}'s investment in ${plan.name}`
-                    });
+                    if (!alreadyGot) {
+                        // ✅ Fixed ₹110 commission
+                        const commissionAmount = 110;
+                        
+                        const newReferrerBalance = (referrerData.balance || 0) + commissionAmount;
+                        const newTotalCommission = (referrerData.totalCommission || 0) + commissionAmount;
+                        const newReferralEarnings = (referrerData.referralEarnings || 0) + commissionAmount;
+                        
+                        await db.ref(`users/${referrerId}`).update({
+                            balance: newReferrerBalance,
+                            totalCommission: newTotalCommission,
+                            referralEarnings: newReferralEarnings
+                        });
+                        
+                        // Update team record
+                        await db.ref(`teams/${referrerId}/${userId}`).update({
+                            hasInvested: true,
+                            totalInvested: plan.price,
+                            commissionPaid: commissionAmount,
+                            lastCommissionDate: new Date().toISOString(),
+                            referralCompleted: true
+                        });
+                        
+                        // Update referrals array
+                        const updatedReferrals = (referrerData.referrals || []).map(ref => {
+                            if (ref.userId === userId) {
+                                return {
+                                    ...ref,
+                                    hasInvested: true,
+                                    totalInvested: plan.price,
+                                    commissionEarned: commissionAmount,
+                                    lastInvestmentDate: new Date().toISOString(),
+                                    referralCompleted: true
+                                };
+                            }
+                            return ref;
+                        });
+                        
+                        await db.ref(`users/${referrerId}`).update({
+                            referrals: updatedReferrals
+                        });
+                        
+                        // Mark user's referral as completed
+                        await db.ref(`users/${userId}/referralCompleted`).set(true);
+                        
+                        // Commission transaction
+                        const commissionTransactionId = generateTransactionId();
+                        await db.ref(`transactions/${referrerId}/${commissionTransactionId}`).set({
+                            id: commissionTransactionId,
+                            type: 'referral_commission',
+                            amount: commissionAmount,
+                            fromUserId: userId,
+                            fromUserName: userData.name,
+                            investmentAmount: plan.price,
+                            planName: plan.name,
+                            date: new Date().toISOString(),
+                            status: 'completed',
+                            note: `₹110 referral bonus from ${userData.name}`
+                        });
+                    }
                 });
             }
         }
@@ -941,7 +978,8 @@ app.post('/api/invest', async (req, res) => {
             dailyIncome: plan.dailyIncome,
             nextPayout: new Date(nextPayoutTime).toLocaleString(),
             totalDays: plan.duration,
-            totalReturn: plan.totalIncome
+            totalReturn: plan.totalIncome,
+            withdrawalType: plan.withdrawalType
         });
         
     } catch (error) {
@@ -975,15 +1013,25 @@ app.get('/api/user-investments/:userId', async (req, res) => {
     }
 });
 
-// 8. CREATE WITHDRAWAL REQUEST
+// 8. CREATE WITHDRAWAL REQUEST (WITH DAILY LIMIT & ₹200 MINIMUM)
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { userId, amount, bankDetails } = req.body;
         
-        if (!userId || !amount || amount < 100) {
+        // ✅ Minimum ₹200 check
+        if (!userId || !amount || amount < 200) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Minimum withdrawal amount is ₹100' 
+                message: 'Minimum withdrawal amount is ₹200' 
+            });
+        }
+        
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account suspended. Cannot withdraw.' 
             });
         }
         
@@ -996,10 +1044,32 @@ app.post('/api/withdraw', async (req, res) => {
         }
         
         const userData = userSnapshot.val();
-        if (userData.balance < amount) {
+        const today = new Date().toDateString();
+        const lastWithdrawal = userData.lastWithdrawalDate;
+        
+        // ✅ Daily ek baar withdrawal check
+        if (lastWithdrawal && new Date(lastWithdrawal).toDateString() === today) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Only one withdrawal allowed per day. Try again tomorrow.' 
+            });
+        }
+        
+        // Check available balance
+        const availableBalance = userData.balance || 0;
+        
+        if (availableBalance < amount) {
             return res.status(400).json({ 
                 success: false, 
                 message: 'Insufficient balance' 
+            });
+        }
+        
+        // Check if bank details are saved
+        if (!userData.bankDetails) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Please save bank details first' 
             });
         }
         
@@ -1010,7 +1080,7 @@ app.post('/api/withdraw', async (req, res) => {
             userName: userData.name,
             userPhone: userData.phone,
             amount: parseFloat(amount),
-            bankDetails: bankDetails,
+            bankDetails: bankDetails || userData.bankDetails,
             date: new Date().toISOString(),
             status: 'pending',
             processedBy: null,
@@ -1024,7 +1094,9 @@ app.post('/api/withdraw', async (req, res) => {
         const newBalance = userData.balance - amount;
         await db.ref(`users/${userId}`).update({
             balance: newBalance,
-            withdrawn: (userData.withdrawn || 0) + amount
+            withdrawn: (userData.withdrawn || 0) + amount,
+            lastWithdrawalDate: new Date().toISOString(),
+            dailyWithdrawalCount: (userData.dailyWithdrawalCount || 0) + 1
         });
         
         const transactionId = generateTransactionId();
@@ -1033,14 +1105,16 @@ app.post('/api/withdraw', async (req, res) => {
             type: 'withdrawal_request',
             amount: amount,
             status: 'pending',
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            withdrawalId: withdrawalId
         });
         
         res.json({ 
             success: true, 
             message: 'Withdrawal request submitted. Will be processed within 24-48 hours.',
             withdrawalId: withdrawalId,
-            newBalance: newBalance
+            newBalance: newBalance,
+            note: 'Daily withdrawal limit: 1 per day'
         });
         
     } catch (error) {
@@ -1203,6 +1277,15 @@ app.post('/api/redeem-gift', async (req, res) => {
             });
         }
         
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Account suspended. Cannot redeem.' 
+            });
+        }
+        
         const codeSnapshot = await db.ref(`giftCodes/${giftCode}`).once('value');
         if (!codeSnapshot.exists()) {
             return res.json({ 
@@ -1296,7 +1379,7 @@ app.get('/api/team-stats/:userId', async (req, res) => {
                 activeInvestors: activeInvestors,
                 totalInvestment: totalInvestment,
                 totalCommission: totalCommission,
-                pendingCommission: totalInvestment * 0.187
+                pendingCommission: 110 * activeInvestors // ₹110 per referral
             }
         });
         
@@ -1362,11 +1445,17 @@ app.get('/api/income-stats/:userId', async (req, res) => {
             }
         });
         
+        // Get locked balance from user data
+        const userSnapshot = await db.ref(`users/${userId}`).once('value');
+        const userData = userSnapshot.val();
+        
         res.json({ 
             success: true, 
             todayIncome: todayIncome,
             totalIncome: totalIncome,
-            referralIncome: referralIncome
+            referralIncome: referralIncome,
+            lockedBalance: userData.lockedBalance || 0,
+            regularBalance: userData.balance || 0
         });
         
     } catch (error) {
@@ -1436,45 +1525,71 @@ app.get('/api/withdrawal-history/:userId', async (req, res) => {
     }
 });
 
-// ==================== NEW SECURE INCOME CHECK APIs ====================
+// ==================== SECURE INCOME CHECK APIs ====================
 
-// 35. SECURE INCOME CHECK (Main New API)
+// 35. SECURE INCOME CHECK (WITH CHEAT DETECTION)
 app.post('/api/secure-income-check', async (req, res) => {
     try {
-        const { userId, clientTime, signature } = req.body;
+        const { userId, clientTime } = req.body;
         const serverTime = Date.now();
         
         console.log(`💰 Secure income check for: ${userId}`);
         
-        // 1. Verify signature
-        if (!verifySignature(userId, clientTime, signature)) {
-            console.log(`❌ Invalid signature for ${userId}`);
-            await db.ref(`security_logs/${userId}/${serverTime}`).set({
-                type: 'invalid_signature',
-                serverTime: serverTime,
-                clientTime: clientTime
-            });
-            return res.status(401).json({
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({
                 success: false,
-                message: 'Invalid request signature'
+                message: 'Account suspended. Cannot check income.'
             });
         }
         
-        // 2. Check time difference (max 2 minutes allowed)
+        // Check time difference (max 2 minutes allowed)
         const timeDifference = Math.abs(serverTime - clientTime);
+        
+        // 🚨 CHEAT DETECTION: Time manipulation
         if (timeDifference > 120000) { // 2 minutes
             console.log(`⚠️ Time manipulation detected: ${userId}`);
             
             // Record cheating attempt
-            await db.ref(`cheating_logs/${userId}/${serverTime}`).set({
+            await db.ref(`cheatLogs/${userId}/${serverTime}`).set({
                 serverTime: serverTime,
                 clientTime: clientTime,
                 difference: timeDifference,
                 type: 'time_manipulation',
-                penaltyApplied: true
+                detectedAt: new Date().toISOString()
             });
             
-            // Add penalty - delay next payout by 1 hour
+            // Increment cheat attempts
+            const userRef = db.ref(`users/${userId}`);
+            const userSnap = await userRef.once('value');
+            const userData = userSnap.val();
+            
+            const newCheatAttempts = (userData.cheatAttempts || 0) + 1;
+            await userRef.update({
+                cheatAttempts: newCheatAttempts
+            });
+            
+            // 🚨 AUTOMATIC BAN after 3 cheat attempts
+            if (newCheatAttempts >= 3) {
+                await detectAndBanCheater(
+                    userId, 
+                    'Multiple cheat attempts detected',
+                    {
+                        attempts: newCheatAttempts,
+                        lastDifference: timeDifference,
+                        type: 'time_manipulation'
+                    }
+                );
+                
+                return res.json({
+                    success: false,
+                    message: 'Account banned due to multiple cheat attempts.',
+                    banned: true
+                });
+            }
+            
+            // Penalty - delay next payout by 1 hour
             await db.ref(`penalties/${userId}`).set({
                 lastPenalty: serverTime,
                 nextCheckTime: serverTime + 3600000,
@@ -1486,11 +1601,12 @@ app.post('/api/secure-income-check', async (req, res) => {
                 message: 'Time manipulation detected! Next income delayed by 1 hour.',
                 realTime: new Date(serverTime).toLocaleString(),
                 yourTime: new Date(clientTime).toLocaleString(),
-                penalty: '1_hour_delay'
+                penalty: '1_hour_delay',
+                cheatAttempts: newCheatAttempts
             });
         }
         
-        // 3. Check if user is penalized
+        // Check if user is penalized
         const penaltySnap = await db.ref(`penalties/${userId}`).once('value');
         const penalty = penaltySnap.val();
         
@@ -1506,14 +1622,16 @@ app.post('/api/secure-income-check', async (req, res) => {
             });
         }
         
-        // 4. Get user investments
+        // Get user investments
         const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
         const investments = investmentsSnap.val() || {};
         
         let totalIncome = 0;
+        let lockedIncome = 0;
+        let regularIncome = 0;
         let processedInvestments = [];
         
-        // 5. Check each investment
+        // Check each investment
         for (const invId in investments) {
             const investment = investments[invId];
             
@@ -1526,6 +1644,7 @@ app.post('/api/secure-income-check', async (req, res) => {
             
             if (hoursPassed >= 24) {
                 const incomeToAdd = investment.dailyIncome;
+                const plan = NEW_PLANS[investment.planId];
                 
                 // Update investment
                 await db.ref(`investments/${userId}/${invId}`).update({
@@ -1538,10 +1657,18 @@ app.post('/api/secure-income-check', async (req, res) => {
                 });
                 
                 totalIncome += incomeToAdd;
+                
+                if (plan && plan.lockedBalance) {
+                    lockedIncome += incomeToAdd;
+                } else {
+                    regularIncome += incomeToAdd;
+                }
+                
                 processedInvestments.push({
                     investmentId: invId,
                     planName: investment.planName,
-                    amount: incomeToAdd
+                    amount: incomeToAdd,
+                    type: plan?.lockedBalance ? 'locked' : 'regular'
                 });
                 
                 // Record payout
@@ -1549,23 +1676,34 @@ app.post('/api/secure-income-check', async (req, res) => {
                     timestamp: serverTime,
                     amount: incomeToAdd,
                     investmentId: invId,
-                    planName: investment.planName
+                    planName: investment.planName,
+                    balanceType: plan?.lockedBalance ? 'locked' : 'regular'
                 });
             }
         }
         
-        // 6. Update user balance if income added
+        // Update user balance if income added
         if (totalIncome > 0) {
             const userRef = db.ref(`users/${userId}`);
             const userSnap = await userRef.once('value');
             const userData = userSnap.val();
             
-            const newBalance = (userData.balance || 0) + totalIncome;
-            const newTotalEarnings = (userData.totalEarnings || 0) + totalIncome;
+            if (regularIncome > 0) {
+                const newBalance = (userData.balance || 0) + regularIncome;
+                await userRef.update({
+                    balance: newBalance
+                });
+            }
+            
+            if (lockedIncome > 0) {
+                const newLockedBalance = (userData.lockedBalance || 0) + lockedIncome;
+                await userRef.update({
+                    lockedBalance: newLockedBalance
+                });
+            }
             
             await userRef.update({
-                balance: newBalance,
-                totalEarnings: newTotalEarnings,
+                totalEarnings: (userData.totalEarnings || 0) + totalIncome,
                 lastIncomeCheck: serverTime
             });
             
@@ -1575,6 +1713,8 @@ app.post('/api/secure-income-check', async (req, res) => {
                 id: transactionId,
                 type: 'daily_income',
                 amount: totalIncome,
+                regularIncome: regularIncome,
+                lockedIncome: lockedIncome,
                 timestamp: serverTime,
                 date: new Date().toISOString(),
                 investments: processedInvestments,
@@ -1586,11 +1726,13 @@ app.post('/api/secure-income-check', async (req, res) => {
             await db.ref(`lastChecks/${userId}`).set({
                 lastCheck: serverTime,
                 incomeAdded: totalIncome,
+                regularIncome: regularIncome,
+                lockedIncome: lockedIncome,
                 investmentsCount: processedInvestments.length
             });
         }
         
-        // 7. Get next payout times for response
+        // Get next payout times for response
         const nextPayouts = [];
         for (const invId in investments) {
             const inv = investments[invId];
@@ -1598,38 +1740,44 @@ app.post('/api/secure-income-check', async (req, res) => {
                 const nextPayout = inv.nextPayoutTime || inv.investmentTime + (24 * 60 * 60 * 1000);
                 const hoursUntilNext = Math.max(0, (nextPayout - serverTime) / (1000 * 60 * 60));
                 
+                const plan = NEW_PLANS[inv.planId];
+                
                 nextPayouts.push({
                     investmentId: invId,
                     planName: inv.planName,
                     nextPayoutTime: nextPayout,
                     hoursRemaining: Math.ceil(hoursUntilNext),
-                    isEligible: hoursUntilNext <= 0
+                    isEligible: hoursUntilNext <= 0,
+                    balanceType: plan?.lockedBalance ? 'locked' : 'regular'
                 });
             }
         }
         
-        // 8. Prepare response
+        // Prepare response
         const response = {
             success: true,
             serverTime: serverTime,
             incomeAdded: totalIncome,
+            regularIncome: regularIncome,
+            lockedIncome: lockedIncome,
             nextCheckTime: serverTime + 3600000, // Can check again in 1 hour
             processedCount: processedInvestments.length,
             nextPayouts: nextPayouts,
             message: totalIncome > 0 
-                ? `🎉 ₹${totalIncome} income added successfully!`
+                ? `🎉 ₹${totalIncome} income added successfully! (₹${regularIncome} available, ₹${lockedIncome} locked)`
                 : 'No income available yet. Check back later.',
             security: {
-                checksToday: await getChecksToday(userId),
-                lastPenalty: penalty || null
+                cheatAttempts: userData?.cheatAttempts || 0
             }
         };
         
-        // 9. Log this check
+        // Log this check
         await db.ref(`incomeChecks/${userId}/${serverTime}`).set({
             serverTime: serverTime,
             clientTime: clientTime,
             incomeAdded: totalIncome,
+            regularIncome: regularIncome,
+            lockedIncome: lockedIncome,
             processedInvestments: processedInvestments.length,
             ip: req.headers['x-forwarded-for'] || req.ip
         });
@@ -1646,42 +1794,18 @@ app.post('/api/secure-income-check', async (req, res) => {
     }
 });
 
-// Helper function to get checks today
-async function getChecksToday(userId) {
-    try {
-        const today = new Date().toDateString();
-        const checksSnap = await db.ref(`incomeChecks/${userId}`)
-            .orderByKey()
-            .limitToLast(50)
-            .once('value');
-        
-        const checks = checksSnap.val() || {};
-        let todayCount = 0;
-        
-        Object.keys(checks).forEach(timestamp => {
-            const checkDate = new Date(parseInt(timestamp)).toDateString();
-            if (checkDate === today) {
-                todayCount++;
-            }
-        });
-        
-        return todayCount;
-    } catch (error) {
-        return 0;
-    }
-}
-
 // 36. GET NEXT INCOME TIME
 app.post('/api/get-next-income', async (req, res) => {
     try {
-        const { userId, signature, clientTime } = req.body;
+        const { userId } = req.body;
         const serverTime = Date.now();
         
-        // Verify signature
-        if (!verifySignature(userId, clientTime, signature)) {
-            return res.status(401).json({
+        // Check if user is banned
+        const isBanned = await checkIfBanned(userId);
+        if (isBanned) {
+            return res.status(403).json({
                 success: false,
-                message: 'Invalid signature'
+                message: 'Account suspended.'
             });
         }
         
@@ -1692,10 +1816,13 @@ app.post('/api/get-next-income', async (req, res) => {
         const result = [];
         let earliestNextPayout = null;
         let totalDailyIncome = 0;
+        let lockedDailyIncome = 0;
+        let regularDailyIncome = 0;
         
         for (const invId in investments) {
             const inv = investments[invId];
             if (inv.status === 'active') {
+                const plan = NEW_PLANS[inv.planId];
                 const nextPayout = inv.nextPayoutTime || inv.investmentTime + (24 * 60 * 60 * 1000);
                 const hoursRemaining = Math.max(0, (nextPayout - serverTime) / (1000 * 60 * 60));
                 
@@ -1704,10 +1831,17 @@ app.post('/api/get-next-income', async (req, res) => {
                     nextPayout: new Date(nextPayout).toLocaleString(),
                     hoursRemaining: Math.ceil(hoursRemaining),
                     dailyIncome: inv.dailyIncome,
-                    isEligible: hoursRemaining <= 0
+                    isEligible: hoursRemaining <= 0,
+                    balanceType: plan?.lockedBalance ? 'locked' : 'regular'
                 });
                 
                 totalDailyIncome += inv.dailyIncome;
+                
+                if (plan?.lockedBalance) {
+                    lockedDailyIncome += inv.dailyIncome;
+                } else {
+                    regularDailyIncome += inv.dailyIncome;
+                }
                 
                 // Track earliest next payout
                 if (!earliestNextPayout || nextPayout < earliestNextPayout) {
@@ -1721,6 +1855,8 @@ app.post('/api/get-next-income', async (req, res) => {
             serverTime: serverTime,
             investments: result,
             totalDailyIncome: totalDailyIncome,
+            lockedDailyIncome: lockedDailyIncome,
+            regularDailyIncome: regularDailyIncome,
             earliestNextPayout: earliestNextPayout ? new Date(earliestNextPayout).toLocaleString() : null,
             earliestHoursRemaining: earliestNextPayout ? Math.ceil((earliestNextPayout - serverTime) / (1000 * 60 * 60)) : null
         });
@@ -1734,48 +1870,7 @@ app.post('/api/get-next-income', async (req, res) => {
     }
 });
 
-// 37. REFRESH SIGNATURE
-app.post('/api/refresh-signature', async (req, res) => {
-    try {
-        const { userId, oldSignature, oldTimestamp } = req.body;
-        const serverTime = Date.now();
-        
-        // Verify old signature
-        if (!verifySignature(userId, oldTimestamp, oldSignature)) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid old signature'
-            });
-        }
-        
-        // Generate new signature
-        const newTimestamp = serverTime;
-        const newSignature = generateSignature(userId, newTimestamp);
-        
-        // Update in database
-        await db.ref(`userSessions/${userId}`).update({
-            signature: newSignature,
-            timestamp: newTimestamp,
-            lastRefresh: new Date().toISOString()
-        });
-        
-        res.json({
-            success: true,
-            signature: newSignature,
-            timestamp: newTimestamp,
-            expiresIn: 24 * 60 * 60 * 1000 // 24 hours
-        });
-        
-    } catch (error) {
-        console.error('Refresh signature error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error' 
-        });
-    }
-});
-
-// ==================== ADMIN APIs (SAME AS BEFORE) ====================
+// ==================== ADMIN APIs ====================
 
 // 18. ADMIN LOGIN
 app.post('/api/admin/login', checkAdmin, (req, res) => {
@@ -1870,7 +1965,7 @@ app.post('/api/admin/approve-recharge', checkAdmin, async (req, res) => {
     }
 });
 
-// 21. PROCESS WITHDRAWAL (Admin only - FIXED FOR FIREBASE QUERY ERROR)
+// 21. PROCESS WITHDRAWAL (Admin only)
 app.post('/api/admin/process-withdrawal', checkAdmin, async (req, res) => {
     try {
         console.log('🔧 Processing withdrawal request:', req.body);
@@ -1949,9 +2044,8 @@ app.post('/api/admin/process-withdrawal', checkAdmin, async (req, res) => {
                         console.log('✅ User trust count updated');
                     }
                     
-                    // FIXED: Update transaction status without multiple orderByChild calls
+                    // Update transaction status
                     try {
-                        // Get all withdrawal_request transactions
                         const txRef = db.ref(`transactions/${withdrawalData.userId}`)
                             .orderByChild('type')
                             .equalTo('withdrawal_request');
@@ -1962,14 +2056,14 @@ app.post('/api/admin/process-withdrawal', checkAdmin, async (req, res) => {
                             let foundTransactionKey = null;
                             let foundTransaction = null;
                             
-                            // Manually filter by amount in JavaScript
                             txSnapshot.forEach((childSnapshot) => {
                                 const tx = childSnapshot.val();
-                                if (tx.amount === withdrawalData.amount || 
-                                    Math.abs(tx.amount - withdrawalData.amount) < 0.01) {
+                                if (tx.withdrawalId === withdrawalId || 
+                                    (tx.amount === withdrawalData.amount && 
+                                     Math.abs(tx.amount - withdrawalData.amount) < 0.01)) {
                                     foundTransaction = tx;
                                     foundTransactionKey = childSnapshot.key;
-                                    return true; // Stop iterating
+                                    return true;
                                 }
                             });
                             
@@ -1977,11 +2071,12 @@ app.post('/api/admin/process-withdrawal', checkAdmin, async (req, res) => {
                                 await db.ref(`transactions/${withdrawalData.userId}/${foundTransactionKey}`).update({
                                     status: 'completed',
                                     utrNumber: utrNumber,
-                                    transactionId: transactionId
+                                    transactionId: transactionId,
+                                    completedDate: new Date().toISOString()
                                 });
                                 console.log('✅ Transaction updated successfully');
                             } else {
-                                console.log('ℹ️ No matching transaction found for amount:', withdrawalData.amount);
+                                console.log('ℹ️ No matching transaction found');
                             }
                         }
                     } catch (txError) {
@@ -2077,12 +2172,110 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
     try {
         console.log('💰 Admin triggered manual daily income distribution');
         
-        const result = await distributeDailyIncome();
+        // Get all active users
+        const usersSnapshot = await db.ref('users').once('value');
+        const users = usersSnapshot.val() || {};
+        
+        let totalDistributed = 0;
+        let usersProcessed = 0;
+        
+        for (const userId in users) {
+            try {
+                // Get user investments
+                const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
+                const investments = investmentsSnap.val() || {};
+                
+                let userIncome = 0;
+                let userLockedIncome = 0;
+                let userRegularIncome = 0;
+                
+                for (const invId in investments) {
+                    const investment = investments[invId];
+                    
+                    if (investment.status !== 'active') continue;
+                    if (investment.daysRemaining <= 0) continue;
+                    
+                    // Check if 24 hours have passed
+                    const lastPayout = investment.lastPayoutTime || investment.investmentTime;
+                    const hoursPassed = (Date.now() - lastPayout) / (1000 * 60 * 60);
+                    
+                    if (hoursPassed >= 24) {
+                        const incomeToAdd = investment.dailyIncome;
+                        const plan = NEW_PLANS[investment.planId];
+                        
+                        // Update investment
+                        await db.ref(`investments/${userId}/${invId}`).update({
+                            lastPayoutTime: Date.now(),
+                            nextPayoutTime: Date.now() + (24 * 60 * 60 * 1000),
+                            daysRemaining: investment.daysRemaining - 1,
+                            totalEarned: (investment.totalEarned || 0) + incomeToAdd,
+                            payoutCount: (investment.payoutCount || 0) + 1,
+                            status: investment.daysRemaining - 1 <= 0 ? 'completed' : 'active'
+                        });
+                        
+                        userIncome += incomeToAdd;
+                        
+                        if (plan?.lockedBalance) {
+                            userLockedIncome += incomeToAdd;
+                        } else {
+                            userRegularIncome += incomeToAdd;
+                        }
+                    }
+                }
+                
+                // Update user balance if income added
+                if (userIncome > 0) {
+                    const userRef = db.ref(`users/${userId}`);
+                    const userSnap = await userRef.once('value');
+                    const userData = userSnap.val();
+                    
+                    if (userRegularIncome > 0) {
+                        await userRef.update({
+                            balance: (userData.balance || 0) + userRegularIncome
+                        });
+                    }
+                    
+                    if (userLockedIncome > 0) {
+                        await userRef.update({
+                            lockedBalance: (userData.lockedBalance || 0) + userLockedIncome
+                        });
+                    }
+                    
+                    await userRef.update({
+                        totalEarnings: (userData.totalEarnings || 0) + userIncome,
+                        lastIncomeCheck: Date.now()
+                    });
+                    
+                    // Record transaction
+                    const transactionId = generateTransactionId();
+                    await db.ref(`transactions/${userId}/${transactionId}`).set({
+                        id: transactionId,
+                        type: 'daily_income',
+                        amount: userIncome,
+                        regularIncome: userRegularIncome,
+                        lockedIncome: userLockedIncome,
+                        timestamp: Date.now(),
+                        date: new Date().toISOString(),
+                        status: 'completed',
+                        note: 'Manual daily income distribution by admin'
+                    });
+                    
+                    totalDistributed += userIncome;
+                    usersProcessed++;
+                }
+            } catch (userError) {
+                console.error(`Error processing user ${userId}:`, userError);
+            }
+        }
         
         res.json({
             success: true,
             message: 'Daily income distributed successfully',
-            result: result
+            result: {
+                totalDistributed: totalDistributed,
+                usersProcessed: usersProcessed,
+                timestamp: new Date().toISOString()
+            }
         });
         
     } catch (error) {
@@ -2149,9 +2342,223 @@ app.get('/api/admin/referral-stats', checkAdmin, async (req, res) => {
     }
 });
 
-// ==================== NEW TRUST SYSTEM APIs ====================
+// ==================== ADMIN BAN SYSTEM ====================
 
-// 26. GET TRUST WITHDRAWALS (Public - Anyone can view)
+// 37. ADMIN: BAN USER
+app.post('/api/admin/ban-user', checkAdmin, async (req, res) => {
+    try {
+        const { userId, reason, durationDays } = req.body;
+        
+        if (!userId || !reason) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID and reason required' 
+            });
+        }
+        
+        // Check if user exists
+        const userSnapshot = await db.ref(`users/${userId}`).once('value');
+        if (!userSnapshot.exists()) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+        
+        const banId = generateBanId();
+        const expiresAt = durationDays ? 
+            new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString() : 
+            null;
+        
+        const banData = {
+            id: banId,
+            userId: userId,
+            userName: userSnapshot.val().name,
+            userPhone: userSnapshot.val().phone,
+            reason: reason,
+            details: req.body.details || null,
+            bannedAt: new Date().toISOString(),
+            bannedBy: 'admin',
+            status: 'active',
+            expiresAt: expiresAt,
+            durationDays: durationDays || null
+        };
+        
+        // Save ban record
+        await db.ref(`bans/${userId}`).set(banData);
+        
+        // Update user status
+        await db.ref(`users/${userId}`).update({
+            status: 'banned',
+            banReason: reason,
+            bannedAt: new Date().toISOString()
+        });
+        
+        console.log(`🔨 ADMIN BANNED USER: ${userId} - ${reason}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'User banned successfully',
+            banId: banId,
+            user: {
+                id: userId,
+                name: userSnapshot.val().name,
+                phone: userSnapshot.val().phone
+            }
+        });
+        
+    } catch (error) {
+        console.error('Admin ban error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// 38. ADMIN: UNBAN USER
+app.post('/api/admin/unban-user', checkAdmin, async (req, res) => {
+    try {
+        const { userId } = req.body;
+        
+        if (!userId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User ID required' 
+            });
+        }
+        
+        // Remove ban record
+        await db.ref(`bans/${userId}`).remove();
+        
+        // Update user status
+        await db.ref(`users/${userId}`).update({
+            status: 'active',
+            banReason: null,
+            bannedAt: null
+        });
+        
+        console.log(`🔓 ADMIN UNBANNED USER: ${userId}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'User unbanned successfully'
+        });
+        
+    } catch (error) {
+        console.error('Admin unban error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// 39. ADMIN: GET BANNED USERS
+app.get('/api/admin/banned-users', checkAdmin, async (req, res) => {
+    try {
+        const snapshot = await db.ref('bans').once('value');
+        const bans = snapshot.val() || {};
+        
+        const bannedUsers = [];
+        
+        for (const userId in bans) {
+            const ban = bans[userId];
+            const userSnapshot = await db.ref(`users/${userId}`).once('value');
+            const user = userSnapshot.val();
+            
+            if (user) {
+                bannedUsers.push({
+                    userId: userId,
+                    userName: user.name,
+                    userPhone: user.phone,
+                    banReason: ban.reason,
+                    bannedAt: ban.bannedAt,
+                    bannedBy: ban.bannedBy,
+                    expiresAt: ban.expiresAt,
+                    status: ban.status,
+                    details: ban.details
+                });
+            }
+        }
+        
+        bannedUsers.sort((a, b) => new Date(b.bannedAt) - new Date(a.bannedAt));
+        
+        res.json({ 
+            success: true, 
+            bannedUsers: bannedUsers,
+            total: bannedUsers.length
+        });
+        
+    } catch (error) {
+        console.error('Get banned users error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// 40. ADMIN: GET CHEAT LOGS
+app.get('/api/admin/cheat-logs', checkAdmin, async (req, res) => {
+    try {
+        const { userId, limit = 50 } = req.query;
+        
+        let cheatLogs = [];
+        
+        if (userId) {
+            const snapshot = await db.ref(`cheatLogs/${userId}`)
+                .orderByKey()
+                .limitToLast(parseInt(limit))
+                .once('value');
+            
+            if (snapshot.exists()) {
+                const logs = snapshot.val();
+                for (const timestamp in logs) {
+                    cheatLogs.push({
+                        userId: userId,
+                        timestamp: parseInt(timestamp),
+                        ...logs[timestamp]
+                    });
+                }
+            }
+        } else {
+            const snapshot = await db.ref('cheatLogs').once('value');
+            const allLogs = snapshot.val() || {};
+            
+            for (const uid in allLogs) {
+                const userLogs = allLogs[uid];
+                for (const timestamp in userLogs) {
+                    cheatLogs.push({
+                        userId: uid,
+                        timestamp: parseInt(timestamp),
+                        ...userLogs[timestamp]
+                    });
+                }
+            }
+        }
+        
+        cheatLogs.sort((a, b) => b.timestamp - a.timestamp);
+        cheatLogs = cheatLogs.slice(0, parseInt(limit));
+        
+        res.json({ 
+            success: true, 
+            cheatLogs: cheatLogs,
+            total: cheatLogs.length
+        });
+        
+    } catch (error) {
+        console.error('Get cheat logs error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// ==================== TRUST SYSTEM APIs ====================
+
+// 41. GET TRUST WITHDRAWALS (Public)
 app.get('/api/trust/withdrawals', async (req, res) => {
     try {
         const { limit = 50, type = 'all' } = req.query;
@@ -2159,43 +2566,15 @@ app.get('/api/trust/withdrawals', async (req, res) => {
         
         let withdrawals = [];
         
-        // Get demo withdrawals
-        if (type === 'all' || type === 'demo') {
-            const demoSapshot = await db.ref('trustWithdrawals/demo')
-                .orderByChild('date')
-                .limitToLast(limitNum / 2)
-                .once('value');
-            
-            if (demoSapshot.exists()) {
-                const demoData = demoSapshot.val();
-                withdrawals = withdrawals.concat(Object.values(demoData));
-            }
-        }
+        // Get from public withdrawals
+        const publicSnapshot = await db.ref('trustWithdrawals/public')
+            .orderByChild('date')
+            .limitToLast(limitNum)
+            .once('value');
         
-        // Get real completed withdrawals
-        if (type === 'all' || type === 'real') {
-            const realSnapshot = await db.ref('trustWithdrawals/real')
-                .orderByChild('date')
-                .limitToLast(limitNum / 2)
-                .once('value');
-            
-            if (realSnapshot.exists()) {
-                const realData = realSnapshot.val();
-                withdrawals = withdrawals.concat(Object.values(realData));
-            }
-        }
-        
-        // If no specific type, get from public
-        if (type === 'all') {
-            const publicSnapshot = await db.ref('trustWithdrawals/public')
-                .orderByChild('date')
-                .limitToLast(limitNum)
-                .once('value');
-            
-            if (publicSnapshot.exists()) {
-                const publicData = publicSnapshot.val();
-                withdrawals = Object.values(publicData);
-            }
+        if (publicSnapshot.exists()) {
+            const publicData = publicSnapshot.val();
+            withdrawals = Object.values(publicData);
         }
         
         // Sort by date (newest first)
@@ -2220,10 +2599,9 @@ app.get('/api/trust/withdrawals', async (req, res) => {
     }
 });
 
-// 27. GET WITHDRAWAL STATS FOR TRUST PAGE
+// 42. GET WITHDRAWAL STATS FOR TRUST PAGE
 app.get('/api/trust/stats', async (req, res) => {
     try {
-        // Get all public withdrawals
         const publicSnapshot = await db.ref('trustWithdrawals/public').once('value');
         const publicWithdrawals = publicSnapshot.val() || {};
         
@@ -2276,7 +2654,7 @@ app.get('/api/trust/stats', async (req, res) => {
     }
 });
 
-// 28. ADMIN: CREATE FAKE/DEMO WITHDRAWAL (For trust building)
+// 43. ADMIN: CREATE FAKE/DEMO WITHDRAWAL
 app.post('/api/admin/create-fake-withdrawal', checkAdmin, async (req, res) => {
     try {
         const { 
@@ -2349,7 +2727,7 @@ app.post('/api/admin/create-fake-withdrawal', checkAdmin, async (req, res) => {
     }
 });
 
-// 29. ADMIN: GET ALL TRUST WITHDRAWALS
+// 44. ADMIN: GET ALL TRUST WITHDRAWALS
 app.get('/api/admin/trust-withdrawals', checkAdmin, async (req, res) => {
     try {
         const { type = 'all' } = req.query;
@@ -2395,7 +2773,7 @@ app.get('/api/admin/trust-withdrawals', checkAdmin, async (req, res) => {
     }
 });
 
-// 30. ADMIN: BULK CREATE DEMO WITHDRAWALS
+// 45. ADMIN: BULK CREATE DEMO WITHDRAWALS
 app.post('/api/admin/bulk-demo-withdrawals', checkAdmin, async (req, res) => {
     try {
         const { count = 20 } = req.body;
@@ -2417,7 +2795,7 @@ app.post('/api/admin/bulk-demo-withdrawals', checkAdmin, async (req, res) => {
     }
 });
 
-// 31. ADMIN: GENERATE GIFT CODE
+// 46. ADMIN: GENERATE GIFT CODE
 app.post('/api/admin/generate-gift-code', checkAdmin, async (req, res) => {
     try {
         const { amount, expiryDays, maxUses = 1, createdFor, note } = req.body;
@@ -2466,7 +2844,7 @@ app.post('/api/admin/generate-gift-code', checkAdmin, async (req, res) => {
     }
 });
 
-// 32. ADMIN: GET ALL GIFT CODES
+// 47. ADMIN: GET ALL GIFT CODES
 app.get('/api/admin/gift-codes', checkAdmin, async (req, res) => {
     try {
         const snapshot = await db.ref('giftCodes').once('value');
@@ -2486,7 +2864,7 @@ app.get('/api/admin/gift-codes', checkAdmin, async (req, res) => {
     }
 });
 
-// 33. USER: CHECK GIFT CODE VALIDITY
+// 48. USER: CHECK GIFT CODE VALIDITY
 app.post('/api/check-gift-code', async (req, res) => {
     try {
         const { giftCode } = req.body;
@@ -2545,7 +2923,7 @@ app.post('/api/check-gift-code', async (req, res) => {
     }
 });
 
-// 34. ADMIN: DELETE TRUST WITHDRAWAL
+// 49. ADMIN: DELETE TRUST WITHDRAWAL
 app.delete('/api/admin/trust-withdrawal/:withdrawalId', checkAdmin, async (req, res) => {
     try {
         const { withdrawalId } = req.params;
@@ -2568,14 +2946,28 @@ app.delete('/api/admin/trust-withdrawal/:withdrawalId', checkAdmin, async (req, 
     }
 });
 
-// 38. HEALTH CHECK
+// 50. HEALTH CHECK
 app.get('/api/health', (req, res) => {
     res.json({ 
         success: true, 
-        message: 'API is running',
+        message: 'Happy Invest API is running',
         timestamp: new Date().toISOString(),
-        version: '4.0.0',
-        features: ['secure-income-system', 'ddos-protection', 'anti-cheat']
+        version: '5.0.0',
+        features: [
+            'secure-income-system',
+            'anti-cheat-protection',
+            'admin-ban-system',
+            'daily-withdrawal-limit',
+            'locked-balance-vip-rich-ultimate',
+            'fixed-110-referral',
+            'trust-withdrawal-system'
+        ],
+        plans: {
+            basic: 3,
+            vip: 3,
+            rich: 4,
+            ultimate: 3
+        }
     });
 });
 
@@ -2599,12 +2991,15 @@ app.use((err, req, res, next) => {
 // ==================== START SERVER ====================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`✅ Secure Happy Invest API running on port ${PORT}`);
+    console.log(`✅ Happy Invest API v5.0 running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`✅ Total APIs: 38 endpoints`);
-    console.log(`✅ Rate Limiting: 60 requests/minute per endpoint`);
-    console.log(`✅ Secure Income System: Enabled`);
-    console.log(`✅ Anti-Cheat Protection: Enabled`);
+    console.log(`✅ Total APIs: 50 endpoints`);
+    console.log(`✅ Rate Limiting: 60 requests/minute`);
+    console.log(`✅ Anti-Cheat System: Enabled (3 attempts = ban)`);
+    console.log(`✅ Admin Ban System: Enabled`);
+    console.log(`✅ Withdrawal Rules: ₹200 min, 1 per day`);
+    console.log(`✅ Referral System: Fixed ₹110 per referral`);
+    console.log(`✅ Locked Balance: VIP/Rich/Ultimate plans`);
     console.log(`✅ Health Check: http://localhost:${PORT}/api/health`);
     
     // Initialize demo withdrawals
