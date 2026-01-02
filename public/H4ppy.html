@@ -34,7 +34,7 @@
             z-index: -1;
         }
         
-        /* Header with Referral Link */
+        /* Header */
         .header {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -60,112 +60,6 @@
             opacity: 0.2;
             z-index: 0;
             border-radius: 0 0 25px 25px;
-        }
-        
-        .referral-title {
-            font-size: 16px;
-            color: #a0a0d0;
-            margin-bottom: 12px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            font-weight: 600;
-        }
-        
-        .referral-box {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-        
-        .referral-box:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(0, 210, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
-        }
-        
-        .website-url {
-            font-size: 14px;
-            color: #fff;
-            font-weight: 500;
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding-right: 10px;
-            font-family: monospace;
-        }
-        
-        .copy-btn {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            min-width: 60px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.6);
-        }
-        
-        .copy-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .page-title {
-            font-size: 24px;
-            color: #fff;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 15px;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Back Button */
-        .back-btn { 
-            font-size: 24px; 
-            color: #fff; 
-            margin-right: 15px; 
-            text-decoration: none; 
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            z-index: 2;
-        }
-        
-        .back-btn:hover {
-            background: rgba(0, 210, 255, 0.2);
-            transform: translateX(-5px);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
         
         /* Login Container */
@@ -247,10 +141,6 @@
         .login-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(0, 255, 170, 0.6);
-        }
-        
-        .login-btn:active {
-            transform: translateY(-1px);
         }
         
         /* Admin Panel Container */
@@ -652,6 +542,135 @@
             letter-spacing: 0.5px;
         }
         
+        /* Ban User Modal */
+        .ban-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ban-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ban-modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .ban-modal-title {
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .ban-modal-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .ban-modal-input:focus {
+            border-color: #ff3366;
+            box-shadow: 0 0 0 2px rgba(255, 51, 102, 0.2);
+        }
+        
+        .ban-modal-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .ban-modal-textarea:focus {
+            border-color: #ff3366;
+            box-shadow: 0 0 0 2px rgba(255, 51, 102, 0.2);
+        }
+        
+        .ban-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .ban-modal-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ban-modal-btn.ban {
+            background: linear-gradient(135deg, #ff3366, #ff0000);
+            color: white;
+        }
+        
+        .ban-modal-btn.unban {
+            background: linear-gradient(135deg, #00ffaa, #00cc88);
+            color: white;
+        }
+        
+        .ban-modal-btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .ban-modal-btn:hover {
+            transform: translateY(-2px);
+        }
+        
         /* Trust Actions */
         .trust-actions {
             padding: 15px;
@@ -839,17 +858,6 @@
             animation: modalSlideIn 0.3s ease-out;
         }
         
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
         .modal-title {
             font-size: 22px;
             color: #fff;
@@ -906,6 +914,68 @@
         
         .modal-btn:hover {
             transform: translateY(-2px);
+        }
+        
+        /* Ban/Unban button in user card */
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .ban-btn, .unban-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .ban-btn {
+            background: rgba(255, 51, 102, 0.2);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+        
+        .unban-btn {
+            background: rgba(0, 255, 170, 0.2);
+            color: #00ffaa;
+            border: 1px solid rgba(0, 255, 170, 0.3);
+        }
+        
+        .ban-btn:hover, .unban-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Back Button */
+        .back-btn { 
+            font-size: 24px; 
+            color: #fff; 
+            margin-right: 15px; 
+            text-decoration: none; 
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            z-index: 2;
+        }
+        
+        .back-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            transform: translateX(-5px);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
         
         /* Responsive */
@@ -968,6 +1038,69 @@
     <!-- Glowing Background -->
     <div class="glow-bg"></div>
     
+    <!-- Ban User Modal -->
+    <div class="ban-modal" id="banModal">
+        <div class="ban-modal-content">
+            <h2 class="ban-modal-title" id="banModalTitle">Ban User</h2>
+            
+            <input type="text" 
+                   id="banUserId" 
+                   class="ban-modal-input" 
+                   placeholder="User ID" readonly>
+            
+            <input type="text" 
+                   id="banUserName" 
+                   class="ban-modal-input" 
+                   placeholder="User Name" readonly>
+            
+            <input type="text" 
+                   id="banReason" 
+                   class="ban-modal-input" 
+                   placeholder="Ban Reason (Required)">
+            
+            <textarea id="banDetails" 
+                      class="ban-modal-textarea" 
+                      placeholder="Additional Details (Optional)"></textarea>
+            
+            <input type="number" 
+                   id="banDurationDays" 
+                   class="ban-modal-input" 
+                   placeholder="Ban Duration (Days, leave empty for permanent)"
+                   min="1">
+            
+            <div class="ban-modal-buttons">
+                <button class="ban-modal-btn cancel" id="cancelBanBtn">Cancel</button>
+                <button class="ban-modal-btn ban" id="confirmBanBtn">Ban User</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Unban User Modal -->
+    <div class="ban-modal" id="unbanModal">
+        <div class="ban-modal-content">
+            <h2 class="ban-modal-title">Unban User</h2>
+            
+            <input type="text" 
+                   id="unbanUserId" 
+                   class="ban-modal-input" 
+                   placeholder="User ID" readonly>
+            
+            <input type="text" 
+                   id="unbanUserName" 
+                   class="ban-modal-input" 
+                   placeholder="User Name" readonly>
+            
+            <p style="color: #a0a0d0; margin-bottom: 20px; text-align: center;">
+                Are you sure you want to unban this user?
+            </p>
+            
+            <div class="ban-modal-buttons">
+                <button class="ban-modal-btn cancel" id="cancelUnbanBtn">Cancel</button>
+                <button class="ban-modal-btn unban" id="confirmUnbanBtn">Unban User</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- UTR Entry Modal -->
     <div class="modal-overlay" id="utrModal">
         <div class="modal-content">
@@ -989,6 +1122,40 @@
             <div class="modal-buttons">
                 <button class="modal-btn secondary" id="cancelBtn">Cancel</button>
                 <button class="modal-btn primary" id="confirmCompleteBtn">Complete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gift Code Modal -->
+    <div class="modal-overlay" id="giftCodeModal">
+        <div class="modal-content">
+            <h2 class="modal-title">Gift Code Generated</h2>
+            <p style="color: #a0a0d0; margin-bottom: 20px; text-align: center;">
+                Copy this gift code and share with user
+            </p>
+            
+            <div style="
+                background: rgba(0, 0, 0, 0.3);
+                padding: 20px;
+                border-radius: 12px;
+                text-align: center;
+                margin-bottom: 20px;
+                border: 2px solid #00ffaa;
+            ">
+                <h3 style="color: #00ffaa; font-size: 24px; margin-bottom: 10px;" id="giftCodeDisplay">CODE12345</h3>
+                <p style="color: #a0a0d0; font-size: 14px;">
+                    Amount: ₹<span id="giftAmountDisplay">0</span>
+                </p>
+                <p style="color: #a0a0d0; font-size: 14px;">
+                    Expires: <span id="giftExpiryDisplay">Never</span>
+                </p>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="closeGiftModalBtn">Close</button>
+                <button class="modal-btn primary" id="copyGiftCodeBtn">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
             </div>
         </div>
     </div>
@@ -1265,18 +1432,18 @@
                     </div>
                 </div>
                 
-                <!-- Trust Withdrawals Stats -->
+                <!-- View Trust Withdrawals -->
                 <div class="trust-action-card">
                     <div class="trust-action-header">
                         <div class="trust-action-icon">📈</div>
                         <div class="trust-action-text">
-                            <h4>Trust Statistics</h4>
-                            <p>View trust withdrawals statistics</p>
+                            <h4>View Trust Withdrawals</h4>
+                            <p>View all trust withdrawals and statistics</p>
                         </div>
                     </div>
                     
                     <div class="action-buttons">
-                        <button class="action-btn approve-btn" id="viewTrustStatsBtn">
+                        <button class="action-btn approve-btn" id="viewTrustWithdrawalsBtn">
                             <i class="fas fa-chart-bar"></i> View Stats
                         </button>
                     </div>
@@ -1308,36 +1475,36 @@
                     </div>
                 </div>
                 
-                <!-- Ban/Unban Users -->
+                <!-- Ban Users -->
                 <div class="trust-action-card">
                     <div class="trust-action-header">
                         <div class="trust-action-icon">🔨</div>
                         <div class="trust-action-text">
-                            <h4>User Management</h4>
-                            <p>Ban or unban users, view cheat logs</p>
+                            <h4>Ban Users</h4>
+                            <p>Ban users who cheat or violate terms</p>
                         </div>
                     </div>
                     
                     <div class="action-buttons">
-                        <button class="action-btn approve-btn" id="banUsersBtn">
-                            <i class="fas fa-user-slash"></i> Manage Users
+                        <button class="action-btn approve-btn" id="viewBannedUsersBtn">
+                            <i class="fas fa-user-slash"></i> View Banned Users
                         </button>
                     </div>
                 </div>
                 
-                <!-- System Stats -->
+                <!-- View Cheat Logs -->
                 <div class="trust-action-card">
                     <div class="trust-action-header">
-                        <div class="trust-action-icon">📊</div>
+                        <div class="trust-action-icon">👁️</div>
                         <div class="trust-action-text">
-                            <h4>System Statistics</h4>
-                            <p>View detailed system statistics and reports</p>
+                            <h4>View Cheat Logs</h4>
+                            <p>View all cheat attempts and suspicious activities</p>
                         </div>
                     </div>
                     
                     <div class="action-buttons">
-                        <button class="action-btn approve-btn" id="viewStatsBtn">
-                            <i class="fas fa-chart-bar"></i> View Stats
+                        <button class="action-btn approve-btn" id="viewCheatLogsBtn">
+                            <i class="fas fa-exclamation-triangle"></i> View Logs
                         </button>
                     </div>
                 </div>
@@ -1372,19 +1539,13 @@
         let isLoggedIn = false;
         let currentWithdrawalId = null;
         let currentWithdrawalCard = null;
-        
-        // Elements
-        const loginContainer = document.getElementById('loginContainer');
-        const adminContainer = document.getElementById('adminContainer');
-        const adminPasswordInput = document.getElementById('adminPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const notification = document.getElementById('notification');
-        const currentTimeEl = document.getElementById('currentTime');
-        const utrModal = document.getElementById('utrModal');
+        let currentBanUserId = null;
+        let currentBanUserName = null;
+        let currentGiftCode = null;
         
         // Show notification
         function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = 'notification';
             
@@ -1423,7 +1584,7 @@
                 year: 'numeric'
             });
             
-            currentTimeEl.textContent = `${dateString} | ${timeString}`;
+            document.getElementById('currentTime').textContent = `${dateString} | ${timeString}`;
         }
         
         // Interactive background effect
@@ -1438,13 +1599,29 @@
             `;
         });
         
-        // ✅ Login function - UPDATED
+        // ✅ Send request with admin password
+        async function sendAdminRequest(url, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'admin-password': adminPassword
+            };
+            
+            return fetch(url, {
+                ...options,
+                headers: {
+                    ...headers,
+                    ...options.headers
+                }
+            });
+        }
+        
+        // ✅ Login function
         async function adminLogin() {
-            const inputPassword = adminPasswordInput.value.trim();
+            const inputPassword = document.getElementById('adminPassword').value.trim();
             
             if (!inputPassword) {
                 showNotification('Please enter admin password', true);
-                adminPasswordInput.focus();
+                document.getElementById('adminPassword').focus();
                 return;
             }
             
@@ -1452,23 +1629,16 @@
             adminPassword = inputPassword;
             
             // Show loading
+            const loginBtn = document.getElementById('loginBtn');
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
             loginBtn.disabled = true;
             
             try {
-                // ✅ Updated API call - Correct endpoint
-                const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        adminPassword: adminPassword
-                    })
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/login`, {
+                    method: 'POST'
                 });
                 
                 const result = await response.json();
-                console.log('Login response:', result);
                 
                 if (result.success) {
                     // Login successful
@@ -1477,8 +1647,8 @@
                     isLoggedIn = true;
                     
                     // Switch to admin panel
-                    loginContainer.style.display = 'none';
-                    adminContainer.style.display = 'flex';
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('adminContainer').style.display = 'flex';
                     
                     // Load all data
                     await loadDashboardStats();
@@ -1502,7 +1672,7 @@
             }
         }
         
-        // Logout function
+        // ✅ Logout function
         function adminLogout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('adminLoggedIn');
@@ -1511,11 +1681,11 @@
                 adminPassword = '';
                 
                 // Switch to login screen
-                adminContainer.style.display = 'none';
-                loginContainer.style.display = 'flex';
+                document.getElementById('adminContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'flex';
                 
                 // Clear password field
-                adminPasswordInput.value = '';
+                document.getElementById('adminPassword').value = '';
                 
                 showNotification('Logged out successfully');
             }
@@ -1531,8 +1701,8 @@
                 isLoggedIn = true;
                 
                 // Switch to admin panel
-                loginContainer.style.display = 'none';
-                adminContainer.style.display = 'flex';
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'flex';
                 
                 // Load all data
                 loadDashboardStats();
@@ -1548,16 +1718,7 @@
         async function loadDashboardStats() {
             try {
                 // Get all users to calculate stats
-                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load users');
-                }
-                
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/users`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1576,33 +1737,19 @@
                 }
                 
                 // Get pending recharges count
-                const rechargesResponse = await fetch(`${API_BASE_URL}/api/admin/pending-recharges`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (rechargesResponse.ok) {
-                    const rechargesResult = await rechargesResponse.json();
-                    if (rechargesResult.success) {
-                        const recharges = rechargesResult.recharges || {};
-                        document.getElementById('pendingRecharges').textContent = Object.keys(recharges).length;
-                    }
+                const rechargesResponse = await sendAdminRequest(`${API_BASE_URL}/api/admin/pending-recharges`);
+                const rechargesResult = await rechargesResponse.json();
+                if (rechargesResult.success) {
+                    const recharges = rechargesResult.recharges || {};
+                    document.getElementById('pendingRecharges').textContent = Object.keys(recharges).length;
                 }
                 
                 // Get pending withdrawals count
-                const withdrawalsResponse = await fetch(`${API_BASE_URL}/api/admin/pending-withdrawals`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (withdrawalsResponse.ok) {
-                    const withdrawalsResult = await withdrawalsResponse.json();
-                    if (withdrawalsResult.success) {
-                        const withdrawals = withdrawalsResult.withdrawals || {};
-                        document.getElementById('pendingWithdrawals').textContent = Object.keys(withdrawals).length;
-                    }
+                const withdrawalsResponse = await sendAdminRequest(`${API_BASE_URL}/api/admin/pending-withdrawals`);
+                const withdrawalsResult = await withdrawalsResponse.json();
+                if (withdrawalsResult.success) {
+                    const withdrawals = withdrawalsResult.withdrawals || {};
+                    document.getElementById('pendingWithdrawals').textContent = Object.keys(withdrawals).length;
                 }
                 
             } catch (error) {
@@ -1610,7 +1757,7 @@
             }
         }
         
-        // ✅ Load pending recharges - UPDATED
+        // ✅ Load pending recharges
         async function loadRecharges() {
             const rechargesList = document.getElementById('rechargesList');
             rechargesList.innerHTML = `
@@ -1621,16 +1768,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/pending-recharges`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load recharges');
-                }
-                
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/pending-recharges`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1721,7 +1859,8 @@
                             const rechargeId = card.dataset.id;
                             
                             if (confirm('Are you sure you want to reject this recharge?')) {
-                                await rejectRecharge(rechargeId);
+                                // Note: You need to implement reject recharge API
+                                showNotification('Recharge rejection feature coming soon!');
                             }
                         });
                     });
@@ -1743,7 +1882,7 @@
             }
         }
         
-        // ✅ Load pending withdrawals - UPDATED
+        // ✅ Load pending withdrawals
         async function loadWithdrawals() {
             const withdrawalsList = document.getElementById('withdrawalsList');
             withdrawalsList.innerHTML = `
@@ -1754,16 +1893,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/pending-withdrawals`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load withdrawals');
-                }
-                
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/pending-withdrawals`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1862,7 +1992,6 @@
                             const card = this.closest('.admin-data-card');
                             const withdrawalId = card.dataset.id;
                             const amount = card.dataset.amount;
-                            const userName = card.querySelector('.user-info h4').textContent;
                             
                             currentWithdrawalId = withdrawalId;
                             currentWithdrawalCard = card;
@@ -1870,7 +1999,7 @@
                             // Show UTR modal
                             document.getElementById('utrNumber').value = '';
                             document.getElementById('transactionId').value = '';
-                            utrModal.classList.add('show');
+                            document.getElementById('utrModal').classList.add('show');
                             
                             // Auto-focus on UTR input
                             setTimeout(() => {
@@ -1886,7 +2015,7 @@
                             const amount = card.dataset.amount;
                             const userName = card.querySelector('.user-info h4').textContent;
                             
-                            if (confirm(`Are you sure you want to REJECT withdrawal of ₹${amount} for ${userName}?\n\nThis will refund the amount to user's balance.`)) {
+                            if (confirm(`Are you sure you want to REJECT withdrawal of ₹${amount} for ${userName}?`)) {
                                 await processWithdrawal(withdrawalId, 'rejected', null, null, card);
                             }
                         });
@@ -1920,16 +2049,7 @@
             `;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
-                    headers: {
-                        'admin-password': adminPassword
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load users');
-                }
-                
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/users`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1947,14 +2067,14 @@
                         return;
                     }
                     
-                    // Create user cards
+                    // Create user cards with ban/unban buttons
                     let html = '';
                     Object.entries(users).forEach(([userId, user]) => {
                         const joinDate = new Date(user.joinDate || Date.now()).toLocaleDateString('en-IN');
                         const balance = parseFloat(user.balance || 0);
                         const totalInvestment = parseFloat(user.totalInvestment || 0);
                         const totalEarnings = parseFloat(user.totalEarnings || 0);
-                        const bankDetails = user.bankDetails || {};
+                        const isBanned = user.status === 'banned';
                         
                         // Get first letter for avatar
                         const firstLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
@@ -1964,14 +2084,14 @@
                                 <div class="card-header">
                                     <div class="user-avatar">${firstLetter}</div>
                                     <div class="user-info">
-                                        <h4>${user.name || 'Unknown User'}</h4>
+                                        <h4>${user.name || 'Unknown User'} ${isBanned ? '🔴' : ''}</h4>
                                         <p>📱 ${user.phone || 'N/A'}</p>
-                                        <p>📅 Joined: ${joinDate}</p>
                                         <p>🎯 Referral Code: ${user.referralCode || 'N/A'}</p>
                                         <p>💰 Balance: ₹${balance.toFixed(2)}</p>
-                                        ${bankDetails.accountNumber ? `
-                                        <p>🏦 Bank: ${bankDetails.bankName || ''} (${bankDetails.accountNumber.slice(-4)})</p>
-                                        ` : ''}
+                                        <p>Status: <span style="color: ${isBanned ? '#ff3366' : '#00ffaa'}">
+                                            ${isBanned ? 'BANNED' : 'ACTIVE'}
+                                        </span></p>
+                                        ${user.banReason ? `<p>Ban Reason: ${user.banReason}</p>` : ''}
                                     </div>
                                 </div>
                                 
@@ -1997,15 +2117,43 @@
                                         <div class="label">Invested</div>
                                     </div>
                                     <div class="stat-item">
-                                        <div class="value">${user.status === 'banned' ? '🔴' : '🟢'}</div>
-                                        <div class="label">Status</div>
+                                        <div class="value">${user.referrals?.length || 0}</div>
+                                        <div class="label">Referrals</div>
                                     </div>
+                                </div>
+                                
+                                <div class="user-actions">
+                                    <button class="action-btn ${isBanned ? 'unban-btn' : 'ban-btn'}" 
+                                            data-userid="${userId}" 
+                                            data-username="${user.name || 'User'}"
+                                            data-banned="${isBanned}">
+                                        <i class="fas ${isBanned ? 'fa-user-check' : 'fa-user-slash'}"></i>
+                                        ${isBanned ? 'Unban User' : 'Ban User'}
+                                    </button>
+                                    <button class="action-btn approve-btn" onclick="viewUserDetails('${userId}')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
                                 </div>
                             </div>
                         `;
                     });
                     
                     usersList.innerHTML = html;
+                    
+                    // Add event listeners for ban/unban buttons
+                    document.querySelectorAll('.ban-btn, .unban-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const userId = this.dataset.userid;
+                            const userName = this.dataset.username;
+                            const isBanned = this.dataset.banned === 'true';
+                            
+                            if (isBanned) {
+                                showUnbanModal(userId, userName);
+                            } else {
+                                showBanModal(userId, userName);
+                            }
+                        });
+                    });
                     
                 } else {
                     throw new Error(result.message || 'Failed to load users');
@@ -2024,7 +2172,114 @@
             }
         }
         
-        // ✅ Approve recharge - UPDATED
+        // ✅ Show ban modal
+        function showBanModal(userId, userName) {
+            currentBanUserId = userId;
+            currentBanUserName = userName;
+            
+            document.getElementById('banUserId').value = userId;
+            document.getElementById('banUserName').value = userName;
+            document.getElementById('banReason').value = '';
+            document.getElementById('banDetails').value = '';
+            document.getElementById('banDurationDays').value = '';
+            
+            document.getElementById('banModalTitle').textContent = `Ban User: ${userName}`;
+            document.getElementById('banModal').classList.add('show');
+            
+            // Focus on reason field
+            setTimeout(() => {
+                document.getElementById('banReason').focus();
+            }, 300);
+        }
+        
+        // ✅ Show unban modal
+        function showUnbanModal(userId, userName) {
+            currentBanUserId = userId;
+            currentBanUserName = userName;
+            
+            document.getElementById('unbanUserId').value = userId;
+            document.getElementById('unbanUserName').value = userName;
+            
+            document.getElementById('unbanModal').classList.add('show');
+        }
+        
+        // ✅ Ban user
+        async function banUser(userId, userName, reason, details, durationDays) {
+            if (!reason) {
+                showNotification('Please enter ban reason', true);
+                return;
+            }
+            
+            try {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/ban-user`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: userId,
+                        reason: reason,
+                        details: details || '',
+                        durationDays: durationDays ? parseInt(durationDays) : null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`User ${userName} banned successfully!`);
+                    
+                    // Close modal
+                    document.getElementById('banModal').classList.remove('show');
+                    
+                    // Reload users
+                    setTimeout(() => {
+                        loadUsers();
+                        loadDashboardStats();
+                    }, 500);
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to ban user');
+                }
+                
+            } catch (error) {
+                console.error('Ban user error:', error);
+                showNotification(error.message || 'Failed to ban user', true);
+            }
+        }
+        
+        // ✅ Unban user
+        async function unbanUser(userId, userName) {
+            try {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/unban-user`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        userId: userId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(`User ${userName} unbanned successfully!`);
+                    
+                    // Close modal
+                    document.getElementById('unbanModal').classList.remove('show');
+                    
+                    // Reload users
+                    setTimeout(() => {
+                        loadUsers();
+                        loadDashboardStats();
+                    }, 500);
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to unban user');
+                }
+                
+            } catch (error) {
+                console.error('Unban user error:', error);
+                showNotification(error.message || 'Failed to unban user', true);
+            }
+        }
+        
+        // ✅ Approve recharge
         async function approveRecharge(rechargeId, userId, amount) {
             try {
                 const btn = document.querySelector(`[data-id="${rechargeId}"] .approve-recharge-btn`);
@@ -2032,12 +2287,8 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 btn.disabled = true;
                 
-                const response = await fetch(`${API_BASE_URL}/api/admin/approve-recharge`, {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/approve-recharge`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    },
                     body: JSON.stringify({
                         rechargeId: rechargeId,
                         userId: userId,
@@ -2079,21 +2330,8 @@
             }
         }
         
-        // ✅ Reject recharge
-        async function rejectRecharge(rechargeId) {
-            try {
-                showNotification('Recharge rejection feature coming soon!');
-                
-            } catch (error) {
-                console.error('Reject recharge error:', error);
-                showNotification('Failed to reject recharge', true);
-            }
-        }
-        
-        // ✅ Process withdrawal - UPDATED
+        // ✅ Process withdrawal
         async function processWithdrawal(withdrawalId, status, utrNumber = null, transactionId = null, cardElement) {
-            console.log('🚀 Processing withdrawal:', { withdrawalId, status, utrNumber, transactionId });
-            
             try {
                 const requestData = {
                     withdrawalId: withdrawalId,
@@ -2104,8 +2342,6 @@
                     requestData.utrNumber = utrNumber;
                     requestData.transactionId = transactionId || `TXN${Date.now()}`;
                 }
-                
-                console.log('📤 Sending request:', requestData);
                 
                 // Show loading on button
                 const approveBtn = cardElement.querySelector('.approve-btn');
@@ -2123,22 +2359,15 @@
                     if (approveBtn) approveBtn.disabled = true;
                 }
                 
-                const response = await fetch(`${API_BASE_URL}/api/admin/process-withdrawal`, {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/process-withdrawal`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    },
                     body: JSON.stringify(requestData)
                 });
                 
-                console.log('📥 Response status:', response.status);
-                
                 const result = await response.json();
-                console.log('📥 Response data:', result);
                 
                 if (result.success) {
-                    showNotification(`✅ Withdrawal ${status} successfully!`);
+                    showNotification(`Withdrawal ${status} successfully!`);
                     
                     // Remove the card from UI
                     cardElement.style.opacity = '0.5';
@@ -2154,8 +2383,8 @@
                 }
                 
             } catch (error) {
-                console.error('❌ Process withdrawal error:', error);
-                showNotification(`❌ Error: ${error.message}`, true);
+                console.error('Process withdrawal error:', error);
+                showNotification(`Error: ${error.message}`, true);
             } finally {
                 // Reset buttons
                 if (cardElement) {
@@ -2197,12 +2426,8 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/create-fake-withdrawal`, {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/create-fake-withdrawal`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    },
                     body: JSON.stringify({
                         userName: userName,
                         amount: parseFloat(amount),
@@ -2252,12 +2477,8 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/bulk-demo-withdrawals`, {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/bulk-demo-withdrawals`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    },
                     body: JSON.stringify({
                         count: parseInt(count)
                     })
@@ -2304,12 +2525,8 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/generate-gift-code`, {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/generate-gift-code`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    },
                     body: JSON.stringify({
                         amount: parseFloat(amount),
                         expiryDays: expiryDays ? parseInt(expiryDays) : 30,
@@ -2321,15 +2538,17 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    const giftCode = result.giftCode;
-                    showNotification(`Gift code generated: ${giftCode}`);
+                    currentGiftCode = result.giftCode;
                     
-                    // Copy to clipboard
-                    navigator.clipboard.writeText(giftCode).then(() => {
-                        setTimeout(() => {
-                            showNotification(`Gift code ${giftCode} copied to clipboard!`);
-                        }, 1000);
-                    });
+                    // Show gift code modal
+                    document.getElementById('giftCodeDisplay').textContent = currentGiftCode;
+                    document.getElementById('giftAmountDisplay').textContent = amount;
+                    
+                    const expiryDate = new Date();
+                    expiryDate.setDate(expiryDate.getDate() + (expiryDays ? parseInt(expiryDays) : 30));
+                    document.getElementById('giftExpiryDisplay').textContent = expiryDate.toLocaleDateString();
+                    
+                    document.getElementById('giftCodeModal').classList.add('show');
                     
                     // Clear form
                     document.getElementById('giftAmount').value = '';
@@ -2362,12 +2581,8 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/distribute-daily-income`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'admin-password': adminPassword
-                    }
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/distribute-daily-income`, {
+                    method: 'POST'
                 });
                 
                 const result = await response.json();
@@ -2387,6 +2602,72 @@
             }
         }
         
+        // ✅ View user details
+        function viewUserDetails(userId) {
+            showNotification(`Viewing details for user: ${userId}`, false);
+            // You can implement a modal to show detailed user info
+        }
+        
+        // ✅ View banned users
+        async function viewBannedUsers() {
+            try {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/banned-users`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const bannedUsers = result.bannedUsers || [];
+                    
+                    let message = `Total Banned Users: ${bannedUsers.length}\n\n`;
+                    bannedUsers.forEach(user => {
+                        message += `${user.userName} (${user.userPhone})\n`;
+                        message += `Reason: ${user.banReason}\n`;
+                        message += `Banned on: ${new Date(user.bannedAt).toLocaleDateString()}\n\n`;
+                    });
+                    
+                    alert(message);
+                } else {
+                    throw new Error(result.message || 'Failed to load banned users');
+                }
+                
+            } catch (error) {
+                console.error('View banned users error:', error);
+                showNotification(error.message || 'Failed to load banned users', true);
+            }
+        }
+        
+        // ✅ View cheat logs
+        async function viewCheatLogs() {
+            try {
+                const response = await sendAdminRequest(`${API_BASE_URL}/api/admin/cheat-logs`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const cheatLogs = result.cheatLogs || [];
+                    
+                    if (cheatLogs.length === 0) {
+                        alert('No cheat logs found');
+                        return;
+                    }
+                    
+                    let message = `Total Cheat Logs: ${cheatLogs.length}\n\n`;
+                    cheatLogs.forEach(log => {
+                        message += `User ID: ${log.userId}\n`;
+                        message += `Type: ${log.type || 'Unknown'}\n`;
+                        message += `Time: ${new Date(log.timestamp).toLocaleString()}\n`;
+                        message += `Reason: ${log.reason || 'N/A'}\n\n`;
+                    });
+                    
+                    alert(message);
+                } else {
+                    throw new Error(result.message || 'Failed to load cheat logs');
+                }
+                
+            } catch (error) {
+                console.error('View cheat logs error:', error);
+                showNotification(error.message || 'Failed to load cheat logs', true);
+            }
+        }
+        
         // ✅ Initialize
         window.addEventListener('DOMContentLoaded', function() {
             // Check login status
@@ -2397,17 +2678,17 @@
             setInterval(updateCurrentTime, 1000);
             
             // Login button click
-            loginBtn.addEventListener('click', adminLogin);
+            document.getElementById('loginBtn').addEventListener('click', adminLogin);
             
             // Enter key on password field
-            adminPasswordInput.addEventListener('keypress', function(e) {
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     adminLogin();
                 }
             });
             
             // Logout button click
-            logoutBtn.addEventListener('click', adminLogout);
+            document.getElementById('logoutBtn').addEventListener('click', adminLogout);
             
             // Tab navigation
             document.querySelectorAll('.admin-nav-tab').forEach(tab => {
@@ -2428,30 +2709,56 @@
                     // Show corresponding section
                     const tabId = this.dataset.tab;
                     document.getElementById(`${tabId}Section`).classList.add('active');
-                    
-                    // Load data for the tab if needed
-                    if (tabId === 'trust') {
-                        // Refresh trust section data if needed
-                    }
                 });
+            });
+            
+            // Ban modal buttons
+            document.getElementById('cancelBanBtn').addEventListener('click', function() {
+                document.getElementById('banModal').classList.remove('show');
+                currentBanUserId = null;
+                currentBanUserName = null;
+            });
+            
+            document.getElementById('confirmBanBtn').addEventListener('click', function() {
+                const reason = document.getElementById('banReason').value.trim();
+                const details = document.getElementById('banDetails').value.trim();
+                const durationDays = document.getElementById('banDurationDays').value.trim();
+                
+                if (!reason) {
+                    showNotification('Please enter ban reason', true);
+                    return;
+                }
+                
+                if (currentBanUserId) {
+                    banUser(currentBanUserId, currentBanUserName, reason, details, durationDays);
+                }
+            });
+            
+            // Unban modal buttons
+            document.getElementById('cancelUnbanBtn').addEventListener('click', function() {
+                document.getElementById('unbanModal').classList.remove('show');
+                currentBanUserId = null;
+                currentBanUserName = null;
+            });
+            
+            document.getElementById('confirmUnbanBtn').addEventListener('click', function() {
+                if (currentBanUserId) {
+                    unbanUser(currentBanUserId, currentBanUserName);
+                }
             });
             
             // Trust system buttons
             document.getElementById('createFakeWithdrawalBtn').addEventListener('click', createFakeWithdrawal);
             document.getElementById('bulkDemoWithdrawalsBtn').addEventListener('click', bulkCreateDemoWithdrawals);
             document.getElementById('generateGiftCodeBtn').addEventListener('click', generateGiftCode);
-            document.getElementById('viewTrustStatsBtn').addEventListener('click', function() {
-                showNotification('Trust statistics coming soon!');
+            document.getElementById('viewTrustWithdrawalsBtn').addEventListener('click', function() {
+                showNotification('Trust withdrawals feature coming soon!');
             });
             
             // Action buttons
             document.getElementById('distributeIncomeBtn').addEventListener('click', distributeDailyIncome);
-            document.getElementById('banUsersBtn').addEventListener('click', function() {
-                showNotification('User management coming soon!');
-            });
-            document.getElementById('viewStatsBtn').addEventListener('click', function() {
-                showNotification('System statistics coming soon!');
-            });
+            document.getElementById('viewBannedUsersBtn').addEventListener('click', viewBannedUsers);
+            document.getElementById('viewCheatLogsBtn').addEventListener('click', viewCheatLogs);
             
             document.getElementById('refreshDataBtn').addEventListener('click', function() {
                 const btn = this;
@@ -2475,7 +2782,7 @@
             
             // UTR Modal buttons
             document.getElementById('cancelBtn').addEventListener('click', function() {
-                utrModal.classList.remove('show');
+                document.getElementById('utrModal').classList.remove('show');
                 currentWithdrawalId = null;
                 currentWithdrawalCard = null;
             });
@@ -2491,7 +2798,7 @@
                 }
                 
                 if (currentWithdrawalId && currentWithdrawalCard) {
-                    utrModal.classList.remove('show');
+                    document.getElementById('utrModal').classList.remove('show');
                     
                     await processWithdrawal(currentWithdrawalId, 'completed', utrNumber, transactionId, currentWithdrawalCard);
                     
@@ -2500,31 +2807,59 @@
                 }
             });
             
-            // Close modal on overlay click
-            utrModal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    utrModal.classList.remove('show');
-                    currentWithdrawalId = null;
-                    currentWithdrawalCard = null;
+            // Gift Code Modal buttons
+            document.getElementById('closeGiftModalBtn').addEventListener('click', function() {
+                document.getElementById('giftCodeModal').classList.remove('show');
+                currentGiftCode = null;
+            });
+            
+            document.getElementById('copyGiftCodeBtn').addEventListener('click', function() {
+                if (currentGiftCode) {
+                    copyToClipboard(currentGiftCode);
+                    showNotification('Gift code copied to clipboard!');
                 }
             });
             
-            // Escape key to close modal
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay, .ban-modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('show');
+                        if (this.id === 'utrModal') {
+                            currentWithdrawalId = null;
+                            currentWithdrawalCard = null;
+                        } else if (this.id === 'banModal' || this.id === 'unbanModal') {
+                            currentBanUserId = null;
+                            currentBanUserName = null;
+                        } else if (this.id === 'giftCodeModal') {
+                            currentGiftCode = null;
+                        }
+                    }
+                });
+            });
+            
+            // Escape key to close modals
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && utrModal.classList.contains('show')) {
-                    utrModal.classList.remove('show');
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.show, .ban-modal.show').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
                     currentWithdrawalId = null;
                     currentWithdrawalCard = null;
+                    currentBanUserId = null;
+                    currentBanUserName = null;
+                    currentGiftCode = null;
                 }
             });
             
             // Auto-focus on password field
-            if (adminPasswordInput) {
-                adminPasswordInput.focus();
-            }
+            document.getElementById('adminPassword').focus();
             
-            console.log('✅ Admin Panel initialized');
+            console.log('✅ Admin Panel v2.0 initialized');
         });
+        
+        // Global function for user details
+        window.viewUserDetails = viewUserDetails;
     </script>
 </body>
 </html>
