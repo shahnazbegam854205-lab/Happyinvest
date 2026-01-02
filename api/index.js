@@ -1525,9 +1525,9 @@ app.get('/api/withdrawal-history/:userId', async (req, res) => {
     }
 });
 
-// ==================== SECURE INCOME CHECK APIs ====================
+// ==================== SECURE INCOME CHECK APIs (FIXED) ====================
 
-// 35. SECURE INCOME CHECK (WITH CHEAT DETECTION)
+// 35. SECURE INCOME CHECK (WITH CHEAT DETECTION) - FIXED VERSION
 app.post('/api/secure-income-check', async (req, res) => {
     try {
         const { userId, clientTime } = req.body;
@@ -1622,6 +1622,11 @@ app.post('/api/secure-income-check', async (req, res) => {
             });
         }
         
+        // Get user data FIRST (FIXED: Pehle hi user data fetch karo)
+        const userRef = db.ref(`users/${userId}`);
+        const userSnap = await userRef.once('value');
+        let userData = userSnap.val() || {};
+        
         // Get user investments
         const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
         const investments = investmentsSnap.val() || {};
@@ -1684,9 +1689,9 @@ app.post('/api/secure-income-check', async (req, res) => {
         
         // Update user balance if income added
         if (totalIncome > 0) {
-            const userRef = db.ref(`users/${userId}`);
-            const userSnap = await userRef.once('value');
-            const userData = userSnap.val();
+            // Refresh user data for updates
+            const updatedUserSnap = await userRef.once('value');
+            userData = updatedUserSnap.val() || {};
             
             if (regularIncome > 0) {
                 const newBalance = (userData.balance || 0) + regularIncome;
@@ -1753,7 +1758,7 @@ app.post('/api/secure-income-check', async (req, res) => {
             }
         }
         
-        // Prepare response
+        // Prepare response (FIXED: userData ab always defined hai)
         const response = {
             success: true,
             serverTime: serverTime,
@@ -1767,7 +1772,7 @@ app.post('/api/secure-income-check', async (req, res) => {
                 ? `🎉 ₹${totalIncome} income added successfully! (₹${regularIncome} available, ₹${lockedIncome} locked)`
                 : 'No income available yet. Check back later.',
             security: {
-                cheatAttempts: userData?.cheatAttempts || 0
+                cheatAttempts: userData.cheatAttempts || 0  // ✅ FIXED: userData always defined
             }
         };
         
@@ -2952,7 +2957,7 @@ app.get('/api/health', (req, res) => {
         success: true, 
         message: 'Happy Invest API is running',
         timestamp: new Date().toISOString(),
-        version: '5.0.0',
+        version: '5.0.1', // Version update kiya
         features: [
             'secure-income-system',
             'anti-cheat-protection',
@@ -2960,7 +2965,8 @@ app.get('/api/health', (req, res) => {
             'daily-withdrawal-limit',
             'locked-balance-vip-rich-ultimate',
             'fixed-110-referral',
-            'trust-withdrawal-system'
+            'trust-withdrawal-system',
+            'bug-fixes' // New feature added
         ],
         plans: {
             basic: 3,
@@ -2991,7 +2997,7 @@ app.use((err, req, res, next) => {
 // ==================== START SERVER ====================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`✅ Happy Invest API v5.0 running on port ${PORT}`);
+    console.log(`✅ Happy Invest API v5.0.1 running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`✅ Total APIs: 50 endpoints`);
     console.log(`✅ Rate Limiting: 60 requests/minute`);
@@ -3000,6 +3006,7 @@ app.listen(PORT, () => {
     console.log(`✅ Withdrawal Rules: ₹200 min, 1 per day`);
     console.log(`✅ Referral System: Fixed ₹110 per referral`);
     console.log(`✅ Locked Balance: VIP/Rich/Ultimate plans`);
+    console.log(`✅ Bug Fixes: userData error fixed in secure-income-check`);
     console.log(`✅ Health Check: http://localhost:${PORT}/api/health`);
     
     // Initialize demo withdrawals
