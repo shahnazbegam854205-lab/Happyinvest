@@ -153,7 +153,7 @@
         }
         
         .phone-input-wrapper:focus-within {
-            border-color: '#00ffaa';
+            border-color: #00ffaa;
             box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
             background: rgba(255, 255, 255, 0.08);
         }
@@ -203,7 +203,7 @@
         }
         
         .form-input:focus {
-            border-color: '#00ffaa';
+            border-color: #00ffaa;
             box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.2);
             background: rgba(255, 255, 255, 0.08);
         }
@@ -496,7 +496,7 @@
             <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
                  alt="Happy Invest" 
                  class="banner-image"
-                 onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
+                 onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';">
             <div class="banner-overlay"></div>
             <div class="banner-content">
                 <h1 class="banner-title">Join Happy Invest</h1>
@@ -533,7 +533,8 @@
                                id="mobile" 
                                placeholder="10-digit mobile number" 
                                required 
-                               maxlength="10">
+                               maxlength="10"
+                               pattern="[0-9]{10}">
                     </div>
                     <div class="error-message" id="mobileError"></div>
                 </div>
@@ -544,7 +545,7 @@
                     <input type="password" 
                            class="form-input" 
                            id="password" 
-                           placeholder="Create secure password" 
+                           placeholder="Create secure password (min 6 characters)" 
                            required 
                            minlength="6">
                     <div class="password-toggle" id="passwordToggle">
@@ -562,8 +563,8 @@
                            placeholder="Re-enter your password" 
                            required 
                            minlength="6">
-                    <div class="input-icon">
-                        <i class="fas fa-shield-alt"></i>
+                    <div class="password-toggle" id="confirmPasswordToggle">
+                        <i class="fas fa-eye"></i>
                     </div>
                     <div class="error-message" id="confirmPasswordError"></div>
                 </div>
@@ -596,7 +597,7 @@
             <!-- Login Link -->
             <div class="login-container">
                 <span class="login-text">Already have an account?</span>
-                <a href="/" class="login-link">
+                <a href="index.html" class="login-link">
                     <i class="fas fa-sign-in-alt"></i> Login Here
                 </a>
             </div>
@@ -604,8 +605,12 @@
     </div>
 
     <script>
-        // ✅ API Configuration
-        const API_BASE_URL = window.location.origin + '/api';
+        // ✅ API Configuration - Dynamic based on deployment
+        const API_BASE_URL = window.location.origin.includes('localhost') 
+            ? 'http://localhost:3000/api' 
+            : `${window.location.origin}/api`;
+        
+        console.log('API Base URL:', API_BASE_URL);
         
         // Interactive background effect
         document.addEventListener('mousemove', function(e) {
@@ -619,7 +624,7 @@
             `;
         });
         
-        // Password toggle
+        // Password toggle for main password
         document.getElementById('passwordToggle').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             const icon = this.querySelector('i');
@@ -637,14 +642,8 @@
             }
         });
         
-        // Confirm password toggle
-        const confirmPasswordGroup = document.getElementById('confirmPassword').parentElement;
-        const confirmPasswordToggle = document.createElement('div');
-        confirmPasswordToggle.className = 'password-toggle';
-        confirmPasswordToggle.innerHTML = '<i class="fas fa-eye"></i>';
-        confirmPasswordGroup.appendChild(confirmPasswordToggle);
-        
-        confirmPasswordToggle.addEventListener('click', function() {
+        // Password toggle for confirm password
+        document.getElementById('confirmPasswordToggle').addEventListener('click', function() {
             const confirmPasswordInput = document.getElementById('confirmPassword');
             const icon = this.querySelector('i');
             
@@ -661,7 +660,7 @@
             }
         });
         
-        // ✅ UPDATED FORM SUBMISSION WITH AUTO LOGIN
+        // ✅ IMPROVED FORM SUBMISSION WITH BETTER ERROR HANDLING
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -671,12 +670,13 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             const referralCode = document.getElementById('referralCode').value.trim();
             
-            // Clear errors
+            // Clear previous errors
             clearErrors();
             
-            // Validate
+            // ✅ Validation
             let isValid = true;
             
+            // Name validation
             if (!fullName) {
                 showError('nameError', 'Please enter your full name');
                 isValid = false;
@@ -685,14 +685,16 @@
                 isValid = false;
             }
             
+            // Mobile validation
             if (!mobile) {
                 showError('mobileError', 'Please enter mobile number');
                 isValid = false;
-            } else if (mobile.length !== 10 || !/^\d+$/.test(mobile)) {
+            } else if (!/^\d{10}$/.test(mobile)) {
                 showError('mobileError', 'Please enter valid 10-digit number');
                 isValid = false;
             }
             
+            // Password validation
             if (!password) {
                 showError('passwordError', 'Please enter password');
                 isValid = false;
@@ -701,6 +703,7 @@
                 isValid = false;
             }
             
+            // Confirm password validation
             if (!confirmPassword) {
                 showError('confirmPasswordError', 'Please confirm your password');
                 isValid = false;
@@ -709,9 +712,12 @@
                 isValid = false;
             }
             
-            if (!isValid) return;
+            if (!isValid) {
+                showNotification('Please fix the errors above', 'error');
+                return;
+            }
             
-            // Show loading
+            // Show loading state
             document.getElementById('loading').style.display = 'block';
             const registerBtn = document.getElementById('registerBtn');
             const originalText = registerBtn.innerHTML;
@@ -721,6 +727,12 @@
             try {
                 // ✅ Step 1: Register User
                 document.getElementById('loadingText').textContent = 'Creating your account...';
+                
+                console.log('Registering user...', {
+                    name: fullName,
+                    phone: mobile,
+                    referralCode: referralCode || null
+                });
                 
                 const registerResponse = await fetch(`${API_BASE_URL}/register`, {
                     method: 'POST',
@@ -736,6 +748,7 @@
                 });
                 
                 const registerResult = await registerResponse.json();
+                console.log('Register response:', registerResult);
                 
                 if (registerResult.success) {
                     // ✅ Step 2: Automatically Login after successful registration
@@ -753,82 +766,85 @@
                     });
                     
                     const loginResult = await loginResponse.json();
+                    console.log('Login response:', loginResult);
                     
                     if (loginResult.success) {
-                        // ✅ Step 3: Save ALL user data including signature
-                        localStorage.setItem('userId', loginResult.user.id);
-                        localStorage.setItem('userName', loginResult.user.name || fullName);
-                        localStorage.setItem('userPhone', loginResult.user.phone || mobile);
-                        localStorage.setItem('userBalance', loginResult.user.balance || 0);
-                        localStorage.setItem('referralCode', loginResult.user.referralCode || registerResult.referralCode || '');
-                        localStorage.setItem('totalEarnings', loginResult.user.totalEarnings || 0);
-                        localStorage.setItem('referralEarnings', loginResult.user.referralEarnings || 0);
+                        // ✅ Step 3: Save user data to localStorage
+                        const userData = loginResult.user;
                         
-                        // ✅ MUST SAVE: Signature and timestamp separately
-                        localStorage.setItem('userSignature', loginResult.user.signature || '');
-                        localStorage.setItem('userTimestamp', loginResult.user.timestamp || Date.now());
+                        // Store all user data
+                        localStorage.setItem('userId', userData.id);
+                        localStorage.setItem('userName', userData.name || fullName);
+                        localStorage.setItem('userPhone', userData.phone || mobile);
+                        localStorage.setItem('userBalance', userData.balance || 0);
+                        localStorage.setItem('lockedBalance', userData.lockedBalance || 0);
+                        localStorage.setItem('referralCode', userData.referralCode || '');
+                        localStorage.setItem('totalEarnings', userData.totalEarnings || 0);
+                        localStorage.setItem('referralEarnings', userData.referralEarnings || 0);
+                        localStorage.setItem('totalInvestment', userData.totalInvestment || 0);
+                        localStorage.setItem('withdrawn', userData.withdrawn || 0);
+                        localStorage.setItem('teamCount', userData.teamCount || 0);
+                        localStorage.setItem('hasInvested', userData.hasInvested || false);
+                        localStorage.setItem('joinDate', userData.joinDate || new Date().toISOString());
+                        localStorage.setItem('isLoggedIn', 'true');
                         
-                        // ✅ Save complete user data
-                        localStorage.setItem('userData', JSON.stringify({
-                            id: loginResult.user.id,
-                            name: loginResult.user.name || fullName,
-                            phone: loginResult.user.phone || mobile,
-                            signature: loginResult.user.signature || '',      // ← SIGNATURE
-                            timestamp: loginResult.user.timestamp || Date.now(), // ← TIMESTAMP
-                            balance: loginResult.user.balance || 0,
-                            referralCode: loginResult.user.referralCode || registerResult.referralCode || '',
-                            referralEarnings: loginResult.user.referralEarnings || 0,
-                            totalEarnings: loginResult.user.totalEarnings || 0,
-                            totalInvestment: loginResult.user.totalInvestment || 0,
-                            withdrawn: loginResult.user.withdrawn || 0,
-                            teamCount: loginResult.user.teamCount || 0,
-                            hasInvested: loginResult.user.hasInvested || false,
-                            joinDate: loginResult.user.joinDate || new Date().toISOString(),
-                            bankDetails: loginResult.user.bankDetails || null,
-                            dailyCheckin: loginResult.user.dailyCheckin || {
-                                lastCheckin: null,
-                                streak: 0
-                            }
-                        }));
+                        // Store complete user object
+                        localStorage.setItem('userData', JSON.stringify(userData));
                         
-                        // Show success
+                        // ✅ IMPORTANT: Save authentication timestamp
+                        localStorage.setItem('authTime', Date.now().toString());
+                        
+                        // Show success state
                         document.getElementById('loadingText').textContent = 'Account created successfully!';
+                        showNotification(`Welcome ${fullName}! Registration successful. Redirecting...`, 'success');
                         
-                        // Show success notification
-                        showNotification(`Welcome ${fullName}! Account created successfully.`, 'success');
-                        
-                        // Show success animation
+                        // Update button to show success
                         registerBtn.classList.add('success-animation');
                         registerBtn.innerHTML = '<i class="fas fa-check"></i> ACCOUNT CREATED!';
                         registerBtn.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
                         
-                        // Redirect to home after delay
+                        // ✅ Redirect to home page after delay
                         setTimeout(() => {
-                            window.location.href = '/home';
+                            window.location.href = 'home.html';
                         }, 2000);
                         
                     } else {
-                        throw new Error(loginResult.message || 'Auto-login failed. Please try logging in manually.');
+                        // Login failed after registration
+                        throw new Error(loginResult.message || 'Auto-login failed. Please login manually.');
                     }
                 } else {
+                    // Registration failed
                     throw new Error(registerResult.message || 'Registration failed. Please try again.');
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                showError('mobileError', error.message);
+                
+                // Hide loading
                 document.getElementById('loading').style.display = 'none';
                 registerBtn.innerHTML = originalText;
                 registerBtn.disabled = false;
                 
-                // Show error notification
-                showNotification(error.message, 'error');
+                // Show appropriate error
+                if (error.message.includes('already registered') || error.message.includes('Phone number')) {
+                    showError('mobileError', 'Phone number already registered');
+                    showNotification('This phone number is already registered. Please login instead.', 'error');
+                } else if (error.message.includes('Invalid phone')) {
+                    showError('mobileError', 'Invalid phone number format');
+                    showNotification('Please enter a valid 10-digit phone number', 'error');
+                } else {
+                    showError('mobileError', error.message);
+                    showNotification(error.message, 'error');
+                }
             }
         });
         
         // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
-            notification.textContent = message;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
             notification.className = `notification ${type}`;
             notification.style.display = 'flex';
             
@@ -847,6 +863,7 @@
         });
         
         document.getElementById('mobile').addEventListener('input', function(e) {
+            // Allow only numbers and limit to 10 digits
             this.value = this.value.replace(/\D/g, '').slice(0, 10);
             clearError('mobileError');
         });
@@ -854,7 +871,7 @@
         document.getElementById('password').addEventListener('input', function() {
             clearError('passwordError');
             
-            // Clear confirm password error when password changes
+            // Real-time password match check
             const confirmPassword = document.getElementById('confirmPassword').value;
             if (confirmPassword && this.value !== confirmPassword) {
                 showError('confirmPasswordError', 'Passwords do not match');
@@ -878,7 +895,8 @@
             element.style.display = 'flex';
             
             // Add shake animation to input
-            const input = element.closest('.input-group').querySelector('input, .phone-input-wrapper');
+            const inputGroup = element.closest('.input-group');
+            const input = inputGroup.querySelector('input, .phone-input-wrapper');
             input.style.animation = 'shake 0.5s ease';
             setTimeout(() => {
                 input.style.animation = '';
@@ -898,7 +916,7 @@
             clearError('confirmPasswordError');
         }
         
-        // Add animations
+        // Add shake animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes shake {
@@ -909,10 +927,10 @@
         `;
         document.head.appendChild(style);
         
-        // Check if already logged in
+        // ✅ Check if already logged in on page load
         window.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('userId')) {
-                window.location.href = '/home';
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'home.html';
                 return;
             }
             
@@ -921,6 +939,7 @@
             const refCode = urlParams.get('ref');
             if (refCode) {
                 document.getElementById('referralCode').value = refCode;
+                showNotification(`Referral code detected: ${refCode}`, 'success');
             }
             
             // Add focus effects to inputs
@@ -940,8 +959,42 @@
             });
             
             // Auto-focus on name field
-            document.getElementById('fullName').focus();
+            setTimeout(() => {
+                document.getElementById('fullName').focus();
+            }, 300);
+            
+            // Add network status indicator
+            window.addEventListener('online', () => {
+                showNotification('You are back online', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                showNotification('No internet connection. Please check your network.', 'error');
+            });
         });
+        
+        // ✅ Debounce function for API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // ✅ Helper function to validate phone number
+        function isValidPhone(phone) {
+            return /^\d{10}$/.test(phone);
+        }
+        
+        // ✅ Helper function to validate password strength
+        function isStrongPassword(password) {
+            return password.length >= 6;
+        }
     </script>
 </body>
 </html>

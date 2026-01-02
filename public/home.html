@@ -6,6 +6,7 @@
     <title>Home - Happy Invest</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* (CSS remains exactly the same - no changes needed) */
         * {
             margin: 0;
             padding: 0;
@@ -754,30 +755,30 @@
             <h3 class="news-title">Latest News</h3>
             
             <div class="news-item">
-                <div class="news-date">27 DEC</div>
+                <div class="news-date">1 JAN</div>
                 <div class="news-content">
-                    <p class="news-text">Boosts RPO: Helps Gujarat meet its Renewable Purchase Obligations.</p>
+                    <p class="news-text">Happy New Year! Special lunch date with CEO for top investors on 1st January.</p>
                 </div>
             </div>
             
             <div class="news-item">
-                <div class="news-date">27 DEC</div>
+                <div class="news-date">1 JAN</div>
                 <div class="news-content">
-                    <p class="news-text">Managed by GUVNL: Operated under the Gujarat Renewable Energy Policy 2023.</p>
+                    <p class="news-text">New Year Special: Get 15% extra bonus on all investments made today!</p>
                 </div>
             </div>
             
             <div class="news-item">
-                <div class="news-date">26 DEC</div>
+                <div class="news-date">31 DEC</div>
                 <div class="news-content">
-                    <p class="news-text">New investment plans launching soon with higher returns and flexible durations.</p>
+                    <p class="news-text">New Year's Eve Party: Join our online celebration at 11:30 PM!</p>
                 </div>
             </div>
             
             <div class="news-item">
-                <div class="news-date">25 DEC</div>
+                <div class="news-date">30 DEC</div>
                 <div class="news-content">
-                    <p class="news-text">Christmas Special: Get 10% extra bonus on all recharges this week!</p>
+                    <p class="news-text">Year-end clearance: Invest before 31st Dec to get special New Year gifts!</p>
                 </div>
             </div>
         </div>
@@ -808,7 +809,9 @@
 
     <script>
         // API Configuration - Use same server
-        const API_BASE_URL = window.location.origin + '/api';
+        const API_BASE_URL = window.location.origin.includes('localhost') 
+            ? 'http://localhost:3000/api' 
+            : '/api';
         
         // Navigation function
         function navigateTo(page) {
@@ -926,7 +929,7 @@
             });
         }
         
-        // Secure Income Check Function
+        // Secure Income Check Function (UPDATED - REMOVED SIGNATURE)
         async function checkIncome() {
             const userId = localStorage.getItem('userId');
             if (!userId) {
@@ -944,18 +947,7 @@
             btn.innerHTML = '<i class="fas fa-spinner"></i>';
 
             try {
-                // Get user signature from localStorage
-                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                const signature = userData.signature;
-                const timestamp = userData.timestamp;
-
-                if (!signature || !timestamp) {
-                    showNotification('Session expired. Please login again.', 'error');
-                    window.location.href = '/';
-                    return;
-                }
-
-                // Call Secure Income Check API
+                // Call Secure Income Check API (without signature)
                 const response = await fetch(`${API_BASE_URL}/secure-income-check`, {
                     method: 'POST',
                     headers: {
@@ -963,9 +955,7 @@
                     },
                     body: JSON.stringify({
                         userId: userId,
-                        clientTime: Date.now(),
-                        signature: signature,
-                        timestamp: timestamp
+                        clientTime: Date.now()
                     })
                 });
 
@@ -1038,22 +1028,14 @@
             if (!userId) return;
             
             try {
-                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                const signature = userData.signature;
-                const timestamp = userData.timestamp;
-                
-                if (!signature || !timestamp) return;
-                
-                // Call get-next-income API
+                // Call get-next-income API (without signature)
                 const response = await fetch(`${API_BASE_URL}/get-next-income`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userId: userId,
-                        clientTime: Date.now(),
-                        signature: signature
+                        userId: userId
                     })
                 });
                 

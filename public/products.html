@@ -58,6 +58,45 @@
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.7);
         }
         
+        /* Launch Banner */
+        .launch-banner {
+            background: linear-gradient(90deg, #ff3366, #ff9966);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-weight: 600;
+            margin: -20px -20px 20px -20px;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+        
+        .launch-banner::before {
+            content: '🎉';
+            margin-right: 10px;
+        }
+        
+        .launch-banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
         .header-content {
             display: flex;
             align-items: center;
@@ -278,6 +317,33 @@
             line-height: 1.6;
         }
         
+        .plan-features {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            color: #a0a0d0;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            color: #00ffaa;
+            font-weight: bold;
+        }
+        
         .plan-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -400,6 +466,54 @@
         
         .invest-btn:hover:not(:disabled)::after {
             left: 100%;
+        }
+        
+        /* Withdrawal Type Badge */
+        .withdrawal-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .daily-withdrawal {
+            background: rgba(0, 255, 170, 0.1);
+            color: #00ffaa;
+            border: 1px solid rgba(0, 255, 170, 0.2);
+        }
+        
+        .end-withdrawal {
+            background: rgba(255, 153, 102, 0.1);
+            color: #ff9966;
+            border: 1px solid rgba(255, 153, 102, 0.2);
+        }
+        
+        /* Balance Type Badge */
+        .balance-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .locked-balance {
+            background: rgba(255, 51, 102, 0.1);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.2);
+        }
+        
+        .regular-balance {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.2);
         }
         
         /* Bottom Navigation */
@@ -671,10 +785,19 @@
             animation: slideIn 0.3s ease-out;
             font-weight: 600;
             max-width: 300px;
+            display: none;
         }
         
         .toast.success {
             background: linear-gradient(90deg, #00cc88, #00ffaa);
+        }
+        
+        .toast.error {
+            background: linear-gradient(90deg, #ff3366, #ff0000);
+        }
+        
+        .toast.info {
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
         }
         
         @keyframes slideIn {
@@ -762,6 +885,22 @@
             text-overflow: ellipsis;
         }
         
+        /* Locked Balance Warning */
+        .locked-warning {
+            background: rgba(255, 153, 102, 0.1);
+            border: 1px solid rgba(255, 153, 102, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .warning-text {
+            color: #ff9966;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
         /* Responsive */
         @media (max-width: 360px) {
             .plan-image-container {
@@ -818,6 +957,11 @@
     
     <!-- Header -->
     <div class="header">
+        <!-- Launch Date Banner -->
+        <div class="launch-banner">
+            🚀 Launch Offer: Get Up to 24.5% Daily Return on Investments!
+        </div>
+        
         <div class="header-content">
             <a href="/home" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
@@ -884,10 +1028,9 @@
                 <div class="balance-amount" id="userBalanceDisplay">₹0.00</div>
             </div>
             
-            <p style="color: #a0a0d0; margin: 20px 0; font-size: 14px; text-align: center;">
-                <i class="fas fa-info-circle" style="color: #00d2ff; margin-right: 8px;"></i>
-                Daily income will be credited automatically at 9:00 AM
-            </p>
+            <div id="modalPlanInfo" style="color: #a0a0d0; font-size: 14px; text-align: center; margin: 15px 0;">
+                <!-- Plan info will be filled by JavaScript -->
+            </div>
             
             <button class="confirm-btn" id="confirmInvestBtn">
                 <i class="fas fa-check-circle"></i> Confirm Investment
@@ -915,9 +1058,12 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
     <script>
         // ==================== CONFIGURATION ====================
-        const API_BASE_URL = '/api'; 
+        const API_BASE_URL = window.location.origin + '/api';
         
         let selectedPlan = null;
         let userBalance = 0;
@@ -925,46 +1071,40 @@
         let userId = null;
         
         // ==================== HELPER FUNCTIONS ====================
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.getElementById('toast');
             toast.textContent = message;
-            
-            document.body.appendChild(toast);
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
             
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => document.body.removeChild(toast), 300);
-            }, 3000);
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.animation = '';
+                }, 300);
+            }, duration);
         }
         
         function navigateTo(page) {
             const button = event?.currentTarget;
             if (button) {
                 button.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                }, 150);
+                setTimeout(() => button.style.transform = 'scale(1)', 150);
             }
-            
             window.location.href = page;
         }
         
         function formatCurrency(amount) {
-            if (amount >= 100000) {
-                return '₹' + (amount/100000).toFixed(1) + 'L';
-            } else if (amount >= 1000) {
-                return '₹' + (amount/1000).toFixed(1) + 'K';
-            }
-            return '₹' + parseFloat(amount || 0).toFixed(2);
+            const num = parseFloat(amount || 0);
+            if (num >= 100000) return '₹' + (num / 100000).toFixed(1) + 'L';
+            if (num >= 1000) return '₹' + (num / 1000).toFixed(1) + 'K';
+            return '₹' + num.toFixed(2);
         }
         
         function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num/1000000).toFixed(1) + 'M';
-            } else if (num >= 1000) {
-                return (num/1000).toFixed(1) + 'K';
-            }
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toFixed(0);
         }
         
@@ -995,7 +1135,7 @@
         // ==================== LOAD PLANS FROM BACKEND ====================
         async function loadPlans() {
             try {
-                console.log('Loading plans from backend...');
+                console.log('Loading plans from backend API...');
                 
                 const response = await fetch(`${API_BASE_URL}/plans`);
                 
@@ -1110,11 +1250,24 @@
             
             const imageUrl = 'https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';
             
+            // Determine withdrawal type badge
+            const withdrawalBadge = plan.withdrawalType === 'daily' ? 
+                `<span class="withdrawal-badge daily-withdrawal">DAILY WITHDRAWAL</span>` : 
+                `<span class="withdrawal-badge end-withdrawal">END TERM WITHDRAWAL</span>`;
+            
+            // Determine balance type badge
+            const balanceBadge = plan.lockedBalance ? 
+                `<span class="balance-badge locked-balance">LOCKED BALANCE</span>` : 
+                `<span class="balance-badge regular-balance">REGULAR BALANCE</span>`;
+            
+            // Calculate total return percentage
+            const totalReturnPercent = ((plan.totalIncome - plan.price) / plan.price * 100).toFixed(1);
+            
             planCard.innerHTML = `
                 <div class="plan-image-container">
                     <img src="${imageUrl}" alt="${plan.name}" class="plan-image"
                          onerror="this.onerror=null; this.src='${imageUrl}';">
-                    <div class="plan-badge">${plan.category.toUpperCase()}</div>
+                    <div class="plan-badge">${plan.category.toUpperCase()} PLAN</div>
                 </div>
                 
                 <div class="plan-content">
@@ -1124,8 +1277,17 @@
                     </div>
                     
                     <p class="plan-description">
-                        ${plan.dailyReturnPercent || 24.5}% daily return for ${plan.duration} days
+                        ${withdrawalBadge} ${balanceBadge}
                     </p>
+                    
+                    <div class="plan-features">
+                        <ul class="feature-list">
+                            <li>Daily Income: ${formatCurrency(plan.dailyIncome)}</li>
+                            <li>Total Return: ${formatCurrency(plan.totalIncome)}</li>
+                            <li>Investment Amount: ${formatCurrency(plan.price)}</li>
+                            <li>Total Profit: ${totalReturnPercent}%</li>
+                        </ul>
+                    </div>
                     
                     <div class="stats-grid">
                         <div class="stat-box">
@@ -1142,17 +1304,25 @@
                         </div>
                         <div class="stat-box">
                             <div class="stat-value-lg">
-                                ${plan.totalReturnPercent || 0}%
+                                ${totalReturnPercent}%
                             </div>
                             <div class="stat-label-sm">Total Profit</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-value-lg">
-                                ${plan.dailyReturnPercent || 24.5}%
+                                ${plan.duration} days
                             </div>
-                            <div class="stat-label-sm">Daily Return</div>
+                            <div class="stat-label-sm">Duration</div>
                         </div>
                     </div>
+                    
+                    ${plan.lockedBalance ? `
+                    <div class="locked-warning">
+                        <div class="warning-text">
+                            <i class="fas fa-lock"></i> Locked Balance - Withdraw at plan end
+                        </div>
+                    </div>
+                    ` : ''}
                     
                     <div class="plan-price-section">
                         <div class="plan-price amount-container" title="₹${plan.price.toLocaleString('en-IN')}">
@@ -1212,6 +1382,33 @@
             // Check if user has enough balance
             const hasEnoughBalance = userBalance >= plan.price;
             const confirmBtn = document.getElementById('confirmInvestBtn');
+            
+            // Set plan info
+            const totalReturnPercent = ((plan.totalIncome - plan.price) / plan.price * 100).toFixed(1);
+            document.getElementById('modalPlanInfo').innerHTML = `
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; margin: 10px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Plan Type:</span>
+                        <span style="color: #00ffaa;">${plan.category.toUpperCase()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Withdrawal:</span>
+                        <span style="color: ${plan.withdrawalType === 'daily' ? '#00ffaa' : '#ff9966'}">
+                            ${plan.withdrawalType === 'daily' ? 'Daily' : 'End Term'}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Balance Type:</span>
+                        <span style="color: ${plan.lockedBalance ? '#ff9966' : '#00d2ff'}">
+                            ${plan.lockedBalance ? 'Locked' : 'Regular'}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Total Return:</span>
+                        <span style="color: #00ffaa;">${totalReturnPercent}%</span>
+                    </div>
+                </div>
+            `;
             
             if (!hasEnoughBalance) {
                 confirmBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Insufficient Balance';
@@ -1294,6 +1491,7 @@
             if (!selectedPlan) return;
             
             const btn = document.getElementById('confirmInvestBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
             
@@ -1340,14 +1538,14 @@
                     
                 } else {
                     showToast(result.message || 'Investment failed', 'error');
-                    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Investment';
+                    btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
                 
             } catch (error) {
                 console.error('Investment error:', error);
                 showToast('Server error. Please try again.', 'error');
-                btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Investment';
+                btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
@@ -1391,6 +1589,25 @@
             // Load plans from backend
             await loadPlans();
             await loadUserBalance();
+        });
+        
+        // Auto-refresh every 30 seconds
+        setInterval(async () => {
+            if (document.visibilityState === 'visible' && localStorage.getItem('userId')) {
+                await loadPlans();
+                await loadUserBalance();
+            }
+        }, 30000);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' || e.key === 'R') {
+                loadPlans();
+                showToast('Refreshing plans...', 'info');
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+            }
         });
     </script>
 </body>
