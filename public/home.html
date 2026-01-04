@@ -108,7 +108,7 @@
             text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
         }
         
-        /* Welcome Section with Income Check Button */
+        /* Welcome Section with Distribution Info */
         .welcome-section {
             padding: 0 20px;
             margin-bottom: 25px;
@@ -134,39 +134,48 @@
             color: #a0a0d0;
         }
         
-        /* Income Check Button */
-        .income-check-btn {
+        /* Distribution Status Button */
+        .distribution-btn {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            background: linear-gradient(135deg, #ff9966, #ff3366);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 153, 102, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
-            animation: pulse 2s infinite;
             position: relative;
         }
         
-        .income-check-btn:hover {
+        .distribution-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.6);
-            background: linear-gradient(135deg, #00ffaa, #3a7bd5);
+            box-shadow: 0 6px 20px rgba(255, 153, 102, 0.6);
+            background: linear-gradient(135deg, #ffaa77, #ff4477);
         }
         
-        .income-check-btn i {
+        .distribution-btn i {
             font-size: 18px;
             color: white;
         }
         
-        .income-check-btn.loading {
-            animation: spin 1s linear infinite;
+        .distribution-btn.completed {
+            background: linear-gradient(135deg, #00ffaa, #00cc88);
+            box-shadow: 0 4px 15px rgba(0, 255, 170, 0.4);
         }
         
-        .income-badge {
+        .distribution-btn.completed:hover {
+            background: linear-gradient(135deg, #00ffcc, #00aa88);
+            box-shadow: 0 6px 20px rgba(0, 255, 170, 0.6);
+        }
+        
+        .distribution-btn.pending {
+            animation: pulse 2s infinite;
+        }
+        
+        .distribution-badge {
             position: absolute;
             top: -5px;
             right: -5px;
@@ -189,14 +198,46 @@
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
-            50% { box-shadow: 0 4px 20px rgba(0, 255, 170, 0.6); }
-            100% { box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
+            0% { box-shadow: 0 4px 15px rgba(255, 153, 102, 0.4); }
+            50% { box-shadow: 0 4px 20px rgba(255, 153, 102, 0.6); }
+            100% { box-shadow: 0 4px 15px rgba(255, 153, 102, 0.4); }
         }
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
+        }
+        
+        /* Distribution Info Banner */
+        .distribution-banner {
+            background: linear-gradient(90deg, #ff9966, #ff3366);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 153, 102, 0.3);
+            border: 2px solid rgba(255, 153, 102, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .distribution-banner.completed {
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.3);
+            border: 2px solid rgba(0, 255, 170, 0.3);
+        }
+        
+        .distribution-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .distribution-time {
+            font-size: 12px;
+            opacity: 0.9;
         }
         
         /* Main Content */
@@ -613,12 +654,12 @@
                 font-size: 18px;
             }
             
-            .income-check-btn {
+            .distribution-btn {
                 width: 35px;
                 height: 35px;
             }
             
-            .income-check-btn i {
+            .distribution-btn i {
                 font-size: 16px;
             }
         }
@@ -653,7 +694,7 @@
     <!-- Header with Banner Image -->
     <div class="header">
         <!-- Banner Image -->
-        <img src="https://i.ibb.co/fYzLm86c/IMG-20260103-085241.png" 
+        <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
              alt="Happy Invest" 
              class="banner-image"
              onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
@@ -667,16 +708,22 @@
         </div>
     </div>
     
-    <!-- Welcome Section with Income Check Button -->
+    <!-- Distribution Banner -->
+    <div class="distribution-banner pending" id="distributionBanner">
+        <div class="distribution-text" id="distributionText">⏳ Waiting for Daily Distribution</div>
+        <div class="distribution-time" id="distributionTime">Admin will distribute income manually</div>
+    </div>
+    
+    <!-- Welcome Section with Distribution Status -->
     <div class="welcome-section">
         <div class="welcome-content">
             <div>
                 <div class="welcome-text" id="welcomeText">Welcome back, User!</div>
                 <div class="date-text" id="currentDate">Loading date...</div>
             </div>
-            <!-- INCOME CHECK BUTTON ADDED HERE -->
-            <div class="income-check-btn" onclick="checkIncome()" title="Check & Collect Daily Income">
-                <i class="fas fa-sync-alt"></i>
+            <!-- DISTRIBUTION STATUS BUTTON (REPLACED INCOME CHECK) -->
+            <div class="distribution-btn pending" onclick="showDistributionStatus()" title="Check Distribution Status">
+                <i class="fas fa-calendar-check"></i>
             </div>
         </div>
     </div>
@@ -755,6 +802,13 @@
             <h3 class="news-title">Latest News</h3>
             
             <div class="news-item">
+                <div class="news-date">NEW</div>
+                <div class="news-content">
+                    <p class="news-text">🔄 <strong>NEW SYSTEM:</strong> Income distributed manually by admin daily. Today's investments get income from tomorrow.</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
                 <div class="news-date">1 JAN</div>
                 <div class="news-content">
                     <p class="news-text">Happy New Year! Special lunch date with CEO for top investors on 1st January.</p>
@@ -772,13 +826,6 @@
                 <div class="news-date">31 DEC</div>
                 <div class="news-content">
                     <p class="news-text">New Year's Eve Party: Join our online celebration at 11:30 PM!</p>
-                </div>
-            </div>
-            
-            <div class="news-item">
-                <div class="news-date">30 DEC</div>
-                <div class="news-content">
-                    <p class="news-text">Year-end clearance: Invest before 31st Dec to get special New Year gifts!</p>
                 </div>
             </div>
         </div>
@@ -873,8 +920,8 @@
             // Add interactive background effect
             setupBackgroundEffect();
             
-            // Check income status on page load
-            await checkIncomeStatus();
+            // Load distribution status
+            await loadDistributionStatus();
         });
         
         // Update current date
@@ -929,162 +976,101 @@
             });
         }
         
-        // Secure Income Check Function (UPDATED - REMOVED SIGNATURE)
-        async function checkIncome() {
-            const userId = localStorage.getItem('userId');
-            if (!userId) {
-                showNotification('Please login first', 'error');
-                window.location.href = '/';
-                return;
-            }
-
-            // Get button element
-            const btn = document.querySelector('.income-check-btn');
+        // Show distribution status
+        async function showDistributionStatus() {
+            const btn = document.querySelector('.distribution-btn');
             if (!btn) return;
-
-            // Add loading animation
-            btn.classList.add('loading');
-            btn.innerHTML = '<i class="fas fa-spinner"></i>';
-
+            
+            // Add click animation
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Show notification
+            showNotification('Checking distribution status...', 'info');
+            
+            // Reload distribution status
+            await loadDistributionStatus();
+        }
+        
+        // Load distribution status
+        async function loadDistributionStatus() {
             try {
-                // Call Secure Income Check API (without signature)
-                const response = await fetch(`${API_BASE_URL}/secure-income-check`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        clientTime: Date.now()
-                    })
-                });
-
-                const result = await response.json();
-
-                // Remove loading animation
-                btn.classList.remove('loading');
-                btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-
-                if (result.success) {
-                    // Show success message
-                    if (result.incomeAdded > 0) {
-                        // Update balance in UI
-                        const currentBalance = parseFloat(localStorage.getItem('userBalance') || 0);
-                        const newBalance = currentBalance + result.incomeAdded;
-                        localStorage.setItem('userBalance', newBalance);
+                const response = await fetch(`${API_BASE_URL}/distribution-status`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        const banner = document.getElementById('distributionBanner');
+                        const btn = document.querySelector('.distribution-btn');
+                        const distributionText = document.getElementById('distributionText');
+                        const distributionTime = document.getElementById('distributionTime');
                         
-                        document.getElementById('userBalance').textContent = `₹${newBalance.toFixed(2)}`;
+                        if (result.todayDistributed) {
+                            // Already distributed today
+                            banner.style.display = 'block';
+                            banner.className = 'distribution-banner completed';
+                            distributionText.innerHTML = '✅ Today\'s Income Distributed!';
+                            distributionTime.textContent = result.lastDistribution ? 
+                                `Distributed at: ${formatDateTime(result.lastDistribution)}` : 
+                                'Income added to your balance';
+                            
+                            // Update button
+                            btn.className = 'distribution-btn completed';
+                            btn.innerHTML = '<i class="fas fa-check-circle"></i>';
+                            btn.title = 'Income distributed today';
+                            
+                        } else {
+                            // Not distributed yet
+                            banner.style.display = 'block';
+                            banner.className = 'distribution-banner pending';
+                            distributionText.innerHTML = '⏳ Waiting for Daily Distribution';
+                            distributionTime.textContent = 'Admin will distribute income manually. Today\'s investments get income from tomorrow.';
+                            
+                            // Update button
+                            btn.className = 'distribution-btn pending';
+                            btn.innerHTML = '<i class="fas fa-calendar-check"></i>';
+                            btn.title = 'Check Distribution Status';
+                        }
                         
-                        // Animate balance update
-                        animateBalanceUpdate();
-                        
-                        // Show success notification
-                        showNotification(`🎉 ₹${result.incomeAdded.toFixed(2)} Income Collected!`, 'success');
-                        
-                        // Play success sound
-                        playSuccessSound();
-                        
-                        // Update today's income
-                        updateTodayIncome(result.incomeAdded);
-                        
-                        // Remove badge if exists
-                        removeEligibleBadge();
-                    } else {
-                        showNotification('No income available yet. Try again later.', 'info');
-                    }
-                    
-                    // Show next payout info
-                    if (result.nextPayouts && result.nextPayouts.length > 0) {
-                        const nextPayout = result.nextPayouts[0];
-                        if (nextPayout.hoursRemaining > 0) {
-                            setTimeout(() => {
-                                showNotification(`Next income in ${nextPayout.hoursRemaining} hours`, 'info');
-                            }, 1500);
+                        // Add badge if there's new info
+                        if (result.stats && result.stats.totalDistributed > 0) {
+                            addDistributionBadge(btn);
                         }
                     }
-                } else {
-                    // Show error message
-                    showNotification(result.message || 'Income check failed', 'error');
-                    
-                    if (result.penalty) {
-                        showNotification(`⚠️ ${result.message}`, 'warning');
-                    }
                 }
-
             } catch (error) {
-                console.error('Income check error:', error);
-                
-                // Remove loading animation
-                btn.classList.remove('loading');
-                btn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-                
-                showNotification('Network error. Please try again.', 'error');
+                console.error('Error loading distribution status:', error);
+                showNotification('Failed to load distribution status', 'error');
             }
         }
         
-        // Check income status on page load
-        async function checkIncomeStatus() {
-            const userId = localStorage.getItem('userId');
-            if (!userId) return;
-            
-            try {
-                // Call get-next-income API (without signature)
-                const response = await fetch(`${API_BASE_URL}/get-next-income`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId: userId
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Check if any investment is eligible for income
-                    const isEligible = result.investments?.some(inv => inv.isEligible) || false;
-                    
-                    // Make button pulse if income is available
-                    const btn = document.querySelector('.income-check-btn');
-                    if (btn && isEligible) {
-                        btn.style.animation = 'pulse 1s infinite';
-                        // Show small badge
-                        addEligibleBadge(btn);
-                    }
-                }
-            } catch (error) {
-                console.log('Income status check error:', error);
-            }
-        }
-        
-        // Add badge to button if income is available
-        function addEligibleBadge(btn) {
+        // Add distribution badge
+        function addDistributionBadge(btn) {
             // Remove existing badge first
-            const existingBadge = btn.querySelector('.income-badge');
+            const existingBadge = btn.querySelector('.distribution-badge');
             if (existingBadge) return;
             
             const badge = document.createElement('div');
-            badge.className = 'income-badge';
+            badge.className = 'distribution-badge';
             badge.innerHTML = '💡';
-            badge.title = 'Income Available!';
+            badge.title = 'Distribution Info Available';
             
             btn.style.position = 'relative';
             btn.appendChild(badge);
         }
         
-        // Remove eligible badge
-        function removeEligibleBadge() {
-            const btn = document.querySelector('.income-check-btn');
-            if (!btn) return;
-            
-            const badge = btn.querySelector('.income-badge');
-            if (badge) {
-                badge.remove();
-            }
-            
-            // Reset button animation
-            btn.style.animation = 'pulse 2s infinite';
+        // Format date time
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
         }
         
         // Helper function to show notifications
@@ -1116,45 +1102,6 @@
                     }
                 }, 300);
             }, 3000);
-        }
-        
-        // Update today's income display
-        function updateTodayIncome(amount) {
-            const todayIncomeElement = document.getElementById('todayIncome');
-            if (todayIncomeElement) {
-                const currentIncome = parseFloat(todayIncomeElement.textContent.replace('₹', '') || 0);
-                const newIncome = currentIncome + amount;
-                todayIncomeElement.textContent = `₹${newIncome.toFixed(2)}`;
-                
-                // Animate the update
-                todayIncomeElement.style.animation = 'pulse 0.5s ease';
-                setTimeout(() => {
-                    todayIncomeElement.style.animation = '';
-                }, 500);
-            }
-        }
-        
-        // Play success sound
-        function playSuccessSound() {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 523.25; // C5
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            } catch (e) {
-                console.log('Audio not supported');
-            }
         }
         
         // Fetch latest user data from backend
@@ -1300,7 +1247,7 @@
             const userId = localStorage.getItem('userId');
             if (userId) {
                 await fetchUserData(userId);
-                await checkIncomeStatus();
+                await loadDistributionStatus();
             }
         }, 30000);
         

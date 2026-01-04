@@ -156,6 +156,57 @@
             min-height: 60vh;
         }
         
+        /* Distribution Status Banner */
+        .distribution-banner {
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.3);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .distribution-banner::before {
+            content: '⏰';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .distribution-banner.pending {
+            background: linear-gradient(90deg, #ff9966, #ff3366);
+            box-shadow: 0 8px 25px rgba(255, 153, 102, 0.3);
+            border: 2px solid rgba(255, 153, 102, 0.3);
+        }
+        
+        .distribution-banner.pending::before {
+            content: '⏳';
+        }
+        
+        .distribution-banner.completed {
+            background: linear-gradient(90deg, #00ffaa, #00cc88);
+            box-shadow: 0 8px 25px rgba(0, 255, 170, 0.3);
+            border: 2px solid rgba(0, 255, 170, 0.3);
+        }
+        
+        .distribution-banner.completed::before {
+            content: '✅';
+        }
+        
+        .distribution-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .distribution-time {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
         /* Stats Summary */
         .stats-summary {
             display: grid;
@@ -590,6 +641,31 @@
             border: 1px solid rgba(255, 153, 102, 0.2);
         }
         
+        /* Distribution Info */
+        .distribution-info {
+            margin-top: 15px;
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .distribution-info.pending {
+            background: rgba(255, 153, 102, 0.1);
+            border-color: rgba(255, 153, 102, 0.2);
+        }
+        
+        .distribution-info.eligible {
+            background: rgba(0, 255, 170, 0.1);
+            border-color: rgba(0, 255, 170, 0.2);
+        }
+        
+        .distribution-info.today {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+        
         /* Loading State */
         .loading-state {
             text-align: center;
@@ -733,7 +809,7 @@
             }
         }
         
-        .empty-state, .investment-item, .stats-summary {
+        .empty-state, .investment-item, .stats-summary, .distribution-banner {
             animation: fadeInUp 0.6s ease-out forwards;
             opacity: 0;
         }
@@ -842,6 +918,12 @@
     
     <!-- Main Content -->
     <div class="main-content">
+        <!-- Distribution Status Banner -->
+        <div class="distribution-banner pending" id="distributionBanner" style="display: none;">
+            <div class="distribution-text">Next Distribution: Admin will distribute manually</div>
+            <div class="distribution-time">Today's investments get income from tomorrow</div>
+        </div>
+        
         <!-- Loading State -->
         <div class="loading-state" id="loadingState">
             <div class="loading-spinner">
@@ -911,19 +993,19 @@
         // ==================== CONFIGURATION ====================
         const API_BASE_URL = window.location.origin + '/api';
         const PLANS_CONFIG = {
-            "basic_608": { color: "#00d2ff", badge: "basic" },
-            "basic_940": { color: "#00d2ff", badge: "basic" },
-            "basic_1500": { color: "#00d2ff", badge: "basic" },
-            "vip_3000": { color: "#ffd700", badge: "vip" },
-            "vip_4500": { color: "#ffd700", badge: "vip" },
-            "vip_6000": { color: "#ffd700", badge: "vip" },
-            "rich_25000": { color: "#00ffaa", badge: "rich" },
-            "rich_50000": { color: "#00ffaa", badge: "rich" },
-            "rich_75000": { color: "#00ffaa", badge: "rich" },
-            "rich_100000": { color: "#00ffaa", badge: "rich" },
-            "ultimate_150000": { color: "#9966ff", badge: "ultimate" },
-            "ultimate_250000": { color: "#9966ff", badge: "ultimate" },
-            "ultimate_500000": { color: "#9966ff", badge: "ultimate" }
+            "basic_608": { color: "#00d2ff", badge: "basic", locked: false },
+            "basic_940": { color: "#00d2ff", badge: "basic", locked: false },
+            "basic_1500": { color: "#00d2ff", badge: "basic", locked: false },
+            "vip_3000": { color: "#ffd700", badge: "vip", locked: true },
+            "vip_4500": { color: "#ffd700", badge: "vip", locked: true },
+            "vip_6000": { color: "#ffd700", badge: "vip", locked: true },
+            "rich_25000": { color: "#00ffaa", badge: "rich", locked: true },
+            "rich_50000": { color: "#00ffaa", badge: "rich", locked: true },
+            "rich_75000": { color: "#00ffaa", badge: "rich", locked: true },
+            "rich_100000": { color: "#00ffaa", badge: "rich", locked: true },
+            "ultimate_150000": { color: "#9966ff", badge: "ultimate", locked: true },
+            "ultimate_250000": { color: "#9966ff", badge: "ultimate", locked: true },
+            "ultimate_500000": { color: "#9966ff", badge: "ultimate", locked: true }
         };
         
         // ==================== HELPER FUNCTIONS ====================
@@ -1014,13 +1096,28 @@
         
         function getBalanceType(planId) {
             const plan = PLANS_CONFIG[planId];
-            if (!plan) return '';
+            if (!plan) return 'regular-balance';
             
-            // VIP/Rich/Ultimate plans have locked balance
-            if (plan.badge === 'vip' || plan.badge === 'rich' || plan.badge === 'ultimate') {
-                return 'locked-balance';
-            }
-            return 'regular-balance';
+            return plan.locked ? 'locked-balance' : 'regular-balance';
+        }
+        
+        function getInvestmentDateInfo(investment) {
+            const today = new Date().toISOString().split('T')[0];
+            const investmentDate = investment.startDate ? 
+                new Date(investment.startDate).toISOString().split('T')[0] : 
+                today;
+            
+            const isTodayInvestment = investmentDate === today;
+            const isEligibleToday = !isTodayInvestment;
+            
+            return {
+                investmentDate,
+                isTodayInvestment,
+                isEligibleToday,
+                displayText: isTodayInvestment ? 
+                    '📌 Investment made today - Will get income from tomorrow' :
+                    '✅ Eligible for today\'s distribution'
+            };
         }
         
         // ==================== INVESTMENT FUNCTIONS ====================
@@ -1037,6 +1134,10 @@
                 document.getElementById('emptyState').style.display = 'none';
                 document.getElementById('statsSummary').style.display = 'none';
                 document.getElementById('investmentsList').style.display = 'none';
+                document.getElementById('distributionBanner').style.display = 'none';
+                
+                // Load distribution status
+                await loadDistributionStatus();
                 
                 // Load investments from API
                 const response = await fetch(`${API_BASE_URL}/user-investments/${userId}`);
@@ -1056,6 +1157,7 @@
                         document.getElementById('emptyState').style.display = 'none';
                         document.getElementById('statsSummary').style.display = 'grid';
                         document.getElementById('investmentsList').style.display = 'block';
+                        document.getElementById('distributionBanner').style.display = 'block';
                         
                         // Calculate totals
                         let totalInvested = 0;
@@ -1115,11 +1217,40 @@
             }
         }
         
+        async function loadDistributionStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/distribution-status`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        const banner = document.getElementById('distributionBanner');
+                        
+                        if (result.todayDistributed) {
+                            banner.className = 'distribution-banner completed';
+                            banner.innerHTML = `
+                                <div class="distribution-text">✅ Today's income distributed!</div>
+                                <div class="distribution-time">${result.lastDistribution ? `Distributed at: ${formatDateTime(result.lastDistribution)}` : ''}</div>
+                            `;
+                        } else {
+                            banner.className = 'distribution-banner pending';
+                            banner.innerHTML = `
+                                <div class="distribution-text">⏳ Waiting for daily distribution</div>
+                                <div class="distribution-time">Admin will distribute income manually. Today's investments get income from tomorrow.</div>
+                            `;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading distribution status:', error);
+            }
+        }
+        
         function showEmptyState() {
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('emptyState').style.display = 'flex';
             document.getElementById('statsSummary').style.display = 'none';
             document.getElementById('investmentsList').style.display = 'none';
+            document.getElementById('distributionBanner').style.display = 'block';
         }
         
         function createInvestmentItem(investment, index) {
@@ -1163,21 +1294,22 @@
             const totalIncome = investment.totalIncome || 0;
             const planBadge = getPlanBadge(investment.planId);
             const balanceType = getBalanceType(investment.planId);
+            const dateInfo = getInvestmentDateInfo(investment);
             
             // Get balance type text
             let balanceText = '';
             if (balanceType === 'locked-balance') {
-                balanceText = '🔒 Locked Balance';
+                balanceText = '🔒 Locked Balance (End Term Withdrawal)';
             } else {
-                balanceText = '💎 Regular Balance';
+                balanceText = '💎 Regular Balance (Daily Withdrawal)';
             }
             
             // Check withdrawal type
             let withdrawalInfo = '';
             if (investment.withdrawalType === 'daily') {
-                withdrawalInfo = '💰 Daily Withdrawal';
+                withdrawalInfo = '💰 Daily Withdrawal Allowed';
             } else if (investment.withdrawalType === 'end') {
-                withdrawalInfo = '📅 End Term Withdrawal';
+                withdrawalInfo = '📅 End Term Withdrawal Only';
             }
             
             // Create investment item HTML
@@ -1238,6 +1370,18 @@
                     </div>
                 </div>
                 
+                <!-- Distribution Eligibility Info -->
+                <div class="distribution-info ${dateInfo.isTodayInvestment ? 'today' : (dateInfo.isEligibleToday ? 'eligible' : 'pending')}">
+                    <div style="color: #fff; font-weight: 600; font-size: 13px; margin-bottom: 5px;">
+                        ${dateInfo.isTodayInvestment ? '📌' : '✅'} ${dateInfo.displayText}
+                    </div>
+                    ${investment.lastDistributionDate ? `
+                    <div style="color: #a0a0d0; font-size: 11px;">
+                        Last income: ${formatDate(investment.lastDistributionDate)}
+                    </div>
+                    ` : ''}
+                </div>
+                
                 ${earnedSoFar > 0 ? `
                 <div style="text-align: center; margin-top: 15px; padding: 12px; background: rgba(0, 255, 170, 0.1); border-radius: 10px;">
                     <span style="color: #a0a0d0; font-size: 14px;">
@@ -1260,18 +1404,18 @@
                     </span>
                 </div>
                 
-                ${investment.nextPayoutTime ? `
-                <div style="text-align: center; margin-top: 10px; padding: 8px; background: rgba(0, 210, 255, 0.1); border-radius: 8px;">
-                    <span style="color: #a0a0d0; font-size: 12px;">
-                        Next payout: <span style="color: #00d2ff; font-weight: bold;">${formatDateTime(investment.nextPayoutTime)}</span>
-                    </span>
-                </div>
-                ` : ''}
-                
                 ${investment.payoutCount > 0 ? `
                 <div style="text-align: center; margin-top: 10px;">
                     <span style="color: #a0a0d0; font-size: 11px;">
                         📊 Payouts received: ${investment.payoutCount || 0}
+                    </span>
+                </div>
+                ` : ''}
+                
+                ${investment.distributionHistory ? `
+                <div style="text-align: center; margin-top: 10px;">
+                    <span style="color: #a0a0d0; font-size: 11px;">
+                        📈 Distribution history recorded
                     </span>
                 </div>
                 ` : ''}
@@ -1359,13 +1503,15 @@
                 });
             }
             
-            // Load investments
+            // Load distribution status and investments
+            await loadDistributionStatus();
             await loadInvestments();
         });
         
         // Auto-refresh investments every 30 seconds
         setInterval(async () => {
             if (document.visibilityState === 'visible' && localStorage.getItem('userId')) {
+                await loadDistributionStatus();
                 await loadInvestments();
             }
         }, 30000);
@@ -1373,6 +1519,7 @@
         // Refresh when page becomes visible
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible' && localStorage.getItem('userId')) {
+                await loadDistributionStatus();
                 await loadInvestments();
             }
         });
@@ -1385,6 +1532,10 @@
             }
             if (e.key === 'i' || e.key === 'I') {
                 window.location.href = '/products';
+            }
+            if (e.key === 'd' || e.key === 'D') {
+                loadDistributionStatus();
+                showToast('Checking distribution status...', 'info');
             }
         });
     </script>
