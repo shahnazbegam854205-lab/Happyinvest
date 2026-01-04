@@ -83,10 +83,12 @@
             text-align: right;
             cursor: pointer;
             transition: all 0.3s ease;
-            padding: 10px 15px;
+            padding: 10px 15px 10px 40px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(0, 255, 170, 0.2);
+            position: relative;
+            min-width: 130px;
         }
         
         .balance-section:hover {
@@ -106,6 +108,38 @@
             font-weight: 700;
             color: #00ffaa;
             text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+        
+        /* Download emoji style */
+        .download-emoji {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 50%;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            animation: float 2s infinite ease-in-out;
+            z-index: 2;
+        }
+        
+        .download-emoji:hover {
+            transform: translateY(-50%) scale(1.2);
+            background: rgba(0, 210, 255, 0.2) !important;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(-50%) translateY(0px); }
+            50% { transform: translateY(-50%) translateY(-5px); }
         }
         
         /* Welcome Section with Distribution Info */
@@ -662,6 +696,18 @@
             .distribution-btn i {
                 font-size: 16px;
             }
+            
+            .balance-section {
+                min-width: 120px;
+                padding: 10px 12px 10px 35px;
+            }
+            
+            .download-emoji {
+                width: 35px;
+                height: 35px;
+                font-size: 24px;
+                left: 8px;
+            }
         }
         
         @media (min-width: 768px) {
@@ -701,7 +747,10 @@
         
         <div class="header-content">
             <div class="logo">Home</div>
-            <div class="balance-section" onclick="refreshBalance()">
+            <div class="balance-section">
+                <div class="download-emoji" onclick="navigateTo('/about')">
+                    📥
+                </div>
                 <div class="balance-label">Balance</div>
                 <div class="balance-amount" id="userBalance">₹0.00</div>
             </div>
@@ -960,6 +1009,18 @@
                     this.style.transform = 'translateY(0)';
                 });
             });
+            
+            // Balance section hover effect
+            const balanceSection = document.querySelector('.balance-section');
+            if (balanceSection) {
+                balanceSection.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                balanceSection.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
         }
         
         // Setup background effect
