@@ -716,6 +716,7 @@
             animation: slideIn 0.3s ease-out;
             font-weight: 600;
             max-width: 300px;
+            display: none;
         }
         
         .toast.success {
@@ -828,6 +829,7 @@
             font-weight: bold;
             z-index: 1001;
             animation: slideIn 0.3s ease-out;
+            display: none;
         }
         
         /* Refresh Button */
@@ -883,7 +885,7 @@
     <div class="glow-bg" id="glowBg"></div>
     
     <!-- Cheat Warning Banner (Hidden by default) -->
-    <div class="cheat-warning" id="cheatWarning" style="display: none;">
+    <div class="cheat-warning" id="cheatWarning">
         ⚠️ CHEAT ATTEMPT DETECTED! Account may be suspended.
     </div>
     
@@ -903,7 +905,7 @@
             </div>
             <div class="profile-info">
                 <h2 class="profile-name" id="userName">
-                    Vishal 
+                    Loading...
                     <span class="status-badge status-active" id="userStatus">Active</span>
                 </h2>
                 <p class="profile-id" id="userId">ID: Loading...</p>
@@ -1054,165 +1056,45 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
     <script>
         // ==================== CONFIGURATION ====================
-        // IMPORTANT: Change this to your backend URL
-        const API_BASE_URL = 'https://richday.vercel.app/api'; // Backend running on port 3000
-        // OR for production: const API_BASE_URL = 'https://richday.vercel.app/api';
+        const API_BASE_URL = window.location.origin + '/api';
         
         let userData = null;
         let lastUpdateTime = Date.now();
         
-        // ==================== ROUTING SYSTEM ====================
-        const routes = {
-            '/': 'index.html',
-            '/home': 'home.html',
-            '/profile': 'profile.html',
-            '/products': 'products.html',
-            '/team': 'team.html',
-            '/about': 'about.html',
-            '/income-record': 'income-record.html',
-            '/records': 'records.html',
-            '/gift-code': 'gift-code.html',
-            '/my-collection': 'my-collection.html',
-            '/bank-info': 'bank-info.html',
-            '/recharge': 'recharge.html',
-            '/withdraw': 'withdraw.html',
-            '/checkin': 'checkin.html',
-            '/invite-earn': 'invite-earn.html'
-        };
-
-        async function navigateTo(cleanPath) {
-            // Check if user is logged in
-            if (!localStorage.getItem('userId') && cleanPath !== '/') {
-                showToast('Please login first', 'error');
-                window.location.href = '/index.html';
-                return;
-            }
-            
-            // Check if user is banned
-            const userStatus = localStorage.getItem('userStatus');
-            if (userStatus === 'banned' && cleanPath !== '/') {
-                showToast('Account suspended. Cannot access.', 'error');
-                return;
-            }
-            
-            // Add click animation
-            const button = event?.currentTarget;
-            if (button) {
-                button.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    button.style.transform = 'scale(1)';
-                }, 150);
-            }
-            
-            // Special handling for withdrawal page
-            if (cleanPath === '/withdraw') {
-                const hasBank = localStorage.getItem('hasBankDetails') === 'true';
-                if (!hasBank) {
-                    if (confirm('You need to add bank details first. Go to Bank Information?')) {
-                        cleanPath = '/bank-info';
-                    } else {
-                        return;
-                    }
-                }
-                
-                // Check daily withdrawal limit
-                const today = new Date().toDateString();
-                const lastWithdrawal = localStorage.getItem('lastWithdrawalDate');
-                if (lastWithdrawal && new Date(lastWithdrawal).toDateString() === today) {
-                    showToast('Only 1 withdrawal allowed per day. Try again tomorrow.', 'warning');
-                    return;
-                }
-            }
-            
-            // Show loading indicator
-            showLoading();
-            
-            // Check if route exists
-            if (routes[cleanPath]) {
-                // Update browser history with clean URL
-                history.pushState(null, '', cleanPath);
-                
-                // After a short delay, navigate to actual file
-                setTimeout(() => {
-                    window.location.href = routes[cleanPath];
-                }, 300);
-            } else {
-                // If route doesn't exist, show error
-                setTimeout(() => {
-                    hideLoading();
-                    showToast('Page not found: ' + cleanPath, 'error');
-                }, 300);
-            }
-        }
-
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', function(event) {
-            const currentPath = window.location.pathname;
-            if (routes[currentPath]) {
-                window.location.href = routes[currentPath];
-            }
-        });
-
-        // ==================== UTILITY FUNCTIONS ====================
-        function showToast(message, type = 'info') {
-            // Remove existing toast
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) existingToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+        // ==================== HELPER FUNCTIONS ====================
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.getElementById('toast');
             toast.textContent = message;
-            
-            document.body.appendChild(toast);
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
             
             setTimeout(() => {
                 toast.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-        
-        function showLoading() {
-            // Create loading overlay
-            const loading = document.createElement('div');
-            loading.id = 'pageLoading';
-            loading.innerHTML = `
-                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:1000;">
-                    <div style="background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); padding:30px; border-radius:15px; text-align:center;">
-                        <div style="width:50px; height:50px; border:3px solid transparent; border-top-color:#00d2ff; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 15px;"></div>
-                        <p style="color:white;">Loading...</p>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(loading);
-        }
-
-        function hideLoading() {
-            const loading = document.getElementById('pageLoading');
-            if (loading) {
-                loading.remove();
-            }
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                    toast.style.animation = '';
+                }, 300);
+            }, duration);
         }
         
         function formatCurrency(amount) {
-            return '₹' + parseFloat(amount || 0).toFixed(2);
+            const num = parseFloat(amount || 0);
+            return '₹' + num.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
         
-        function maskPhone(phone) {
-            if (!phone) return 'Not set';
-            if (phone.length >= 10) {
-                return phone.substring(0, 3) + '****' + phone.substring(7);
-            }
-            return phone;
-        }
-        
-        function maskUserId(userId) {
-            if (!userId) return 'N/A';
-            if (userId.length > 8) {
-                return userId.substring(0, 4) + '...' + userId.substring(userId.length - 4);
-            }
-            return userId;
+        function formatNumber(num) {
+            const n = parseFloat(num || 0);
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n.toFixed(0);
         }
         
         function timeAgo(timestamp) {
@@ -1228,7 +1110,54 @@
             if (hours < 24) return hours + 'h ago';
             return Math.floor(hours / 24) + 'd ago';
         }
-
+        
+        function maskPhone(phone) {
+            if (!phone || phone.length < 10) return phone || 'Not set';
+            return phone.substring(0, 3) + '****' + phone.substring(7);
+        }
+        
+        function maskUserId(userId) {
+            if (!userId) return 'N/A';
+            if (userId.length > 8) {
+                return userId.substring(0, 4) + '...' + userId.substring(userId.length - 4);
+            }
+            return userId;
+        }
+        
+        // ==================== NAVIGATION ====================
+        function navigateTo(page) {
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => button.style.transform = 'scale(1)', 150);
+            }
+            
+            // Check login
+            if (!localStorage.getItem('userId') && page !== '/') {
+                window.location.href = '/index.html';
+                return;
+            }
+            
+            // Special checks for withdrawal page
+            if (page === '/withdraw') {
+                const hasBank = localStorage.getItem('hasBankDetails') === 'true';
+                if (!hasBank) {
+                    showToast('Please add bank details first', 'warning');
+                    page = '/bank-info';
+                }
+                
+                // Check daily withdrawal limit
+                const today = new Date().toDateString();
+                const lastWithdrawal = localStorage.getItem('lastWithdrawalDate');
+                if (lastWithdrawal && new Date(lastWithdrawal).toDateString() === today) {
+                    showToast('Only 1 withdrawal allowed per day. Try again tomorrow.', 'warning');
+                    return;
+                }
+            }
+            
+            window.location.href = page;
+        }
+        
         // ==================== USER DATA FUNCTIONS ====================
         async function loadUserData() {
             try {
@@ -1239,14 +1168,10 @@
                 }
                 
                 // Show loading state
-                document.getElementById('userName').innerHTML = 'Loading...';
+                document.getElementById('userName').innerHTML = 'Loading... <span class="status-badge status-active">Active</span>';
                 
-                // Try to load from API
-                const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
-                    headers: {
-                        'Cache-Control': 'no-cache'
-                    }
-                });
+                // Load from API
+                const response = await fetch(`${API_BASE_URL}/user/${userId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
@@ -1257,11 +1182,11 @@
                 if (result.success && result.user) {
                     userData = result.user;
                     
-                    // ✅ Check if user is banned
+                    // Check if user is banned
                     if (userData.status === 'banned') {
                         showCheatWarning();
                         disableUserActions();
-                        showToast('Your account has been suspended. Contact admin.', 'error');
+                        showToast('Account suspended. Contact admin.', 'error');
                         setTimeout(() => {
                             showBannedModal(userData.banReason || 'Violation of terms');
                         }, 1000);
@@ -1279,14 +1204,13 @@
                     updateLastUpdated();
                     
                 } else {
-                    showToast(result.message || 'Failed to load user data', 'warning');
-                    loadFromLocalStorage();
+                    throw new Error('Invalid response from server');
                 }
                 
             } catch (error) {
                 console.error('Error loading user data:', error);
-                showToast('Network error. Using cached data.', 'warning');
                 loadFromLocalStorage();
+                showToast('Using cached data. Please check connection.', 'warning');
             }
         }
         
@@ -1300,7 +1224,7 @@
                 </span>
             `;
             
-            document.getElementById('userId').textContent = `ID: ${maskUserId(data.id || localStorage.getItem('userId'))}`;
+            document.getElementById('userId').textContent = `ID: ${maskUserId(data.id)}`;
             document.getElementById('userPhone').textContent = `Phone: ${maskPhone(data.phone)}`;
             
             // Update balances
@@ -1321,9 +1245,6 @@
             if (data.lockedBalance && data.lockedBalance > 0) {
                 showLockedBalance(data.lockedBalance);
             }
-            
-            // Check for new gift codes
-            checkGiftCodes();
             
             // Update button states
             updateButtonStates(data);
@@ -1372,7 +1293,7 @@
             const rechargeBtn = document.getElementById('rechargeBtn');
             
             // Enable/disable withdrawal based on balance
-            if (data.balance < 200) { // Minimum withdrawal is ₹200
+            if (data.balance < 200) {
                 withdrawBtn.classList.add('disabled');
                 withdrawBtn.onclick = function() {
                     showToast('Minimum ₹200 required for withdrawal', 'warning');
@@ -1411,18 +1332,6 @@
             }
         }
         
-        async function checkGiftCodes() {
-            try {
-                // This would check for available gift codes
-                // For now, we'll show badge if user has less than ₹500 balance
-                if (userData && userData.balance < 500) {
-                    document.getElementById('giftBadge').style.display = 'flex';
-                }
-            } catch (error) {
-                console.log('Could not check gift codes');
-            }
-        }
-        
         function updateLocalStorage(data) {
             localStorage.setItem('userName', data.name || 'User');
             localStorage.setItem('userPhone', data.phone || '');
@@ -1432,6 +1341,8 @@
             localStorage.setItem('totalRecharged', data.totalRecharged || 0);
             localStorage.setItem('withdrawn', data.withdrawn || 0);
             localStorage.setItem('teamCount', data.teamCount || 0);
+            localStorage.setItem('referralCode', data.referralCode || '');
+            localStorage.setItem('referralLink', data.referralLink || '');
             
             if (data.bankDetails) {
                 localStorage.setItem('hasBankDetails', 'true');
@@ -1569,60 +1480,6 @@
             if (modal) modal.remove();
         }
         
-        // ==================== EVENT HANDLERS ====================
-        function logout() {
-            // Add glowing effect to logout button
-            const logoutBtn = document.querySelector('.logout-btn');
-            logoutBtn.style.boxShadow = '0 0 30px rgba(255, 65, 108, 0.8)';
-            
-            setTimeout(() => {
-                logoutBtn.style.boxShadow = '0 10px 20px rgba(255, 65, 108, 0.3)';
-                
-                if (confirm('Are you sure you want to logout?')) {
-                    // Add exit animation
-                    document.body.style.opacity = '0.7';
-                    document.body.style.transform = 'scale(0.95)';
-                    document.body.style.transition = 'all 0.3s ease';
-                    
-                    setTimeout(() => {
-                        // Clear user data from localStorage
-                        localStorage.removeItem('userId');
-                        localStorage.removeItem('userName');
-                        localStorage.removeItem('userPhone');
-                        localStorage.removeItem('userBalance');
-                        localStorage.removeItem('userStatus');
-                        localStorage.removeItem('referralCode');
-                        localStorage.removeItem('referralLink');
-                        localStorage.removeItem('hasBankDetails');
-                        localStorage.removeItem('lastWithdrawalDate');
-                        
-                        // Navigate to login page
-                        window.location.href = 'index.html';
-                    }, 300);
-                }
-            }, 300);
-        }
-        
-        function showHelp() {
-            const helpOptions = [
-                '📞 Customer Support: +91 1234567890',
-                '📧 Email: support@happyinvest.com',
-                '💬 WhatsApp: +91 9876543210',
-                '📱 Telegram: @happyinvest_support',
-                '🕒 Hours: 9AM - 6PM (Mon-Sat)',
-                '',
-                '⚠️ IMPORTANT:',
-                '• Minimum withdrawal: ₹200',
-                '• Daily withdrawal limit: 1 per day',
-                '• Recharge approval: 2-4 hours',
-                '• Withdrawal processing: 24-48 hours',
-                '• Cheat attempts may lead to ban'
-            ];
-            
-            const helpText = helpOptions.join('\n');
-            alert('Help & Support:\n\n' + helpText);
-        }
-        
         function copyReferralCode() {
             const referralCode = userData?.referralCode || localStorage.getItem('referralCode');
             if (referralCode) {
@@ -1652,7 +1509,6 @@
         }
         
         function disableUserActions() {
-            // Disable all action buttons
             const actionBtns = document.querySelectorAll('.action-btn, .menu-item');
             actionBtns.forEach(btn => {
                 btn.classList.add('disabled');
@@ -1660,7 +1516,6 @@
                 btn.onclick = null;
             });
             
-            // Disable logout button
             const logoutBtn = document.querySelector('.logout-btn');
             logoutBtn.style.opacity = '0.5';
             logoutBtn.style.cursor = 'not-allowed';
@@ -1677,17 +1532,65 @@
                 showToast('Data refreshed!', 'success');
             }, 500);
         }
-
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear localStorage
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userPhone');
+                localStorage.removeItem('userBalance');
+                localStorage.removeItem('userStatus');
+                localStorage.removeItem('referralCode');
+                localStorage.removeItem('referralLink');
+                localStorage.removeItem('hasBankDetails');
+                localStorage.removeItem('lastWithdrawalDate');
+                
+                // Redirect to login
+                window.location.href = '/index.html';
+            }
+        }
+        
+        function showHelp() {
+            const helpOptions = [
+                '📞 Customer Support: +91 1234567890',
+                '📧 Email: support@happyinvest.com',
+                '💬 WhatsApp: +91 9876543210',
+                '📱 Telegram: @happyinvest_support',
+                '🕒 Hours: 9AM - 6PM (Mon-Sat)',
+                '',
+                '⚠️ IMPORTANT:',
+                '• Minimum withdrawal: ₹200',
+                '• Daily withdrawal limit: 1 per day',
+                '• Recharge approval: 2-4 hours',
+                '• Withdrawal processing: 24-48 hours',
+                '• Cheat attempts may lead to ban'
+            ];
+            
+            alert('Help & Support:\n\n' + helpOptions.join('\n'));
+        }
+        
         // ==================== INITIALIZATION ====================
         window.addEventListener('DOMContentLoaded', async function() {
-            // Check if user is logged in
+            // Check login
             if (!localStorage.getItem('userId')) {
                 window.location.href = '/index.html';
                 return;
             }
             
             // Setup background effect
-            setupBackgroundEffect();
+            document.addEventListener('mousemove', function(e) {
+                const glowBg = document.getElementById('glowBg');
+                if (!glowBg) return;
+                
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                glowBg.style.background = `
+                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
+                `;
+            });
             
             // Load user data
             await loadUserData();
@@ -1711,23 +1614,7 @@
             setInterval(updateLastUpdated, 60000);
         });
         
-        function setupBackgroundEffect() {
-            document.addEventListener('mousemove', function(e) {
-                const glowBg = document.getElementById('glowBg');
-                if (!glowBg) return;
-                
-                const x = e.clientX / window.innerWidth;
-                const y = e.clientY / window.innerHeight;
-                
-                glowBg.style.background = `
-                    radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(0, 150, 255, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at ${100 - x * 100}% ${100 - y * 100}%, rgba(255, 0, 150, 0.1) 0%, transparent 50%)
-                `;
-            });
-        }
-        
         function setupHoverEffects() {
-            // Menu items hover
             const menuItems = document.querySelectorAll('.menu-item:not(.disabled)');
             menuItems.forEach(item => {
                 item.addEventListener('mouseenter', function() {
@@ -1739,7 +1626,6 @@
                 });
             });
             
-            // Action buttons hover
             const actionBtns = document.querySelectorAll('.action-btn:not(.disabled)');
             actionBtns.forEach(btn => {
                 btn.addEventListener('mouseenter', function() {
@@ -1751,7 +1637,6 @@
                 });
             });
             
-            // Summary items hover
             const summaryItems = document.querySelectorAll('.summary-item');
             summaryItems.forEach(item => {
                 item.addEventListener('mouseenter', function() {
@@ -1766,7 +1651,7 @@
         
         // Auto-refresh user data every 2 minutes
         setInterval(async () => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === 'visible' && localStorage.getItem('userId')) {
                 await loadUserData();
             }
         }, 120000);

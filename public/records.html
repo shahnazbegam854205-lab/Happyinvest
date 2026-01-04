@@ -780,7 +780,7 @@
 
     <script>
         // ==================== CONFIGURATION ====================
-        const API_BASE_URL = 'https://richday.vercel.app/api';
+        const API_BASE_URL = window.location.origin + '/api';
         let withdrawalRecords = [];
         let currentFilter = 'all';
         let currentPage = 1;
@@ -789,6 +789,11 @@
         
         // ==================== UTILITY FUNCTIONS ====================
         function navigateTo(page) {
+            const button = event?.currentTarget;
+            if (button) {
+                button.style.transform = 'scale(0.95)';
+                setTimeout(() => button.style.transform = 'scale(1)', 150);
+            }
             window.location.href = page;
         }
         
@@ -871,7 +876,11 @@
         
         // Format currency
         function formatCurrency(amount) {
-            return '₹' + parseFloat(amount || 0).toFixed(2);
+            const num = parseFloat(amount || 0);
+            return '₹' + num.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
         
         // Format bank details
@@ -985,13 +994,14 @@
                 
                 // Check authentication
                 const userId = localStorage.getItem('userId');
-                const userPhone = localStorage.getItem('userPhone');
                 
-                if (!userId || !userPhone) {
+                if (!userId) {
                     console.log('❌ User not logged in');
-                    showEmptyState();
+                    window.location.href = '/index.html';
                     return;
                 }
+                
+                console.log('✅ Loading withdrawal records for user:', userId);
                 
                 // Load withdrawal history from API
                 const response = await fetch(`${API_BASE_URL}/withdrawal-history/${userId}`);
@@ -1002,9 +1012,13 @@
                 
                 const result = await response.json();
                 
-                if (result.success && result.withdrawals && result.withdrawals.length > 0) {
+                // NOTE: Your API returns { success: false, withdrawals: [] } for empty records
+                // We need to handle both success: true/false cases
+                if (result.withdrawals && Array.isArray(result.withdrawals)) {
                     // Store records
                     withdrawalRecords = result.withdrawals;
+                    
+                    console.log(`✅ Loaded ${withdrawalRecords.length} withdrawal records`);
                     
                     // Calculate and display stats
                     const stats = calculateStats(withdrawalRecords);
@@ -1170,21 +1184,14 @@
         window.addEventListener('DOMContentLoaded', async function() {
             // Check authentication
             const userId = localStorage.getItem('userId');
-            const userPhone = localStorage.getItem('userPhone');
             
-            console.log('🔍 Withdrawal Records - Checking login status...');
-            console.log('User ID:', userId);
-            console.log('User Phone:', userPhone);
-            
-            if (!userId || !userPhone) {
+            if (!userId) {
                 console.log('❌ User not logged in, redirecting to login');
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 2000);
+                window.location.href = '/index.html';
                 return;
             }
             
-            console.log('✅ User logged in, loading records...');
+            console.log('✅ User logged in, loading withdrawal records...');
             
             // Interactive background effect
             document.addEventListener('mousemove', function(e) {

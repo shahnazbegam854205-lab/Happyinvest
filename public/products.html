@@ -492,28 +492,9 @@
             border: 1px solid rgba(255, 153, 102, 0.2);
         }
         
-        /* Balance Type Badge */
+        /* Balance Type Badge (Hidden for VIP/Rich/Ultimate) */
         .balance-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .locked-balance {
-            background: rgba(255, 51, 102, 0.1);
-            color: #ff3366;
-            border: 1px solid rgba(255, 51, 102, 0.2);
-        }
-        
-        .regular-balance {
-            background: rgba(0, 210, 255, 0.1);
-            color: #00d2ff;
-            border: 1px solid rgba(0, 210, 255, 0.2);
+            display: none; /* Hidden as requested */
         }
         
         /* Bottom Navigation */
@@ -885,20 +866,9 @@
             text-overflow: ellipsis;
         }
         
-        /* Locked Balance Warning */
+        /* Locked Balance Warning - HIDDEN AS REQUESTED */
         .locked-warning {
-            background: rgba(255, 153, 102, 0.1);
-            border: 1px solid rgba(255, 153, 102, 0.2);
-            border-radius: 10px;
-            padding: 12px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .warning-text {
-            color: #ff9966;
-            font-size: 12px;
-            font-weight: 600;
+            display: none; /* Hidden as requested */
         }
         
         /* Responsive */
@@ -1255,10 +1225,8 @@
                 `<span class="withdrawal-badge daily-withdrawal">DAILY WITHDRAWAL</span>` : 
                 `<span class="withdrawal-badge end-withdrawal">END TERM WITHDRAWAL</span>`;
             
-            // Determine balance type badge
-            const balanceBadge = plan.lockedBalance ? 
-                `<span class="balance-badge locked-balance">LOCKED BALANCE</span>` : 
-                `<span class="balance-badge regular-balance">REGULAR BALANCE</span>`;
+            // Hide locked balance info (as requested)
+            const balanceBadge = ''; // Empty string instead of showing locked/regular badge
             
             // Calculate total return percentage
             const totalReturnPercent = ((plan.totalIncome - plan.price) / plan.price * 100).toFixed(1);
@@ -1315,14 +1283,6 @@
                             <div class="stat-label-sm">Duration</div>
                         </div>
                     </div>
-                    
-                    ${plan.lockedBalance ? `
-                    <div class="locked-warning">
-                        <div class="warning-text">
-                            <i class="fas fa-lock"></i> Locked Balance - Withdraw at plan end
-                        </div>
-                    </div>
-                    ` : ''}
                     
                     <div class="plan-price-section">
                         <div class="plan-price amount-container" title="₹${plan.price.toLocaleString('en-IN')}">
@@ -1383,7 +1343,7 @@
             const hasEnoughBalance = userBalance >= plan.price;
             const confirmBtn = document.getElementById('confirmInvestBtn');
             
-            // Set plan info
+            // Set plan info (hide locked balance info)
             const totalReturnPercent = ((plan.totalIncome - plan.price) / plan.price * 100).toFixed(1);
             document.getElementById('modalPlanInfo').innerHTML = `
                 <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; margin: 10px 0;">
@@ -1398,10 +1358,8 @@
                         </span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Balance Type:</span>
-                        <span style="color: ${plan.lockedBalance ? '#ff9966' : '#00d2ff'}">
-                            ${plan.lockedBalance ? 'Locked' : 'Regular'}
-                        </span>
+                        <span>Duration:</span>
+                        <span style="color: #00ffaa;">${plan.duration} Days</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
                         <span>Total Return:</span>

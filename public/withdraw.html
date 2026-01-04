@@ -697,7 +697,7 @@
         <img src="https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg" 
              alt="Withdraw" 
              class="banner-image"
-             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';">
+             onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
         
         <div class="header-content">
             <a href="profile.html" class="back-btn">
@@ -908,6 +908,10 @@
                         const lastWithdrawal = new Date(userData.lastWithdrawalDate).toDateString();
                         canWithdrawToday = today !== lastWithdrawal;
                         lastWithdrawalDate = userData.lastWithdrawalDate;
+                        
+                        if (!canWithdrawToday) {
+                            showNotification('You have already withdrawn today. Try again tomorrow.', true);
+                        }
                     }
                     
                     // Update localStorage
@@ -951,7 +955,11 @@
                     // Check localStorage
                     const storedBankDetails = localStorage.getItem('bankDetails');
                     if (storedBankDetails) {
-                        bankDetails = JSON.parse(storedBankDetails);
+                        try {
+                            bankDetails = JSON.parse(storedBankDetails);
+                        } catch (e) {
+                            bankDetails = null;
+                        }
                     }
                 }
                 
@@ -980,7 +988,7 @@
                 bankInfoDiv.innerHTML = `
                     <div class="info-row">
                         <span class="info-label">Account Holder:</span>
-                        <span class="info-value">${bankDetails.holderName || userData.name || 'N/A'}</span>
+                        <span class="info-value">${bankDetails.accountHolder || bankDetails.holderName || userData.name || 'N/A'}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Account Number:</span>
@@ -990,7 +998,8 @@
                         <span class="info-label">IFSC Code:</span>
                         <span class="info-value">${bankDetails.ifscCode || 'N/A'}</span>
                     </div>
-                    <div class="info-label">Bank Name:</span>
+                    <div class="info-row">
+                        <span class="info-label">Bank Name:</span>
                         <span class="info-value">${bankDetails.bankName || 'N/A'}</span>
                     </div>
                 `;
@@ -1179,8 +1188,9 @@
                 showLoading('Processing withdrawal request...');
                 
                 try {
-                    console.log('📤 Sending withdrawal request:', {
-                        userId: userData.id,
+                    console.log('📤 Sending withdrawal request to:', `${API_BASE_URL}/withdraw`);
+                    console.log('Request data:', {
+                        userId: localStorage.getItem('userId'),
                         amount: amount,
                         bankDetails: bankDetails
                     });
@@ -1191,14 +1201,14 @@
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            userId: userData.id,
+                            userId: localStorage.getItem('userId'),
                             amount: amount,
                             bankDetails: bankDetails
                         })
                     });
                     
                     const result = await response.json();
-                    console.log('📥 Withdrawal response:', result);
+                    console.log('📥 Withdrawal API Response:', result);
                     
                     hideLoading();
                     
@@ -1213,19 +1223,20 @@
                         });
                         
                         // Update balance
-                        userBalance -= amount;
+                        userBalance = result.newBalance || (userBalance - amount);
                         document.getElementById('availableBalance').textContent = `₹${userBalance.toFixed(2)}`;
                         
                         // Update localStorage
                         localStorage.setItem('userBalance', userBalance);
-                        
-                        // Update button
-                        btn.innerHTML = '<i class="fas fa-check"></i> Success!';
-                        btn.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
+                        localStorage.setItem('lastWithdrawalDate', new Date().toISOString());
                         
                         // Update withdrawal status
                         canWithdrawToday = false;
                         lastWithdrawalDate = new Date().toISOString();
+                        
+                        // Update button
+                        btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                        btn.style.background = 'linear-gradient(90deg, #00ffaa, #00cc88)';
                         
                         // Reset button after delay
                         setTimeout(() => {
@@ -1264,7 +1275,8 @@
         window.addEventListener('online', () => {
             showNotification('✅ You are back online', false);
             // Refresh user data when back online
-            if (userData.id) {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
                 loadUserData();
             }
         });
@@ -1272,6 +1284,26 @@
         window.addEventListener('offline', () => {
             showNotification('⚠️ No internet connection', true);
         });
+        
+        // Auto-refresh balance every 60 seconds
+        setInterval(async () => {
+            if (document.visibilityState === 'visible') {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+                        const result = await response.json();
+                        if (result.success && result.user) {
+                            userBalance = parseFloat(result.user.balance) || 0;
+                            document.getElementById('availableBalance').textContent = `₹${userBalance.toFixed(2)}`;
+                            localStorage.setItem('userBalance', userBalance);
+                        }
+                    } catch (error) {
+                        console.log('Auto-refresh failed:', error);
+                    }
+                }
+            }
+        }, 60000);
     </script>
 </body>
 </html>
