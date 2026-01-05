@@ -59,87 +59,77 @@
             border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
+        /* NEW: Header with TWO balance boxes */
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
             position: relative;
             z-index: 1;
         }
         
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        /* Balance Boxes */
+        .balance-container {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            justify-content: flex-end;
         }
         
-        .logo::before {
-            content: '🏠';
-            margin-right: 8px;
-        }
-        
-        .balance-section {
+        .balance-box {
             text-align: right;
             cursor: pointer;
             transition: all 0.3s ease;
-            padding: 10px 15px 10px 40px;
+            padding: 12px 15px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(0, 255, 170, 0.2);
             position: relative;
-            min-width: 130px;
+            min-width: 120px;
+            flex: 1;
+            max-width: 150px;
         }
         
-        .balance-section:hover {
+        .balance-box:hover {
             transform: scale(1.05);
             background: rgba(0, 255, 170, 0.1);
             box-shadow: 0 5px 15px rgba(0, 255, 170, 0.2);
         }
         
+        /* End-Term Balance Box Special Styling */
+        .end-term-balance-box {
+            border: 1px solid rgba(255, 153, 0, 0.3) !important;
+            background: rgba(255, 153, 0, 0.05) !important;
+        }
+        
+        .end-term-balance-box:hover {
+            background: rgba(255, 153, 0, 0.1) !important;
+            border-color: rgba(255, 153, 0, 0.5) !important;
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.2) !important;
+        }
+        
         .balance-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #a0a0d0;
             margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .end-term-balance-box .balance-label {
+            color: #ffcc80 !important;
         }
         
         .balance-amount {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #00ffaa;
-            text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
         }
         
-        /* Download emoji style */
-        .download-emoji {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 210, 255, 0.1);
-            border-radius: 50%;
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            animation: float 2s infinite ease-in-out;
-            z-index: 2;
-        }
-        
-        .download-emoji:hover {
-            transform: translateY(-50%) scale(1.2);
-            background: rgba(0, 210, 255, 0.2) !important;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(-50%) translateY(0px); }
-            50% { transform: translateY(-50%) translateY(-5px); }
+        .end-term-balance-box .balance-amount {
+            color: #ff9900 !important;
+            text-shadow: 0 0 10px rgba(255, 153, 0, 0.5) !important;
         }
         
         /* Welcome Section with Distribution Info */
@@ -166,6 +156,39 @@
         .date-text {
             font-size: 14px;
             color: #a0a0d0;
+        }
+        
+        /* ✅ DOWNLOAD APP BUTTON - SIMPLIFIED */
+        .download-app-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            animation: float 2s infinite ease-in-out;
+        }
+        
+        .download-app-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.6);
+            background: linear-gradient(135deg, #00eaff, #4a8be5);
+        }
+        
+        .download-app-btn i {
+            font-size: 18px;
+            color: white;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
         
         /* Distribution Status Button */
@@ -599,6 +622,16 @@
             content: 'ℹ️';
         }
         
+        /* End-Term Notification */
+        .notification.end-term {
+            background: rgba(255, 153, 0, 0.1);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+        }
+        
+        .notification.end-term::before {
+            content: '💰';
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -625,6 +658,12 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
+        }
+        
+        @keyframes pulse-gold {
+            0% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 153, 0, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
         }
         
         .quick-actions, .news-section, .stats-section {
@@ -672,7 +711,12 @@
             }
             
             .balance-amount {
-                font-size: 18px;
+                font-size: 16px;
+            }
+            
+            .balance-box {
+                min-width: 110px;
+                padding: 10px 12px;
             }
             
             .stats-section {
@@ -688,25 +732,13 @@
                 font-size: 18px;
             }
             
-            .distribution-btn {
+            .distribution-btn, .download-app-btn {
                 width: 35px;
                 height: 35px;
             }
             
-            .distribution-btn i {
+            .distribution-btn i, .download-app-btn i {
                 font-size: 16px;
-            }
-            
-            .balance-section {
-                min-width: 120px;
-                padding: 10px 12px 10px 35px;
-            }
-            
-            .download-emoji {
-                width: 35px;
-                height: 35px;
-                font-size: 24px;
-                left: 8px;
             }
         }
         
@@ -745,14 +777,27 @@
              class="banner-image"
              onerror="this.onerror=null; this.src='https://i.ibb.co/VWwhVGd9/Screenshot-2025-12-27-12-04-49-10-40deb401b9ffe8e1df2f1cc5ba480b12.jpg';">
         
+        <!-- ✅ UPDATED: TWO BALANCE BOXES INSTEAD OF "Home" LOGO -->
         <div class="header-content">
-            <div class="logo">Home</div>
-            <div class="balance-section">
-                <div class="download-emoji" onclick="navigateTo('/about')">
-                    📥
+            <!-- Left: Welcome Text -->
+            <div>
+                <div class="welcome-text" id="welcomeText">Welcome back!</div>
+                <div class="date-text" id="currentDate">Loading date...</div>
+            </div>
+            
+            <!-- Right: TWO Balance Boxes -->
+            <div class="balance-container">
+                <!-- Regular Balance Box -->
+                <div class="balance-box" onclick="refreshBalance()">
+                    <div class="balance-label">Regular Balance</div>
+                    <div class="balance-amount" id="userBalance">₹0.00</div>
                 </div>
-                <div class="balance-label">Balance</div>
-                <div class="balance-amount" id="userBalance">₹0.00</div>
+                
+                <!-- End-Term Balance Box -->
+                <div class="balance-box end-term-balance-box" onclick="showEndTermInfo()">
+                    <div class="balance-label">End-Term Balance</div>
+                    <div class="balance-amount" id="endTermBalance">₹0.00</div>
+                </div>
             </div>
         </div>
     </div>
@@ -763,14 +808,20 @@
         <div class="distribution-time" id="distributionTime">Admin will distribute income manually</div>
     </div>
     
-    <!-- Welcome Section with Distribution Status -->
+    <!-- Welcome Section with Distribution Status & Download App Button -->
     <div class="welcome-section">
         <div class="welcome-content">
             <div>
-                <div class="welcome-text" id="welcomeText">Welcome back, User!</div>
-                <div class="date-text" id="currentDate">Loading date...</div>
+                <div class="welcome-text" id="userNameText">Hello, User!</div>
+                <div class="date-text">Check today's distribution status</div>
             </div>
-            <!-- DISTRIBUTION STATUS BUTTON (REPLACED INCOME CHECK) -->
+            
+            <!-- ✅ DOWNLOAD APP BUTTON - SIMPLIFIED: DIRECT /about PAGE NAVIGATION -->
+            <div class="download-app-btn" onclick="navigateTo('/about')" title="Download App">
+                <i class="fas fa-download"></i>
+            </div>
+            
+            <!-- DISTRIBUTION STATUS BUTTON -->
             <div class="distribution-btn pending" onclick="showDistributionStatus()" title="Check Distribution Status">
                 <i class="fas fa-calendar-check"></i>
             </div>
@@ -779,7 +830,7 @@
     
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Stats Section -->
+        <!-- Stats Section with 4 Boxes -->
         <div class="stats-section">
             <div class="stat-card" onclick="navigateTo('/income-record')">
                 <div class="stat-value" id="todayIncome">₹0</div>
@@ -853,7 +904,21 @@
             <div class="news-item">
                 <div class="news-date">NEW</div>
                 <div class="news-content">
-                    <p class="news-text">🔄 <strong>NEW SYSTEM:</strong> Income distributed manually by admin daily. Today's investments get income from tomorrow.</p>
+                    <p class="news-text">📱 <strong>DOWNLOAD OUR APP:</strong> Click the download button to get our app from the About page!</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <div class="news-date">NEW</div>
+                <div class="news-content">
+                    <p class="news-text">💰 <strong>NEW BALANCE SYSTEM:</strong> Now showing Regular Balance & End-Term Balance separately in header.</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <div class="news-date">NEW</div>
+                <div class="news-content">
+                    <p class="news-text">✅ <strong>END-TERM FEATURE:</strong> VIP/Rich/Ultimate plans accumulate in End-Term Balance and auto-release on completion.</p>
                 </div>
             </div>
             
@@ -861,20 +926,6 @@
                 <div class="news-date">1 JAN</div>
                 <div class="news-content">
                     <p class="news-text">Happy New Year! Special lunch date with CEO for top investors on 1st January.</p>
-                </div>
-            </div>
-            
-            <div class="news-item">
-                <div class="news-date">1 JAN</div>
-                <div class="news-content">
-                    <p class="news-text">New Year Special: Get 15% extra bonus on all investments made today!</p>
-                </div>
-            </div>
-            
-            <div class="news-item">
-                <div class="news-date">31 DEC</div>
-                <div class="news-content">
-                    <p class="news-text">New Year's Eve Party: Join our online celebration at 11:30 PM!</p>
                 </div>
             </div>
         </div>
@@ -924,6 +975,128 @@
             window.location.href = page;
         }
         
+        // ✅ DOWNLOAD APP FUNCTION - SIMPLIFIED: DIRECT /about PAGE NAVIGATION
+        function downloadApp() {
+            navigateTo('/about');
+        }
+        
+        // Show End-Term Information
+        async function showEndTermInfo() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                showNotification('Please login first', 'error');
+                return;
+            }
+            
+            // Add click animation
+            const box = document.querySelector('.end-term-balance-box');
+            if (box) {
+                box.style.animation = 'pulse-gold 0.5s ease';
+                setTimeout(() => {
+                    box.style.animation = '';
+                }, 500);
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/${userId}/end-term-info`);
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        const data = result.data;
+                        
+                        let message = `💰 <strong>End-Term Balance: ₹${parseFloat(data.totalLockedBalance || 0).toFixed(2)}</strong>\n\n`;
+                        
+                        if (data.activeEndTermPlans.length > 0) {
+                            message += `📊 <strong>Active Plans: ${data.activeEndTermPlans.length}</strong>\n`;
+                            data.activeEndTermPlans.forEach(plan => {
+                                message += `• ${plan.planName}: ${plan.daysRemaining} days left\n`;
+                                message += `  Earned: ₹${parseFloat(plan.lockedEarned || 0).toFixed(2)}\n`;
+                            });
+                            
+                            if (data.nextReleaseAmount > 0) {
+                                message += `\n🎉 <strong>Next Release: ₹${parseFloat(data.nextReleaseAmount).toFixed(2)}</strong>\n`;
+                                message += `(Will auto-release when plan completes)`;
+                            }
+                        } else {
+                            message += `📭 No active end-term plans\n`;
+                            message += `Invest in VIP/Rich/Ultimate plans to accumulate end-term balance`;
+                        }
+                        
+                        if (data.completedEndTermPlans.length > 0) {
+                            message += `\n\n✅ <strong>Completed Plans: ${data.completedEndTermPlans.length}</strong>\n`;
+                            let totalReleased = 0;
+                            data.completedEndTermPlans.forEach(plan => {
+                                totalReleased += plan.releasedAmount || 0;
+                            });
+                            message += `Total Released: ₹${parseFloat(totalReleased).toFixed(2)}`;
+                        }
+                        
+                        // Show custom end-term notification
+                        showEndTermNotification('💰 End-Term Balance Info', message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching end-term info:', error);
+                showNotification('Failed to load end-term info', 'error');
+            }
+        }
+        
+        // Show End-Term Notification
+        function showEndTermNotification(title, message) {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notif => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notif.parentNode) {
+                        notif.parentNode.removeChild(notif);
+                    }
+                }, 300);
+            });
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'notification end-term';
+            notification.style.maxWidth = '380px';
+            notification.style.whiteSpace = 'pre-line';
+            notification.style.textAlign = 'left';
+            notification.style.lineHeight = '1.4';
+            notification.innerHTML = `<strong>${title}</strong><br><br>${message}`;
+            
+            // Add close button
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '10px';
+            closeBtn.style.right = '10px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.style.opacity = '0.7';
+            closeBtn.onclick = function() {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            };
+            
+            notification.appendChild(closeBtn);
+            document.body.appendChild(notification);
+            
+            // Remove after 6 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 6000);
+        }
+        
         // Refresh balance with animation
         async function refreshBalance() {
             const balanceElement = document.getElementById('userBalance');
@@ -954,7 +1127,7 @@
             
             // Display user name
             const userName = localStorage.getItem('userName') || 'User';
-            document.getElementById('welcomeText').textContent = `Welcome back, ${userName}!`;
+            document.getElementById('userNameText').textContent = `Hello, ${userName}!`;
             
             // Display user balance
             const userBalance = localStorage.getItem('userBalance') || '0.00';
@@ -1010,14 +1183,26 @@
                 });
             });
             
-            // Balance section hover effect
-            const balanceSection = document.querySelector('.balance-section');
-            if (balanceSection) {
-                balanceSection.addEventListener('mouseenter', function() {
+            // Balance boxes hover effect
+            const balanceBoxes = document.querySelectorAll('.balance-box');
+            balanceBoxes.forEach(box => {
+                box.addEventListener('mouseenter', function() {
                     this.style.transform = 'scale(1.05)';
                 });
                 
-                balanceSection.addEventListener('mouseleave', function() {
+                box.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Download button hover effect
+            const downloadBtn = document.querySelector('.download-app-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                });
+                
+                downloadBtn.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                 });
             }
@@ -1184,9 +1369,9 @@
                             balanceElement.textContent = `₹${parseFloat(result.user.balance || 0).toFixed(2)}`;
                         }
                         
-                        const welcomeElement = document.getElementById('welcomeText');
-                        if (welcomeElement) {
-                            welcomeElement.textContent = `Welcome back, ${result.user.name || 'User'}!`;
+                        const userNameElement = document.getElementById('userNameText');
+                        if (userNameElement) {
+                            userNameElement.textContent = `Hello, ${result.user.name || 'User'}!`;
                         }
                         
                         if (forceRefresh) {
@@ -1202,7 +1387,30 @@
                     if (incomeData.success) {
                         const todayIncomeElement = document.getElementById('todayIncome');
                         if (todayIncomeElement) {
-                            todayIncomeElement.textContent = `₹${parseFloat(incomeData.todayIncome || 0).toFixed(2)}`;
+                            const todayIncome = incomeData.todayIncome || 0;
+                            const eligibleIncome = incomeData.eligibleTodayIncome || 0;
+                            
+                            if (todayIncome > 0) {
+                                // Already received income today
+                                todayIncomeElement.textContent = `₹${parseFloat(todayIncome).toFixed(2)}`;
+                                todayIncomeElement.style.color = '#00ffaa';
+                                todayIncomeElement.style.textShadow = '0 0 10px rgba(0, 255, 170, 0.5)';
+                                todayIncomeElement.title = `Received today\nRegular: ₹${parseFloat(incomeData.todayRegularIncome || 0).toFixed(2)}\nLocked: ₹${parseFloat(incomeData.todayLockedIncome || 0).toFixed(2)}`;
+                                
+                            } else if (eligibleIncome > 0) {
+                                // Eligible but not yet distributed
+                                todayIncomeElement.textContent = `₹${parseFloat(eligibleIncome).toFixed(2)}*`;
+                                todayIncomeElement.style.color = '#ffcc00';
+                                todayIncomeElement.style.textShadow = '0 0 10px rgba(255, 204, 0, 0.5)';
+                                todayIncomeElement.title = `Eligible for today\nWaiting for admin distribution`;
+                                
+                            } else {
+                                // No income today
+                                todayIncomeElement.textContent = '₹0';
+                                todayIncomeElement.style.color = '#a0a0d0';
+                                todayIncomeElement.style.textShadow = 'none';
+                                todayIncomeElement.title = 'No income today';
+                            }
                         }
                     }
                 }
@@ -1248,6 +1456,64 @@
                     }
                 }
                 
+                // 6. GET END-TERM BALANCE INFO (NEW FUNCTIONALITY)
+                try {
+                    const endTermResponse = await fetch(`${API_BASE_URL}/user/${userId}/end-term-info`);
+                    if (endTermResponse.ok) {
+                        const endTermData = await endTermResponse.json();
+                        if (endTermData.success) {
+                            const endTermElement = document.getElementById('endTermBalance');
+                            const endTermBox = document.querySelector('.end-term-balance-box');
+                            
+                            if (endTermElement && endTermBox) {
+                                const totalLocked = endTermData.data.totalLockedBalance || 0;
+                                
+                                if (totalLocked > 0) {
+                                    endTermElement.textContent = `₹${parseFloat(totalLocked).toFixed(2)}`;
+                                    endTermElement.style.color = '#ff9900';
+                                    endTermElement.style.textShadow = '0 0 10px rgba(255, 153, 0, 0.5)';
+                                    
+                                    // Update tooltip with detailed info
+                                    const activePlans = endTermData.data.activeEndTermPlans?.length || 0;
+                                    const completedPlans = endTermData.data.completedEndTermPlans?.length || 0;
+                                    const totalReleased = endTermData.data.totalEndTermReceived || 0;
+                                    
+                                    let tooltipText = `End-Term Balance\n`;
+                                    tooltipText += `Active Plans: ${activePlans}\n`;
+                                    if (completedPlans > 0) {
+                                        tooltipText += `Completed Plans: ${completedPlans}\n`;
+                                        tooltipText += `Total Released: ₹${parseFloat(totalReleased).toFixed(2)}\n`;
+                                    }
+                                    tooltipText += `\nClick for details`;
+                                    
+                                    endTermBox.title = tooltipText;
+                                    
+                                    // Pulse animation if there's locked balance
+                                    if (forceRefresh) {
+                                        endTermBox.style.animation = 'pulse-gold 0.8s ease';
+                                        setTimeout(() => {
+                                            endTermBox.style.animation = '';
+                                        }, 800);
+                                    }
+                                    
+                                } else {
+                                    endTermElement.textContent = '₹0.00';
+                                    endTermElement.style.color = '#a0a0d0';
+                                    endTermElement.style.textShadow = 'none';
+                                    endTermBox.title = 'No end-term plans active\nInvest in VIP/Rich/Ultimate plans';
+                                }
+                            }
+                        }
+                    }
+                } catch (endTermError) {
+                    console.log('End-term info not available:', endTermError.message);
+                    const endTermElement = document.getElementById('endTermBalance');
+                    if (endTermElement) {
+                        endTermElement.textContent = '₹0.00';
+                        endTermElement.title = 'End-term system loading...';
+                    }
+                }
+                
                 // Animate updates
                 animateUpdates();
                 
@@ -1258,6 +1524,7 @@
                 document.getElementById('teamMembers').textContent = '0';
                 document.getElementById('activeInvestments').textContent = '0';
                 document.getElementById('referralEarnings').textContent = '₹0';
+                document.getElementById('endTermBalance').textContent = '₹0.00';
             }
         }
         
@@ -1278,6 +1545,7 @@
         function animateUpdates() {
             const values = [
                 document.getElementById('userBalance'),
+                document.getElementById('endTermBalance'),
                 document.getElementById('todayIncome'),
                 document.getElementById('teamMembers'),
                 document.getElementById('activeInvestments'),
@@ -1288,12 +1556,44 @@
                 if (value) {
                     value.style.transition = 'all 0.3s ease';
                     value.style.transform = 'scale(1.1)';
-                    value.style.color = '#00ffaa';
+                    
+                    // Set color based on element
+                    if (value.id === 'userBalance') {
+                        value.style.color = '#00ffaa';
+                    } else if (value.id === 'endTermBalance') {
+                        const amount = parseFloat(value.textContent.replace('₹', '')) || 0;
+                        value.style.color = amount > 0 ? '#ff9900' : '#a0a0d0';
+                    } else if (value.id === 'todayIncome') {
+                        const amount = parseFloat(value.textContent.replace('₹', '').replace('*', '')) || 0;
+                        if (amount > 0) {
+                            if (value.textContent.includes('*')) {
+                                value.style.color = '#ffcc00';
+                            } else {
+                                value.style.color = '#00ffaa';
+                            }
+                        } else {
+                            value.style.color = '#a0a0d0';
+                        }
+                    }
+                    
                     setTimeout(() => {
                         value.style.transform = 'scale(1)';
                         setTimeout(() => {
+                            // Reset to original colors
                             if (value.id === 'userBalance') {
                                 value.style.color = '#00ffaa';
+                            } else if (value.id === 'endTermBalance') {
+                                const amount = parseFloat(value.textContent.replace('₹', '')) || 0;
+                                value.style.color = amount > 0 ? '#ff9900' : '#a0a0d0';
+                            } else if (value.id === 'todayIncome') {
+                                const amount = parseFloat(value.textContent.replace('₹', '').replace('*', '')) || 0;
+                                if (amount > 0) {
+                                    if (value.textContent.includes('*')) {
+                                        value.style.color = '#ffcc00';
+                                    } else {
+                                        value.style.color = '#00ffaa';
+                                    }
+                                }
                             } else {
                                 value.style.color = '';
                             }
@@ -1332,6 +1632,15 @@
             
             .action-icon:hover i {
                 animation: bounce 0.5s ease;
+            }
+            
+            button {
+                font-family: inherit;
+                outline: none;
+            }
+            
+            button:active {
+                transform: scale(0.98);
             }
         `;
         document.head.appendChild(style);
