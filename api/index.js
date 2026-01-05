@@ -12,7 +12,7 @@ const rateLimiter = (req, res, next) => {
     const ip = req.headers['x-forwarded-for'] || req.ip || 'unknown';
     const endpoint = req.path;
     const key = `${ip}:${endpoint}`;
-    const now = Math.floor(Date.now() / 60000); // Current minute
+    const now = Math.floor(Date.now() / 60000);
     
     const minuteKey = `${key}:${now}`;
     const currentCount = requestCounts.get(minuteKey) || 0;
@@ -515,9 +515,13 @@ app.post('/api/register', async (req, res) => {
             dailyWithdrawalCount: 0,
             lastWithdrawalDate: null,
             cheatAttempts: 0,
+            // END-TERM SYSTEM FIELDS
             vipBalance: 0,
             richBalance: 0,
-            ultimateBalance: 0
+            ultimateBalance: 0,
+            totalEndTermReceived: 0,
+            pendingEndTermEarnings: 0,
+            endTermPlans: []
         };
         
         await db.ref(`users/${userId}`).set(userData);
@@ -784,7 +788,7 @@ app.get('/api/plans', async (req, res) => {
     }
 });
 
-// 6. INVEST IN PLAN (WITH ₹110 REFERRAL)
+// 6. INVEST IN PLAN (WITH ₹110 REFERRAL) - UPDATED WITH END-TERM
 app.post('/api/invest', async (req, res) => {
     try {
         const { userId, planId } = req.body;
@@ -840,7 +844,7 @@ app.post('/api/invest', async (req, res) => {
         });
         
         const investmentId = generateInvestmentId();
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const today = new Date().toISOString().split('T')[0];
         
         const investmentData = {
             id: investmentId,
@@ -851,19 +855,23 @@ app.post('/api/invest', async (req, res) => {
             dailyIncome: plan.dailyIncome,
             totalIncome: plan.totalIncome,
             startDate: new Date().toISOString(),
-            investmentDate: today, // Store as YYYY-MM-DD
+            investmentDate: today,
             endDate: new Date(Date.now() + plan.duration * 24 * 60 * 60 * 1000).toISOString(),
             status: 'active',
             daysRemaining: plan.duration,
             totalEarned: 0,
+            lockedEarned: 0,  // END-TERM: Locked earnings stored here
             payoutCount: 0,
             expectedTotal: plan.totalIncome,
             isActive: true,
             lastUpdated: new Date().toISOString(),
             planType: plan.type,
+            planCategory: plan.category,
             lockedBalance: plan.lockedBalance || false,
             withdrawalType: plan.withdrawalType || 'daily',
-            // Distribution tracking
+            isEndTerm: plan.withdrawalType === 'end',
+            endTermReleased: false,
+            releasedAmount: 0,
             distributionHistory: {},
             lastDistribution: null
         };
@@ -965,7 +973,8 @@ app.post('/api/invest', async (req, res) => {
             note: 'Income will be distributed manually by admin daily. Today\'s investments will get income from tomorrow.',
             totalDays: plan.duration,
             totalReturn: plan.totalIncome,
-            withdrawalType: plan.withdrawalType
+            withdrawalType: plan.withdrawalType,
+            isEndTerm: plan.withdrawalType === 'end'
         });
         
     } catch (error) {
@@ -999,6 +1008,13 @@ app.get('/api/user-investments/:userId', async (req, res) => {
             inv.distributionNote = investmentDate === today ? 
                 'Will get income from tomorrow' : 
                 'Eligible for today\'s distribution';
+            
+            // END-TERM info
+            if (inv.isEndTerm) {
+                inv.lockedEarnings = inv.lockedEarned || 0;
+                inv.pendingDays = inv.daysRemaining || 0;
+                inv.canRelease = inv.daysRemaining <= 0 && !inv.endTermReleased;
+            }
         });
         
         res.json({ 
@@ -1412,19 +1428,27 @@ app.get('/api/team-members/:userId', async (req, res) => {
     }
 });
 
-// 15. GET INCOME STATS
+// 15. GET INCOME STATS - UPDATED WITH END-TERM
 app.get('/api/income-stats/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        
         const today = new Date().toISOString().split('T')[0];
+        
         let todayIncome = 0;
         let totalIncome = 0;
         let referralIncome = 0;
+        let todayLockedIncome = 0;
+        let todayRegularIncome = 0;
         
+        // 1. Get user data first
+        const userSnapshot = await db.ref(`users/${userId}`).once('value');
+        const userData = userSnapshot.val() || {};
+        
+        // 2. Get transactions
         const txSnapshot = await db.ref(`transactions/${userId}`).once('value');
         const transactions = txSnapshot.val() || {};
         
+        // 3. Calculate from transactions
         Object.values(transactions).forEach(tx => {
             if (tx.type === 'daily_income') {
                 totalIncome += tx.amount || 0;
@@ -1432,6 +1456,8 @@ app.get('/api/income-stats/:userId', async (req, res) => {
                 const txDate = tx.distributionDate || new Date(tx.date).toISOString().split('T')[0];
                 if (txDate === today) {
                     todayIncome += tx.amount || 0;
+                    todayRegularIncome += tx.regularIncome || tx.amount || 0;
+                    todayLockedIncome += tx.lockedIncome || 0;
                 }
             } else if (tx.type === 'referral_commission') {
                 referralIncome += tx.amount || 0;
@@ -1441,16 +1467,62 @@ app.get('/api/income-stats/:userId', async (req, res) => {
             }
         });
         
-        const userSnapshot = await db.ref(`users/${userId}`).once('value');
-        const userData = userSnapshot.val();
+        // 4. Check distribution status
+        const settingsSnap = await db.ref('settings/dailyDistribution').once('value');
+        const settings = settingsSnap.val() || {};
+        const alreadyDistributed = settings.lastDistributionDate === today;
+        
+        // 5. Calculate eligible income (if not distributed yet)
+        let eligibleTodayIncome = 0;
+        let eligibleBreakdown = {
+            regular: 0,
+            locked: 0
+        };
+        
+        if (!alreadyDistributed) {
+            const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
+            const investments = investmentsSnap.val() || {};
+            
+            Object.values(investments).forEach(investment => {
+                if (investment.status !== 'active') return;
+                if (investment.daysRemaining <= 0) return;
+                
+                const investmentDate = investment.startDate ? 
+                    new Date(investment.startDate).toISOString().split('T')[0] : 
+                    today;
+                
+                // Rule: "Aaj ka investment, kal ka income"
+                if (investmentDate !== today) {
+                    eligibleTodayIncome += investment.dailyIncome || 0;
+                    
+                    // Check if locked or regular plan
+                    const plan = NEW_PLANS[investment.planId];
+                    if (plan?.lockedBalance) {
+                        eligibleBreakdown.locked += investment.dailyIncome || 0;
+                    } else {
+                        eligibleBreakdown.regular += investment.dailyIncome || 0;
+                    }
+                }
+            });
+        }
         
         res.json({ 
             success: true, 
             todayIncome: todayIncome,
+            eligibleTodayIncome: eligibleTodayIncome,
+            eligibleBreakdown: eligibleBreakdown,
             totalIncome: totalIncome,
             referralIncome: referralIncome,
             lockedBalance: userData.lockedBalance || 0,
-            regularBalance: userData.balance || 0
+            regularBalance: userData.balance || 0,
+            todayLockedIncome: todayLockedIncome,
+            todayRegularIncome: todayRegularIncome,
+            distributionStatus: {
+                alreadyDistributed: alreadyDistributed,
+                lastDistributionDate: settings.lastDistributionDate,
+                lastDistribution: settings.lastDistribution,
+                nextDistribution: 'Admin will distribute manually'
+            }
         });
         
     } catch (error) {
@@ -1846,13 +1918,13 @@ app.get('/api/admin/pending-withdrawals', checkAdmin, async (req, res) => {
     }
 });
 
-// 25. ADMIN DAILY INCOME DISTRIBUTION (MANUAL)
+// 25. ADMIN DAILY INCOME DISTRIBUTION (WITH END-TERM SYSTEM)
 app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
     try {
         console.log('💰 Admin triggered manual daily income distribution');
         
         const now = new Date();
-        const todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        const todayDate = now.toISOString().split('T')[0];
         const todayReadable = now.toDateString();
         const distributionTime = now.toISOString();
         
@@ -1880,10 +1952,13 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
             totalDistributed: 0,
             usersProcessed: 0,
             investmentsProcessed: 0,
+            endTermReleased: 0,
+            endTermAmount: 0,
+            regularIncome: 0,
+            lockedIncome: 0,
             skippedNewInvestors: 0,
             date: todayDate,
-            time: distributionTime,
-            todayReadable: todayReadable
+            time: distributionTime
         };
         
         // Process each user
@@ -1901,17 +1976,17 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
                 let userIncome = 0;
                 let userLockedIncome = 0;
                 let userRegularIncome = 0;
+                let userEndTermReleased = 0;
                 let userProcessedInvestments = [];
+                let completedPlans = [];
                 
                 // Process each investment
                 for (const invId in investments) {
                     const investment = investments[invId];
                     
-                    // Skip if not active or completed
+                    // Skip if not active
                     if (investment.status !== 'active') continue;
-                    if (investment.daysRemaining <= 0) continue;
                     
-                    // 🚨 IMPORTANT RULE: Check investment date
                     const investmentDate = investment.startDate ? 
                         new Date(investment.startDate).toISOString().split('T')[0] : 
                         todayDate;
@@ -1920,66 +1995,127 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
                     if (investmentDate === todayDate) {
                         console.log(`⏭️ Skipping today's investment for ${userId}: ${investment.planName}`);
                         stats.skippedNewInvestors++;
-                        continue; // Skip today's investments
+                        continue;
                     }
                     
-                    // Check if already distributed today (safety check)
+                    // Check if already distributed today
                     const distributionHistory = investment.distributionHistory || {};
                     if (distributionHistory[todayDate]) {
-                        continue; // Already distributed today
+                        continue;
                     }
-                    
-                    // Add income
-                    const incomeToAdd = investment.dailyIncome;
-                    const plan = NEW_PLANS[investment.planId];
                     
                     // Calculate new days remaining
                     const newDaysRemaining = investment.daysRemaining - 1;
-                    const newStatus = newDaysRemaining <= 0 ? 'completed' : 'active';
+                    const plan = NEW_PLANS[investment.planId];
                     
-                    // Update investment
-                    const updates = {
-                        daysRemaining: newDaysRemaining,
-                        totalEarned: (investment.totalEarned || 0) + incomeToAdd,
-                        payoutCount: (investment.payoutCount || 0) + 1,
-                        status: newStatus,
-                        lastDistribution: distributionTime,
-                        lastDistributionDate: todayDate,
-                        [`distributionHistory/${todayDate}`]: {
-                            amount: incomeToAdd,
-                            time: distributionTime,
-                            type: plan?.lockedBalance ? 'locked' : 'regular'
-                        }
-                    };
-                    
-                    await db.ref(`investments/${userId}/${invId}`).update(updates);
-                    
-                    userIncome += incomeToAdd;
-                    stats.investmentsProcessed++;
-                    
-                    if (plan?.lockedBalance) {
+                    // END-TERM LOGIC
+                    if (plan?.lockedBalance && plan.withdrawalType === 'end') {
+                        // This is END-TERM PLAN
+                        const incomeToAdd = investment.dailyIncome || 0;
+                        
+                        // Update locked earnings in investment
+                        await db.ref(`investments/${userId}/${invId}`).update({
+                            lockedEarned: (investment.lockedEarned || 0) + incomeToAdd,
+                            daysRemaining: newDaysRemaining,
+                            payoutCount: (investment.payoutCount || 0) + 1,
+                            lastDistribution: distributionTime,
+                            lastDistributionDate: todayDate,
+                            [`distributionHistory/${todayDate}`]: {
+                                amount: incomeToAdd,
+                                time: distributionTime,
+                                type: 'locked',
+                                planCategory: plan.category
+                            }
+                        });
+                        
                         userLockedIncome += incomeToAdd;
+                        userIncome += incomeToAdd;
+                        stats.lockedIncome += incomeToAdd;
+                        
+                        // CHECK IF PLAN COMPLETED TODAY
+                        if (newDaysRemaining <= 0) {
+                            // PLAN COMPLETED! Release to main balance
+                            const totalLockedEarned = (investment.lockedEarned || 0) + incomeToAdd;
+                            
+                            await db.ref(`investments/${userId}/${invId}`).update({
+                                status: 'completed',
+                                endTermReleased: true,
+                                releasedAmount: totalLockedEarned,
+                                endTermReleaseDate: todayDate
+                            });
+                            
+                            // Add to completed plans list
+                            completedPlans.push({
+                                investmentId: invId,
+                                planName: investment.planName,
+                                releasedAmount: totalLockedEarned,
+                                category: plan.category
+                            });
+                            
+                            userEndTermReleased += totalLockedEarned;
+                            stats.endTermReleased += totalLockedEarned;
+                            stats.endTermAmount += totalLockedEarned;
+                            
+                            console.log(`🎉 END-TERM RELEASED: ${investment.planName} - ₹${totalLockedEarned} to balance`);
+                        }
+                        
+                        userProcessedInvestments.push({
+                            investmentId: invId,
+                            planName: investment.planName,
+                            amount: incomeToAdd,
+                            type: 'locked',
+                            newDaysRemaining: newDaysRemaining,
+                            status: newDaysRemaining <= 0 ? 'completed' : 'active',
+                            isEndTerm: true,
+                            completedToday: newDaysRemaining <= 0,
+                            releasedAmount: newDaysRemaining <= 0 ? (investment.lockedEarned || 0) + incomeToAdd : 0
+                        });
+                        
                     } else {
+                        // This is REGULAR (DAILY) PLAN
+                        const incomeToAdd = investment.dailyIncome || 0;
+                        const newStatus = newDaysRemaining <= 0 ? 'completed' : 'active';
+                        
+                        // Update investment
+                        await db.ref(`investments/${userId}/${invId}`).update({
+                            daysRemaining: newDaysRemaining,
+                            totalEarned: (investment.totalEarned || 0) + incomeToAdd,
+                            payoutCount: (investment.payoutCount || 0) + 1,
+                            status: newStatus,
+                            lastDistribution: distributionTime,
+                            lastDistributionDate: todayDate,
+                            [`distributionHistory/${todayDate}`]: {
+                                amount: incomeToAdd,
+                                time: distributionTime,
+                                type: 'regular'
+                            }
+                        });
+                        
                         userRegularIncome += incomeToAdd;
+                        userIncome += incomeToAdd;
+                        stats.regularIncome += incomeToAdd;
+                        
+                        userProcessedInvestments.push({
+                            investmentId: invId,
+                            planName: investment.planName,
+                            amount: incomeToAdd,
+                            type: 'regular',
+                            newDaysRemaining: newDaysRemaining,
+                            status: newStatus,
+                            isEndTerm: false
+                        });
                     }
                     
-                    userProcessedInvestments.push({
-                        investmentId: invId,
-                        planName: investment.planName,
-                        amount: incomeToAdd,
-                        type: plan?.lockedBalance ? 'locked' : 'regular',
-                        newDaysRemaining: newDaysRemaining,
-                        status: newStatus
-                    });
-                    
-                    console.log(`✅ Added ₹${incomeToAdd} from ${investment.planName} for ${users[userId].name}`);
+                    stats.investmentsProcessed++;
+                    stats.totalDistributed += investment.dailyIncome || 0;
                 }
                 
                 // Update user balance if income added
-                if (userIncome > 0) {
+                if (userIncome > 0 || userEndTermReleased > 0) {
                     const userRef = db.ref(`users/${userId}`);
                     const userData = users[userId];
                     
+                    // 1. Add regular income to balance
                     if (userRegularIncome > 0) {
                         const currentBalance = userData.balance || 0;
                         await userRef.update({
@@ -1987,38 +2123,92 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
                         });
                     }
                     
-                    if (userLockedIncome > 0) {
+                    // 2. Add locked income to locked balance (if not released)
+                    if (userLockedIncome > 0 && userEndTermReleased === 0) {
                         const currentLocked = userData.lockedBalance || 0;
                         await userRef.update({
-                            lockedBalance: currentLocked + userLockedBalance
+                            lockedBalance: currentLocked + userLockedIncome
                         });
                     }
                     
+                    // 3. Add end-term released amount to balance
+                    if (userEndTermReleased > 0) {
+                        const currentBalance = userData.balance || 0;
+                        const currentLocked = userData.lockedBalance || 0;
+                        
+                        // Move from locked to balance
+                        await userRef.update({
+                            balance: currentBalance + userEndTermReleased,
+                            lockedBalance: Math.max(0, currentLocked - userEndTermReleased),
+                            totalEndTermReceived: (userData.totalEndTermReceived || 0) + userEndTermReleased
+                        });
+                        
+                        // Update category specific balances
+                        for (const plan of completedPlans) {
+                            if (plan.category === 'vip') {
+                                await userRef.update({
+                                    vipBalance: (userData.vipBalance || 0) + plan.releasedAmount
+                                });
+                            } else if (plan.category === 'rich') {
+                                await userRef.update({
+                                    richBalance: (userData.richBalance || 0) + plan.releasedAmount
+                                });
+                            } else if (plan.category === 'ultimate') {
+                                await userRef.update({
+                                    ultimateBalance: (userData.ultimateBalance || 0) + plan.releasedAmount
+                                });
+                            }
+                        }
+                        
+                        // Add to end-term plans history
+                        const currentEndTermPlans = userData.endTermPlans || [];
+                        const updatedEndTermPlans = [
+                            ...currentEndTermPlans,
+                            ...completedPlans.map(plan => ({
+                                ...plan,
+                                releaseDate: todayDate,
+                                userId: userId
+                            }))
+                        ];
+                        
+                        await userRef.update({
+                            endTermPlans: updatedEndTermPlans
+                        });
+                    }
+                    
+                    // Update total earnings
                     await userRef.update({
-                        totalEarnings: (userData.totalEarnings || 0) + userIncome,
+                        totalEarnings: (userData.totalEarnings || 0) + userIncome + userEndTermReleased,
                         lastIncomeDate: todayDate
                     });
                     
                     // Record transaction
                     const transactionId = generateTransactionId();
-                    await db.ref(`transactions/${userId}/${transactionId}`).set({
+                    const transactionData = {
                         id: transactionId,
                         type: 'daily_income',
-                        amount: userIncome,
+                        amount: userIncome + userEndTermReleased,
                         regularIncome: userRegularIncome,
                         lockedIncome: userLockedIncome,
+                        endTermReleased: userEndTermReleased,
                         distributionDate: todayDate,
                         distributionTime: distributionTime,
                         date: new Date().toISOString(),
                         investments: userProcessedInvestments,
                         status: 'completed',
-                        note: `Daily income distributed by admin on ${todayReadable}`
-                    });
+                        note: `Daily income distributed by admin on ${todayReadable}` + 
+                              (userEndTermReleased > 0 ? ` + End-term released: ₹${userEndTermReleased}` : '')
+                    };
                     
-                    stats.totalDistributed += userIncome;
+                    if (completedPlans.length > 0) {
+                        transactionData.completedPlans = completedPlans;
+                    }
+                    
+                    await db.ref(`transactions/${userId}/${transactionId}`).set(transactionData);
+                    
                     stats.usersProcessed++;
                     
-                    console.log(`💰 Distributed ₹${userIncome} to ${users[userId].name} (₹${userRegularIncome} regular, ₹${userLockedIncome} locked)`);
+                    console.log(`💰 Distributed to ${users[userId].name}: Regular ₹${userRegularIncome}, Locked ₹${userLockedIncome}, End-term Released ₹${userEndTermReleased}`);
                 }
                 
             } catch (userError) {
@@ -2043,7 +2233,7 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
             time: distributionTime,
             stats: stats,
             distributedBy: 'admin',
-            note: 'Manual distribution by admin'
+            note: 'Manual distribution by admin with end-term system'
         });
         
         console.log(`✅ Daily distribution completed:`, stats);
@@ -2052,7 +2242,7 @@ app.post('/api/admin/distribute-daily-income', checkAdmin, async (req, res) => {
             success: true,
             message: 'Daily income distributed successfully',
             stats: stats,
-            note: `Next distribution available tomorrow. Today's new investments will get income from tomorrow.`
+            note: `End-term plans: ₹${stats.endTermAmount} released to user balances. Today's new investments will get income from tomorrow.`
         });
         
     } catch (error) {
@@ -2753,7 +2943,9 @@ app.get('/api/user/:userId/eligibility', async (req, res) => {
             alreadyDistributed: settings.lastDistributionDate === today,
             investments: [],
             eligibleTotal: 0,
-            ineligibleTotal: 0
+            ineligibleTotal: 0,
+            endTermPlans: [],
+            regularPlans: []
         };
         
         for (const invId in investments) {
@@ -2766,20 +2958,33 @@ app.get('/api/user/:userId/eligibility', async (req, res) => {
             
             const isEligible = investmentDate !== today;
             const amount = inv.dailyIncome || 0;
+            const plan = NEW_PLANS[inv.planId];
             
-            result.investments.push({
+            const invData = {
                 id: invId,
                 planName: inv.planName,
                 investmentDate: investmentDate,
                 isEligible: isEligible,
                 amount: amount,
+                isEndTerm: plan?.withdrawalType === 'end',
+                lockedBalance: plan?.lockedBalance || false,
+                daysRemaining: inv.daysRemaining,
+                lockedEarned: inv.lockedEarned || 0,
                 note: isEligible ? 
                     'Eligible for distribution' : 
                     'Will get income from tomorrow (today\'s investment)'
-            });
+            };
+            
+            result.investments.push(invData);
             
             if (isEligible) {
                 result.eligibleTotal += amount;
+                
+                if (plan?.withdrawalType === 'end') {
+                    result.endTermPlans.push(invData);
+                } else {
+                    result.regularPlans.push(invData);
+                }
             } else {
                 result.ineligibleTotal += amount;
             }
@@ -2802,27 +3007,110 @@ app.get('/api/user/:userId/eligibility', async (req, res) => {
     }
 });
 
-// 42. HEALTH CHECK
+// 42. NEW ENDPOINT: GET END-TERM BALANCE INFO
+app.get('/api/user/:userId/end-term-info', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        const userSnapshot = await db.ref(`users/${userId}`).once('value');
+        if (!userSnapshot.exists()) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+        
+        const userData = userSnapshot.val();
+        
+        const investmentsSnap = await db.ref(`investments/${userId}`).once('value');
+        const investments = investmentsSnap.val() || {};
+        
+        let endTermInfo = {
+            totalLockedBalance: userData.lockedBalance || 0,
+            totalEndTermReceived: userData.totalEndTermReceived || 0,
+            vipBalance: userData.vipBalance || 0,
+            richBalance: userData.richBalance || 0,
+            ultimateBalance: userData.ultimateBalance || 0,
+            activeEndTermPlans: [],
+            completedEndTermPlans: [],
+            nextReleaseAmount: 0
+        };
+        
+        // Process investments
+        for (const invId in investments) {
+            const inv = investments[invId];
+            const plan = NEW_PLANS[inv.planId];
+            
+            if (plan?.withdrawalType === 'end') {
+                const planInfo = {
+                    id: invId,
+                    planName: inv.planName,
+                    amount: inv.amount,
+                    dailyIncome: inv.dailyIncome,
+                    daysRemaining: inv.daysRemaining,
+                    lockedEarned: inv.lockedEarned || 0,
+                    startDate: inv.startDate,
+                    endDate: inv.endDate,
+                    status: inv.status,
+                    endTermReleased: inv.endTermReleased || false,
+                    releasedAmount: inv.releasedAmount || 0
+                };
+                
+                if (inv.status === 'active') {
+                    endTermInfo.activeEndTermPlans.push(planInfo);
+                    
+                    // Calculate when this plan will complete
+                    if (inv.daysRemaining === 1) {
+                        endTermInfo.nextReleaseAmount += (inv.lockedEarned || 0) + (inv.dailyIncome || 0);
+                    }
+                } else if (inv.status === 'completed' && inv.endTermReleased) {
+                    endTermInfo.completedEndTermPlans.push(planInfo);
+                }
+            }
+        }
+        
+        res.json({
+            success: true,
+            data: endTermInfo,
+            summary: {
+                totalLocked: endTermInfo.totalLockedBalance,
+                totalReleased: endTermInfo.totalEndTermReceived,
+                activePlans: endTermInfo.activeEndTermPlans.length,
+                nextRelease: endTermInfo.nextReleaseAmount
+            }
+        });
+        
+    } catch (error) {
+        console.error('End-term info error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// 43. HEALTH CHECK
 app.get('/api/health', (req, res) => {
     res.json({ 
         success: true, 
         message: 'Happy Invest API is running',
         timestamp: new Date().toISOString(),
-        version: '6.0.0',
+        version: '7.0.0',
         features: [
             'manual-income-distribution',
-            'admin-controlled-system',
+            'end-term-system-complete',
             'today-investment-tomorrow-income',
-            'no-timing-system',
-            'daily-distribution-log',
-            'fixed-110-referral',
+            'locked-balance-tracking',
+            'end-term-auto-release',
+            'category-wise-balances',
             'trust-withdrawal-system',
             'anti-cheat-protection'
         ],
         distribution: {
             type: 'manual',
             controlledBy: 'admin',
-            rule: 'Today\'s investment gets income from tomorrow'
+            rule: 'Today\'s investment gets income from tomorrow',
+            endTerm: 'Auto-release on completion'
         }
     });
 });
@@ -2868,11 +3156,13 @@ const initializeSettings = async () => {
 // ==================== START SERVER ====================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-    console.log(`✅ Happy Invest API v6.0.0 running on port ${PORT}`);
+    console.log(`✅ Happy Invest API v7.0.0 running on port ${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`✅ Total APIs: 42 endpoints`);
+    console.log(`✅ Total APIs: 43 endpoints`);
     console.log(`✅ Income System: MANUAL ADMIN DISTRIBUTION`);
+    console.log(`✅ End-Term System: COMPLETE AUTO-RELEASE`);
     console.log(`✅ Rule: Today's investment → Tomorrow's income`);
+    console.log(`✅ End-Term Rule: Auto-release to balance on completion`);
     console.log(`✅ Withdrawal Rules: ₹200 min, 1 per day`);
     console.log(`✅ Referral System: Fixed ₹110 per referral`);
     console.log(`✅ Admin Panel: Full control`);
